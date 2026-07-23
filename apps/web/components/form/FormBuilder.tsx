@@ -1,36 +1,36 @@
+import { ReactNode } from "react";
 import { FormProvider, useForm, DefaultValues } from "react-hook-form";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import { ZodSchema } from "zod";
-
 import FieldRenderer from "./FieldRenderer";
-
-import { FormConfig } from "@/types";
+import { FieldConfig } from "@/types";
 import { cn } from "@/lib/utils";
+import { Button } from "../ui/button";
+import { Spinner } from "@/components/ui/spinner";
 
 type Props<T extends Record<string, unknown>> = {
-  config: FormConfig[];
-
+  config: FieldConfig[];
+  title: string;
+  description?: string;
   schema: ZodSchema<T>;
-
   onSubmit: (values: T) => void | Promise<void>;
+  submitText?: string;
+  className?: string;
+  footer?: ReactNode;
 };
 
 export default function FormBuilder<T extends Record<string, unknown>>({
   config,
   schema,
   onSubmit,
+  title,
+  description,
+  submitText,
 }: Props<T>) {
-  const defaults = config
-    .map((section) => section.fields)
-    .reduce((acc, config) => {
-      return acc.concat(config);
-    }, [])
-    .reduce((acc, field) => {
-      acc[field.name] = field.defaultValue ?? "";
-      return acc;
-    }, {} as DefaultValues<T>);
+  const defaults = config.reduce((acc, field) => {
+    acc[field.name] = field.defaultValue ?? "";
+    return acc;
+  }, {} as DefaultValues<T>);
 
   const methods = useForm<T>({
     resolver: zodResolver(schema as any),
@@ -41,41 +41,48 @@ export default function FormBuilder<T extends Record<string, unknown>>({
   });
 
   return (
-    <FormProvider {...methods}>
-      <form className="space-y-5" onSubmit={methods.handleSubmit(onSubmit)}>
-        {config.map((section) => (
-          <div key={section.title} className="rounded-sm border bg-white">
-            <div className="flex items-center gap-2 p-5 border-b">
-              {section.icon && <section.icon color="#FE9F43" />} {section.title}
-            </div>
-            <div className="grid grid-cols-2 gap-5 p-5">
-              {section.fields.map((field) => {
-                return (
-                  <div
-                    key={field.name}
-                    className={cn({
-                      "col-span-2": field.fullWidth || field.type == "file",
-                      "w-1/3": field.oneThirdWidth,
-                    })}
-                  >
-                    <FieldRenderer key={field.name} field={field} />
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        ))}
+    <>
+      <div className="w-full max-w-xl rounded-3xl bg-white p-10 shadow-xl">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold">{title}</h1>
 
-        <div className="flex justify-end py-5">
-          <button
-            type="submit"
-            disabled={methods.formState.isSubmitting}
-            className="rounded-lg bg-black px-5 py-3 text-white"
-          >
-            Submit
-          </button>
+          <p className="mt-3 text-slate-500">{description}</p>
         </div>
-      </form>
-    </FormProvider>
+        <FormProvider {...methods}>
+          <form
+            onSubmit={methods.handleSubmit(onSubmit)}
+            className="mt-5 space-y-4"
+          >
+            {config.map((field) => (
+              <div key={field.name}>
+                <div className="w-full">
+                  <FieldRenderer key={field.name} field={field} />
+                </div>
+              </div>
+            ))}
+
+            <div className="flex justify-center py-5">
+              <Button
+                size="lg"
+                type="submit"
+                disabled={methods.formState.isSubmitting}
+                className="px-5 py-3 text-white"
+              >
+                {submitText ?? "Submit"}{" "}
+                {methods.formState.isSubmitting && <Spinner />}
+              </Button>
+            </div>
+          </form>
+        </FormProvider>
+        {/* <div className="mt-8 text-center">
+          <p className="text-slate-500">
+            Already have an account?{" "}
+            <Link href="/login" className="font-semibold text-emerald-600">
+              Sign In
+            </Link>
+          </p>
+        </div> */}
+      </div>
+    </>
   );
 }

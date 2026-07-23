@@ -22,7 +22,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  return NextResponse.rewrite(new URL(`/`, request.url));
+  return NextResponse.next();
 }
 
 // Config to specify matching criteria and skip static files

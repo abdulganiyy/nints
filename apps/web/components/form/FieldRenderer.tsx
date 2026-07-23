@@ -44,7 +44,9 @@ export default function FieldRenderer({ field }: Props) {
       control={control}
       render={({ field: rhField, fieldState: rhFieldState }) => (
         <div className="space-y-2">
-          <FieldLabel className="block font-medium">{field.label}</FieldLabel>
+          {field.hideLabel ? null : (
+            <FieldLabel className="block font-medium">{field.label}</FieldLabel>
+          )}
 
           {field.type === "textarea" && (
             <Textarea {...rhField} placeholder={field.placeholder} />
@@ -68,8 +70,6 @@ export default function FieldRenderer({ field }: Props) {
                     {option.label}
                   </SelectItem>
                 ))}
-                <SelectItem value="auto">Auto</SelectItem>
-                <SelectItem value="en">English</SelectItem>
               </SelectContent>
             </Select>
           )}
@@ -96,6 +96,19 @@ export default function FieldRenderer({ field }: Props) {
                 </Field>
               ))}
             </FieldGroup>
+          )}
+
+          {field.type === "checkbox" && !field.options && (
+            <Field key={field.name} orientation="horizontal">
+              <Checkbox
+                id={field.name}
+                name={rhField.name}
+                aria-invalid={rhFieldState.invalid}
+                checked={rhField.value}
+                onCheckedChange={rhField.onChange}
+              />
+              <Label htmlFor={field.name}>{field.label}</Label>
+            </Field>
           )}
 
           {field.type === "radio" && field.options && (

@@ -28,6 +28,8 @@ export type FieldConfig = {
 
   fullWidth?: boolean;
 
+  hideLabel?: boolean;
+
   oneThirdWidth?: boolean;
 };
 
