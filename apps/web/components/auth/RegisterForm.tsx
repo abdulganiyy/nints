@@ -10,20 +10,19 @@ import { useRouter } from "next/navigation";
 import { registerFieldConfig } from "@/config";
 import { phoneRegex } from "@/utils/constants";
 
-export const registerSchema = z
-  .object({
-    fullName: z.string().min(6, "Fullname must be at least 6 characters"),
-    email: z.email(),
-    phoneNumber: z
-      .string()
-      .min(1, { message: "Phone number is required." })
-      .regex(phoneRegex, { message: "Invalid phone number format." }),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z.string().min(1, "Please confirm your password"),
-    agreed: z.boolean({
-      error: "You need to accept the terms and conditions.",
-    }),
-  })
+export const registerSchema = z.object({
+  fullName: z.string().min(6, "Fullname must be at least 6 characters"),
+  email: z.email(),
+  phoneNumber: z
+    .string()
+    .min(1, { message: "Phone number is required." })
+    .regex(phoneRegex, { message: "Invalid phone number format." }),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  confirmPassword: z.string().min(1, "Please confirm your password"),
+  agreed: z.boolean({
+    error: "You need to accept the terms and conditions.",
+  }),
+})
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
@@ -67,6 +66,7 @@ export default function RegisterForm() {
       config={registerFieldConfig}
       schema={registerSchema}
       onSubmit={onSubmit}
+
       submitText="Create Account"
     />
   );

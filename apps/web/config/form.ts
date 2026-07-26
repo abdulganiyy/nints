@@ -33,3 +33,17 @@ export const registerFieldConfig: FieldConfig[] = [
     hideLabel: true,
   },
 ];
+
+
+export const loginFieldConfig: FieldConfig[] = [
+  {
+    name: "email",
+    label: "Email Address",
+    type: "email",
+  },
+  {
+    name: "password",
+    label: "Password",
+    type: "text",
+  },
+];
