@@ -11,7 +11,7 @@ export type User = {
   email: string;
   fullname: string;
   phone?: string;
-  tenantId: string;
+  emailVerified: boolean;
   roles: string[];
   permissions?: string[];
 };
@@ -32,4 +32,9 @@ export type LoginFormValues = {
   password: string;
 };
 
-export type SignUpFormValues = Pick<User, "fullname" | "email">;
+export type RegisterFormValues = {
+  phone: string;
+  fullname: string;
+  email: string;
+  password: string;
+};

@@ -3,8 +3,6 @@ import { useMutation } from "@tanstack/react-query";
 import FormBuilder from "@/components/form/FormBuilder";
 import { z } from "zod";
 import axios from "axios";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { registerFieldConfig } from "@/config";
@@ -12,9 +10,9 @@ import { phoneRegex } from "@/utils/constants";
 
 export const registerSchema = z
   .object({
-    fullName: z.string().min(6, "Fullname must be at least 6 characters"),
+    fullname: z.string().min(6, "Fullname must be at least 6 characters"),
     email: z.email(),
-    phoneNumber: z
+    phone: z
       .string()
       .min(1, { message: "Phone number is required." })
       .regex(phoneRegex, { message: "Invalid phone number format." }),
@@ -34,22 +32,16 @@ export type RegisterForm = z.infer<typeof registerSchema>;
 export default function RegisterForm() {
   const router = useRouter();
 
-  useForm<z.infer<typeof registerSchema>>({
-    resolver: zodResolver(registerSchema),
-    defaultValues: {
-      agreed: false,
-    },
-  });
-
   const mutation = useMutation({
-    mutationFn: async (data: z.infer<typeof registerSchema>) => {
-      const res = await axios.post(`/api/register`, data);
+    mutationFn: async (
+      data: Omit<z.infer<typeof registerSchema>, "agreed" | "confirmPassword">,
+    ) => {
+      const res = await axios.post(`api/register`, data);
 
       return res.data;
     },
-    onSuccess: (data) => {
-      // localStorage.setItem("user", JSON.stringify(data));
-      // router.replace("/dashboard");
+    onSuccess: () => {
+      router.replace("/dashboard");
     },
     onError: (err: any) => {
       toast.error(err?.response?.data?.message);
@@ -57,7 +49,8 @@ export default function RegisterForm() {
   });
 
   async function onSubmit(values: z.infer<typeof registerSchema>) {
-    mutation.mutate(values);
+    const { agreed, confirmPassword, ...rest } = values;
+    await mutation.mutateAsync(rest);
   }
 
   return (

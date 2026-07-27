@@ -7,6 +7,8 @@ import { UserModule } from '../user/user.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigService } from '@nestjs/config';
 import { EmailModule } from '../email/email.module';
+import { WalletModule } from '../wallet/wallet.module';
+import { VirtualAccountModule } from '../virtualaccount/virtualaccount.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { EmailModule } from '../email/email.module';
     }),
     UserModule,
     EmailModule,
+    WalletModule,
+    VirtualAccountModule,
   ],
   providers: [AuthService, JwtStrategy],
   controllers: [AuthController],

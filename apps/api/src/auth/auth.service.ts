@@ -2,7 +2,6 @@ import {
   Injectable,
   ForbiddenException,
   BadRequestException,
-  Inject,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as argon2 from 'argon2';
@@ -12,37 +11,82 @@ import { jwtConstants } from './constants';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
 import { generateOtp } from './helpers/generate-otp';
-import { type EmailService } from '../email/email.interface';
+import { EmailService } from '../email/email.interface';
 import { Token } from './auth.interface';
-
+import { RegisterDto } from './dto/register.dto';
+import { UserService } from '../user/user.service';
+import { WalletService } from '../wallet/wallet.service';
+import { VirtualAccountService } from '../virtualaccount/virtualaccount.service';
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwt: JwtService,
     private config: ConfigService,
-    @Inject('EmailService') private emailService: EmailService,
+    private emailService: EmailService,
+    private userService: UserService,
+    private walletService: WalletService,
+    private virtualAccountService: VirtualAccountService,
   ) {}
 
-  async login(dto: LoginDto) {
-    const user = await this.prisma.user.findFirst({
-      where: { email: dto.email },
-      include: {
-        userRoles: {
-          include: {
-            role: {
-              include: {
-                rolePermissions: {
-                  include: {
-                    permission: true,
-                  },
-                },
-              },
-            },
-          },
-        },
+  async register(dto: RegisterDto) {
+    const user = await this.userService.createUser(dto);
+
+    const { otp, hash } = generateOtp();
+
+    await this.prisma.user.update({
+      where: { id: user!.id },
+      data: {
+        emailOtpHash: hash,
+        emailOtpExpiresAt: new Date(Date.now() + 10 * 60 * 1000),
       },
     });
+
+    await this.emailService.sendEmail({
+      to: user!.email,
+      subject: 'Verify Your Email',
+      template: 'verify-email',
+      context: {
+        appName: 'Nints',
+        name: user!.fullname,
+        verificationUrl: `${process.env.FRONTEND_URL}/verify-email?token=${otp}&email=${user!.email}`,
+        expiryHours: '24',
+        supportEmail: 'support@nints.com',
+        year: new Date().getFullYear(),
+      },
+    });
+
+    const roles = user!.userRoles.map((ur) => ur.role.name);
+
+    const permissions = [
+      ...new Set(
+        user!.userRoles.flatMap((ur) =>
+          ur.role.rolePermissions.map((rp) => rp.permission.name),
+        ),
+      ),
+    ];
+
+    const { accessToken } = await this.signTokens({
+      sub: user!.id,
+      email: user!.email as string,
+      roles,
+      permissions,
+      fullname: user!.fullname,
+    });
+
+    return {
+      user: {
+        fullname: user!.fullname,
+        email: user!.email,
+        roles,
+        permissions,
+      },
+      accessToken,
+    };
+  }
+
+  async login(dto: LoginDto) {
+    const user = await this.userService.getUserByEmail(dto.email);
 
     if (!user) throw new BadRequestException('Incorrect credentials');
 
@@ -79,40 +123,22 @@ export class AuthService {
   }
 
   async verifyEmail(email: string, otp: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { email },
+    return this.prisma.$transaction(async (tx) => {
+      const user = await this.userService.verifyEmail(email, otp);
+
+      const wallet = await this.walletService.create(user.id);
+
+      await this.virtualAccountService.create(wallet.id, user.id);
+
+      await tx.user.update({
+        where: { id: user.id },
+        data: {
+          status: 'ACTIVE',
+        },
+      });
+
+      return wallet;
     });
-
-    if (!user || user.emailVerified) {
-      throw new BadRequestException('Invalid verification attempt');
-    }
-
-    if (!user.emailOtpHash || !user.emailOtpExpiresAt) {
-      throw new BadRequestException('No OTP found');
-    }
-
-    if (user.emailOtpExpiresAt < new Date()) {
-      throw new BadRequestException('OTP expired');
-    }
-
-    const otpHash = crypto.createHash('sha256').update(otp).digest('hex');
-
-    if (otpHash !== user.emailOtpHash) {
-      throw new BadRequestException('Invalid OTP');
-    }
-
-    const updatedUser = await this.prisma.user.update({
-      where: { id: user.id },
-      data: {
-        emailVerified: true,
-        emailOtpHash: null,
-        emailOtpExpiresAt: null,
-      },
-    });
-
-    const { password: _, ...safeUser } = updatedUser;
-
-    return { user: safeUser };
   }
 
   async resendEmailOtp(email: string) {
@@ -129,6 +155,20 @@ export class AuthService {
       data: {
         emailOtpHash: hash,
         emailOtpExpiresAt: new Date(Date.now() + 10 * 60 * 1000),
+      },
+    });
+
+    await this.emailService.sendEmail({
+      to: user!.email,
+      subject: 'Verify Your Email',
+      template: 'verify-email',
+      context: {
+        appName: 'Nints',
+        name: user!.fullname,
+        verificationUrl: `${process.env.FRONTEND_URL}/verify-email?token=${otp}`,
+        expiryHours: '24',
+        supportEmail: 'support@finflow.com',
+        year: new Date().getFullYear(),
       },
     });
   }

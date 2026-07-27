@@ -8,6 +8,10 @@
         "include":"../generated/prisma/**/*",
         "outDir":"dist/generated"
 
+      },
+      {
+        "include": "email/templates/**/*",
+        "outDir": "dist/src"
       }
     ],
     "deleteOutDir": true

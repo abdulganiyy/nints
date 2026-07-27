@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsEmail,
   IsEnum,
   IsNotEmpty,
@@ -29,7 +30,11 @@ export class CreateUserDto {
   @IsString()
   fullname!: string;
 
-  @IsNotEmpty()
-  @IsEnum(RoleName)
-  roleName!: RoleName;
+  @IsOptional()
+  @IsArray()
+  roleIds?: string[];
+
+  @IsOptional()
+  @IsArray()
+  permissionIds?: string[];
 }

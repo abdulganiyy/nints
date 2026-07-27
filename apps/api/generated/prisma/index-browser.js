@@ -24,12 +24,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 7.8.0
- * Query Engine version: 3c6e192761c0362d496ed980de936e2f3cebcd3a
+ * Prisma Client JS version: 7.9.0
+ * Query Engine version: e922089b7d7502aff4249d5da3420f6fa55fc6ad
  */
 Prisma.prismaVersion = {
-  client: "7.8.0",
-  engine: "3c6e192761c0362d496ed980de936e2f3cebcd3a"
+  client: "7.9.0",
+  engine: "e922089b7d7502aff4249d5da3420f6fa55fc6ad"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -133,9 +133,35 @@ exports.Prisma.UserScalarFieldEnum = {
   otpExpiresAt: 'otpExpiresAt',
   resetPasswordToken: 'resetPasswordToken',
   resetPasswordExpiresAt: 'resetPasswordExpiresAt',
+  pin: 'pin',
+  status: 'status',
+  phoneVerified: 'phoneVerified',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  deleted: 'deleted'
+  deleted: 'deleted',
+  deletedAt: 'deletedAt'
+};
+
+exports.Prisma.WalletScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  balance: 'balance',
+  currency: 'currency',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.VirtualAccountScalarFieldEnum = {
+  id: 'id',
+  walletId: 'walletId',
+  provider: 'provider',
+  bankName: 'bankName',
+  accountNumber: 'accountNumber',
+  accountName: 'accountName',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.RoleScalarFieldEnum = {
@@ -164,6 +190,18 @@ exports.Prisma.RolePermissionScalarFieldEnum = {
   permissionId: 'permissionId'
 };
 
+exports.Prisma.OtpScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  identifier: 'identifier',
+  codeHash: 'codeHash',
+  purpose: 'purpose',
+  expiresAt: 'expiresAt',
+  verifiedAt: 'verifiedAt',
+  attempts: 'attempts',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -178,18 +216,61 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.UserStatus = exports.$Enums.UserStatus = {
+  PENDING_VERIFICATION: 'PENDING_VERIFICATION',
+  ACTIVE: 'ACTIVE',
+  SUSPENDED: 'SUSPENDED',
+  BLOCKED: 'BLOCKED',
+  DELETED: 'DELETED'
+};
+
+exports.Currency = exports.$Enums.Currency = {
+  NGN: 'NGN',
+  USD: 'USD'
+};
+
+exports.WalletStatus = exports.$Enums.WalletStatus = {
+  ACTIVE: 'ACTIVE',
+  FROZEN: 'FROZEN',
+  CLOSED: 'CLOSED'
+};
+
+exports.VirtualAccountProvider = exports.$Enums.VirtualAccountProvider = {
+  PAYSTACK: 'PAYSTACK',
+  MONNIFY: 'MONNIFY',
+  FLUTTERWAVE: 'FLUTTERWAVE',
+  SAFE_HAVEN: 'SAFE_HAVEN'
+};
+
+exports.VirtualAccountStatus = exports.$Enums.VirtualAccountStatus = {
+  PENDING: 'PENDING',
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  CLOSED: 'CLOSED'
+};
+
 exports.RoleName = exports.$Enums.RoleName = {
   SUPER_ADMIN: 'SUPER_ADMIN',
   ADMIN: 'ADMIN',
   USER: 'USER'
 };
 
+exports.OtpPurpose = exports.$Enums.OtpPurpose = {
+  EMAIL_VERIFICATION: 'EMAIL_VERIFICATION',
+  PHONE_VERIFICATION: 'PHONE_VERIFICATION',
+  PASSWORD_RESET: 'PASSWORD_RESET',
+  LOGIN: 'LOGIN'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
+  Wallet: 'Wallet',
+  VirtualAccount: 'VirtualAccount',
   Role: 'Role',
   UserRole: 'UserRole',
   Permission: 'Permission',
-  RolePermission: 'RolePermission'
+  RolePermission: 'RolePermission',
+  Otp: 'Otp'
 };
 
 /**
