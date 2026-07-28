@@ -1,9 +1,15 @@
-import { Injectable, BadRequestException, UseGuards } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { GetUsersDto } from './dto/get-users.dto';
+import { Prisma } from '@prisma/client/extension';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class UserService {
@@ -28,27 +34,81 @@ export class UserService {
       dto.password ?? process.env.SUPER_ADMIN_PASSWORD!,
     );
 
-    const user = await this.prisma.user.create({
-      data: {
-        ...dto,
-        password: hashedPassword,
-      } as any,
-    });
+    return this.prisma.$transaction(async (tx) => {
+      const user = await tx.user.create({
+        data: {
+          fullname: dto.fullname,
+          email: dto.email,
+          phone: dto.phone,
+          password: hashedPassword,
+        },
+      });
 
-    const userRole = await this.prisma.role.findUnique({
-      where: { name: dto.roleName },
-    });
+      const roleIds = dto.roleIds?.length
+        ? dto.roleIds
+        : [await this.getDefaultRoleId(tx)];
 
-    await this.prisma.userRole.create({
-      data: {
-        userId: user.id,
-        roleId: userRole!.id,
+      await tx.userRole.createMany({
+        data: roleIds.map((roleId) => ({
+          userId: user.id,
+          roleId,
+        })),
+      });
+
+      return tx.user.findUnique({
+        where: { id: user.id },
+        include: {
+          userRoles: {
+            include: {
+              role: {
+                include: {
+                  rolePermissions: {
+                    include: {
+                      permission: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+    });
+  }
+
+  private async getDefaultRoleId(tx: Prisma.TransactionClient) {
+    const role = await tx.role.findUnique({
+      where: {
+        name: 'USER',
       },
     });
 
-    return {
-      message: 'User created successfully',
-    };
+    if (!role) throw new InternalServerErrorException('Default role not found');
+
+    return role.id;
+  }
+
+  async getUserByEmail(email: string) {
+    return this.prisma.user.findUnique({
+      where: {
+        email,
+      },
+      include: {
+        userRoles: {
+          include: {
+            role: {
+              include: {
+                rolePermissions: {
+                  include: {
+                    permission: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
   }
 
   async updateUser(dto: UpdateUserDto) {
@@ -115,6 +175,43 @@ export class UserService {
         totalPages: Math.ceil(total / limit),
       },
     };
+  }
+
+  async verifyEmail(email: string, otp: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user || user.emailVerified) {
+      throw new BadRequestException('Invalid verification attempt');
+    }
+
+    if (!user.emailOtpHash || !user.emailOtpExpiresAt) {
+      throw new BadRequestException('No OTP found');
+    }
+
+    if (user.emailOtpExpiresAt < new Date()) {
+      throw new BadRequestException('OTP expired');
+    }
+
+    const otpHash = crypto.createHash('sha256').update(otp).digest('hex');
+
+    if (otpHash !== user.emailOtpHash) {
+      throw new BadRequestException('Invalid OTP');
+    }
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        emailVerified: true,
+        emailOtpHash: null,
+        emailOtpExpiresAt: null,
+      },
+    });
+
+    const { password: _, ...safeUser } = updatedUser;
+
+    return safeUser;
   }
 
   softdelete(id: string) {

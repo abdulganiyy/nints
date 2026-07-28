@@ -23,11 +23,64 @@ model User {
   resetPasswordToken     String?
   resetPasswordExpiresAt DateTime?
 
+  pin           String?
+
+  status            UserStatus  @default(PENDING_VERIFICATION)
+
+  phoneVerified     Boolean     @default(false)
+
+  wallet            Wallet?
+
+
   createdAt              DateTime     @default(now())
   updatedAt              DateTime     @updatedAt
   deleted                Boolean      @default(false)
+  deletedAt         DateTime?
+
 
   userRoles              UserRole[]
+  otps                   Otp[]
+}
+
+model Wallet {
+  id            String        @id @default(cuid())
+
+  userId        String        @unique
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  balance       Decimal       @db.Decimal(18, 2)
+  currency      Currency      @default(NGN)
+
+  status        WalletStatus  @default(ACTIVE)
+
+  virtualAccount VirtualAccount?
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([userId])
+}
+
+model VirtualAccount {
+  id              String                  @id @default(cuid())
+
+  walletId        String                  @unique
+  wallet          Wallet                  @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  provider        VirtualAccountProvider
+
+  bankName        String
+  accountNumber   String                  @unique
+  accountName     String
+
+  status          VirtualAccountStatus    @default(PENDING)
+
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+
+  @@index([walletId])
+  @@index([provider])
+  @@index([accountNumber])
 }
 
 
@@ -75,3 +128,64 @@ enum RoleName {
   USER
 }
 
+enum UserStatus {
+  PENDING_VERIFICATION
+  ACTIVE
+  SUSPENDED
+  BLOCKED
+  DELETED
+}
+
+enum WalletStatus {
+  ACTIVE
+  FROZEN
+  CLOSED
+}
+
+enum VirtualAccountStatus {
+  PENDING
+  ACTIVE
+  INACTIVE
+  CLOSED
+}
+
+enum Currency {
+  NGN
+  USD
+}
+
+enum VirtualAccountProvider {
+  PAYSTACK
+  MONNIFY
+  FLUTTERWAVE
+  SAFE_HAVEN
+}
+
+enum OtpPurpose {
+  EMAIL_VERIFICATION
+  PHONE_VERIFICATION
+  PASSWORD_RESET
+  LOGIN
+}
+
+model Otp {
+  id          String      @id @default(cuid())
+
+  userId      String?
+  user        User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  identifier  String      // email or phone
+  codeHash    String
+
+  purpose     OtpPurpose
+
+  expiresAt   DateTime
+  verifiedAt  DateTime?
+
+  attempts    Int         @default(0)
+
+  createdAt   DateTime    @default(now())
+
+  @@index([identifier])
+  @@index([purpose])
+}

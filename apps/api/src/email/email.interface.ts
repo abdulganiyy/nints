@@ -2,9 +2,9 @@ export interface EmailInput {
   to: string;
   subject: string;
   template: string;
-  context: Record<string, string>;
+  context: Record<string, any>;
 }
 
-export interface EmailService {
-  sendEmail(input: EmailInput): void;
+export abstract class EmailService {
+  abstract sendEmail(input: EmailInput): Promise<void>;
 }

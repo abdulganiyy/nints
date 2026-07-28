@@ -7,6 +7,11 @@ import { CommonModule } from './common/common.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { EmailModule } from './email/email.module';
+import { PaymentModule } from './payment/payment.module';
+import { WalletModule } from './wallet/wallet.module';
+import { VirtualAccountModule } from './virtualaccount/virtualaccount.module';
+import { SmsModule } from './sms/sms.module';
+import { OtpModule } from './otp/otp.module';
 
 @Module({
   imports: [
@@ -19,6 +24,11 @@ import { EmailModule } from './email/email.module';
     AuthModule,
     PrismaModule,
     EmailModule,
+    PaymentModule,
+    WalletModule,
+    VirtualAccountModule,
+    SmsModule,
+    OtpModule,
   ],
   controllers: [AppController],
   providers: [AppService],

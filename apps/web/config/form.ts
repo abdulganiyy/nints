@@ -2,7 +2,7 @@ import { FieldConfig } from "@/types";
 
 export const registerFieldConfig: FieldConfig[] = [
   {
-    name: "fullName",
+    name: "fullname",
     label: "Full Name",
     type: "text",
   },
@@ -12,7 +12,7 @@ export const registerFieldConfig: FieldConfig[] = [
     type: "email",
   },
   {
-    name: "phoneNumber",
+    name: "phone",
     label: "Phone Number",
     type: "text",
   },

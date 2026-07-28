@@ -12,7 +12,7 @@ export class BrevoProvider implements EmailService {
   async sendEmail(payload: EmailInput) {
     const html = this.templateService.render(payload.template, payload.context);
 
-    return axios.post(
+    await axios.post(
       this.baseUrl,
       {
         sender: { email: process.env.MAIL_FROM },
