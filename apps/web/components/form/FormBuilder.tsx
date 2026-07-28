@@ -1,3 +1,5 @@
+"use client";
+
 import { ReactNode } from "react";
 import { FormProvider, useForm, DefaultValues } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -61,12 +63,12 @@ export default function FormBuilder<T extends Record<string, unknown>>({
               </div>
             ))}
 
-            <div className="flex justify-center py-5">
+            <div className="flex py-5">
               <Button
                 size="lg"
                 type="submit"
                 disabled={methods.formState.isSubmitting}
-                className="px-5 py-3 text-white"
+                className="px-5 py-3 text-white w-full"
               >
                 {submitText ?? "Submit"}{" "}
                 {methods.formState.isSubmitting && <Spinner />}
