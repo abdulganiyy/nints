@@ -7,6 +7,7 @@ import z from "zod";
 import axios from "axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export const loginSchema = z.object({
   email: z.email(),
@@ -31,17 +32,27 @@ const LoginForm = () => {
   });
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
-    mutation.mutate(values);
+    mutation.mutateAsync(values);
   }
   return (
-    <FormBuilder
-      title="Sign in to your Account"
-      description="Sign in and use your digital wallet today."
-      config={loginFieldConfig}
-      schema={loginSchema}
-      onSubmit={onSubmit}
-      submitText="Sign In"
-    />
+    <div className="rounded-3xl bg-white p-4 shadow-x min-w-xll">
+      <FormBuilder
+        title="Sign in to your Account"
+        description="Sign in and use your digital wallet today."
+        config={loginFieldConfig}
+        schema={loginSchema}
+        onSubmit={onSubmit}
+        submitText="Sign In"
+        footer={
+          <p className="text-slate-500 text-center">
+            Don't have an account yet?{" "}
+            <Link href="/register" className="font-semibold text-emerald-600">
+              Register
+            </Link>
+          </p>
+        }
+      />
+    </div>
   );
 };
 
