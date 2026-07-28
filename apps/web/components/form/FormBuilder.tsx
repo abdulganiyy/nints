@@ -28,6 +28,7 @@ export default function FormBuilder<T extends Record<string, unknown>>({
   title,
   description,
   submitText,
+  footer,
 }: Props<T>) {
   const defaults = config.reduce((acc, field) => {
     acc[field.name] = field.defaultValue ?? "";
@@ -44,7 +45,7 @@ export default function FormBuilder<T extends Record<string, unknown>>({
 
   return (
     <>
-      <div className="w-full max-w-xl rounded-3xl bg-white p-10 shadow-xl">
+      <div className="w-full max-w-xl">
         <div className="text-center">
           <h1 className="text-4xl font-bold">{title}</h1>
 
@@ -76,14 +77,7 @@ export default function FormBuilder<T extends Record<string, unknown>>({
             </div>
           </form>
         </FormProvider>
-        {/* <div className="mt-8 text-center">
-          <p className="text-slate-500">
-            Already have an account?{" "}
-            <Link href="/login" className="font-semibold text-emerald-600">
-              Sign In
-            </Link>
-          </p>
-        </div> */}
+        {footer}
       </div>
     </>
   );

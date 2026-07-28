@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { registerFieldConfig } from "@/config";
 import { phoneRegex } from "@/utils/constants";
+import Link from "next/link";
 
 export const registerSchema = z
   .object({
@@ -54,13 +55,23 @@ export default function RegisterForm() {
   }
 
   return (
-    <FormBuilder
-      title="Create Account"
-      description="  Start using your digital wallet today."
-      config={registerFieldConfig}
-      schema={registerSchema}
-      onSubmit={onSubmit}
-      submitText="Create Account"
-    />
+    <div className="rounded-3xl bg-white p-4 shadow-xl min-w-xl">
+      <FormBuilder
+        title="Create Account"
+        description="  Start using your digital wallet today."
+        config={registerFieldConfig}
+        schema={registerSchema}
+        onSubmit={onSubmit}
+        submitText="Create Account"
+        footer={
+          <p className="text-slate-500 text-center">
+            Already have an account?{" "}
+            <Link href="/login" className="font-semibold text-emerald-600">
+              Login
+            </Link>
+          </p>
+        }
+      />
+    </div>
   );
 }
