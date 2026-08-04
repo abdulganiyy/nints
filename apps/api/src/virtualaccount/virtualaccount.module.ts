@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
 import { VirtualAccountService } from './virtualaccount.service';
-import { PaymentModule } from '../payment/payment.module';
 
 @Module({
-  imports: [PaymentModule],
+  imports: [],
   providers: [VirtualAccountService],
   exports: [VirtualAccountService],
 })

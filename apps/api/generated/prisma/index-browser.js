@@ -24,11 +24,11 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 7.9.0
+ * Prisma Client JS version: 7.9.1
  * Query Engine version: e922089b7d7502aff4249d5da3420f6fa55fc6ad
  */
 Prisma.prismaVersion = {
-  client: "7.9.0",
+  client: "7.9.1",
   engine: "e922089b7d7502aff4249d5da3420f6fa55fc6ad"
 }
 
@@ -136,6 +136,7 @@ exports.Prisma.UserScalarFieldEnum = {
   pin: 'pin',
   status: 'status',
   phoneVerified: 'phoneVerified',
+  paystackCustomerId: 'paystackCustomerId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deleted: 'deleted',

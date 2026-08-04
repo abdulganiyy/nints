@@ -59,9 +59,16 @@ export class AuthController {
     );
   }
 
+  @Post('resend-verification')
+  async resendVerification(
+    @Body() resendEmailVerificationDto: { email: string },
+  ) {
+    return this.authService.resendEmailOtp(resendEmailVerificationDto.email);
+  }
+
   @Get('me')
   @UseGuards(JwtGuard)
   getMe(@Req() req: any) {
-    return req.user;
+    return this.authService.me(req.user.email);
   }
 }

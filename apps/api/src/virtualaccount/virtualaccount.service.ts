@@ -1,28 +1,32 @@
 import { Injectable } from '@nestjs/common';
 import { PaymentProvider } from '../payment/payment.interface';
 import { PrismaService } from '../prisma/prisma.service';
+import { Prisma, PrismaClient } from '@prisma/client/extension';
+
+type PrismaExecutor = PrismaClient | Prisma.TransactionClient;
 
 @Injectable()
 export class VirtualAccountService {
-  constructor(
-    private readonly paymentProvider: PaymentProvider,
-    private readonly prismaService: PrismaService,
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
-  async create(walletId: string, userId: string) {
-    const account = await this.paymentProvider.createVirtualAccount(userId);
+  async create(
+    walletId: string,
+    data: {
+      provider: string;
 
-    return this.prismaService.virtualAccount.create({
+      bankName: string;
+
+      accountNumber: string;
+
+      accountName: string;
+    },
+    db: PrismaExecutor = this.prismaService,
+  ) {
+    return db.virtualAccount.upsert({
+      where: { walletId },
       data: {
-        walletId,
-
-        provider: account.provider,
-
-        bankName: account.bankName,
-
-        accountName: account.accountName,
-
-        accountNumber: account.accountNumber,
+        ...data,
+        status: 'ACTIVE',
       },
     });
   }

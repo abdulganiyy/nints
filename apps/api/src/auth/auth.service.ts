@@ -16,7 +16,9 @@ import { Token } from './auth.interface';
 import { RegisterDto } from './dto/register.dto';
 import { UserService } from '../user/user.service';
 import { WalletService } from '../wallet/wallet.service';
-import { VirtualAccountService } from '../virtualaccount/virtualaccount.service';
+import { PaymentQueue } from '../payment/payment.queue';
+import { EmailQueue } from '../email/email.queue';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -26,7 +28,8 @@ export class AuthService {
     private emailService: EmailService,
     private userService: UserService,
     private walletService: WalletService,
-    private virtualAccountService: VirtualAccountService,
+    private paymentQueue: PaymentQueue,
+    private emailQueue: EmailQueue,
   ) {}
 
   async register(dto: RegisterDto) {
@@ -42,18 +45,10 @@ export class AuthService {
       },
     });
 
-    await this.emailService.sendEmail({
-      to: user!.email,
-      subject: 'Verify Your Email',
-      template: 'verify-email',
-      context: {
-        appName: 'Nints',
-        name: user!.fullname,
-        verificationUrl: `${process.env.FRONTEND_URL}/verify-email?token=${otp}&email=${user!.email}`,
-        expiryHours: '24',
-        supportEmail: 'support@nints.com',
-        year: new Date().getFullYear(),
-      },
+    await this.emailQueue.verifyEmail({
+      email: user!.email,
+      fullname: user!.fullname,
+      token: otp,
     });
 
     const roles = user!.userRoles.map((ur) => ur.role.name);
@@ -124,20 +119,15 @@ export class AuthService {
 
   async verifyEmail(email: string, otp: string) {
     return this.prisma.$transaction(async (tx) => {
-      const user = await this.userService.verifyEmail(email, otp);
+      const user = await this.userService.verifyEmail(email, otp, tx);
 
-      const wallet = await this.walletService.create(user.id);
+      await this.walletService.create(user.id, tx);
 
-      await this.virtualAccountService.create(wallet.id, user.id);
+      await this.paymentQueue.provisionVirtualAccount(user.id);
 
-      await tx.user.update({
-        where: { id: user.id },
-        data: {
-          status: 'ACTIVE',
-        },
-      });
-
-      return wallet;
+      return {
+        message: 'Email verified successfully',
+      };
     });
   }
 
@@ -146,7 +136,10 @@ export class AuthService {
       where: { email },
     });
 
-    if (!user || user.emailVerified) return;
+    if (!user || user.emailVerified)
+      return {
+        message: 'Email is already verified',
+      };
 
     const { otp, hash } = generateOtp();
 
@@ -158,19 +151,15 @@ export class AuthService {
       },
     });
 
-    await this.emailService.sendEmail({
-      to: user!.email,
-      subject: 'Verify Your Email',
-      template: 'verify-email',
-      context: {
-        appName: 'Nints',
-        name: user!.fullname,
-        verificationUrl: `${process.env.FRONTEND_URL}/verify-email?token=${otp}`,
-        expiryHours: '24',
-        supportEmail: 'support@finflow.com',
-        year: new Date().getFullYear(),
-      },
+    await this.emailQueue.verifyEmail({
+      email: user!.email,
+      fullname: user!.fullname,
+      token: otp,
     });
+
+    return {
+      message: 'Otp resent',
+    };
   }
 
   async forgotPassword(email: string) {
@@ -266,5 +255,11 @@ export class AuthService {
     } catch (e) {
       throw new ForbiddenException('Invalid refresh token');
     }
+  }
+
+  async me(email: string) {
+    const user = await this.userService.getUserByEmail(email);
+
+    return { email: user?.email, emailVerified: user?.emailVerified };
   }
 }

@@ -12,11 +12,12 @@ import { WalletModule } from './wallet/wallet.module';
 import { VirtualAccountModule } from './virtualaccount/virtualaccount.module';
 import { SmsModule } from './sms/sms.module';
 import { OtpModule } from './otp/otp.module';
+import { QueueModule } from './queue/queue.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, // Makes ConfigService available everywhere
+      isGlobal: true,
       envFilePath: '.env',
     }),
     CommonModule,
@@ -29,6 +30,7 @@ import { OtpModule } from './otp/otp.module';
     VirtualAccountModule,
     SmsModule,
     OtpModule,
+    QueueModule,
   ],
   controllers: [AppController],
   providers: [AppService],
