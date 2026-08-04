@@ -2,22 +2,27 @@ import {
   Injectable,
   BadRequestException,
   InternalServerErrorException,
+  ConflictException,
 } from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { GetUsersDto } from './dto/get-users.dto';
-import { Prisma } from '@prisma/client/extension';
+import { Prisma, PrismaClient } from '@prisma/client/extension';
 import * as crypto from 'crypto';
+
+type PrismaExecutor = PrismaClient | Prisma.TransactionClient;
 
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
   async createUser(dto: CreateUserDto) {
-    const userExists = await this.prisma.user.findUnique({
-      where: { email: dto.email },
+    const userExists = await this.prisma.user.findFirst({
+      where: {
+        OR: [{ email: dto.email }, { phone: dto.phone }],
+      },
       include: {
         userRoles: {
           include: {
@@ -28,7 +33,7 @@ export class UserService {
     });
 
     if (userExists)
-      throw new BadRequestException('User details already exists');
+      throw new ConflictException('Email or phone already exists');
 
     const hashedPassword = await argon2.hash(
       dto.password ?? process.env.SUPER_ADMIN_PASSWORD!,
@@ -177,8 +182,12 @@ export class UserService {
     };
   }
 
-  async verifyEmail(email: string, otp: string) {
-    const user = await this.prisma.user.findUnique({
+  async verifyEmail(
+    email: string,
+    otp: string,
+    db: PrismaExecutor = this.prisma,
+  ) {
+    const user = await db.user.findUnique({
       where: { email },
     });
 
@@ -200,7 +209,7 @@ export class UserService {
       throw new BadRequestException('Invalid OTP');
     }
 
-    const updatedUser = await this.prisma.user.update({
+    const updatedUser = await db.user.update({
       where: { id: user.id },
       data: {
         emailVerified: true,

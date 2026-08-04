@@ -1,31 +1,36 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { useMutation } from "@tanstack/react-query";
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import BalanceCard from "@/components/dashboard/BalanceCard";
+import QuickActions from "@/components/dashboard/QuickActions";
+import TransactionHistory from "@/components/dashboard/TransactionHistory";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import EmailVerificationModal from "@/components/dashboard/EmailVerificationModal";
 
 export default function DashboardPage() {
-  const router = useRouter();
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["me"],
+    queryFn: async () => {
+      const res = await axios.get("api/me");
 
-  const mutation = useMutation({
-    mutationFn: async () => {
-      await axios.post(`/api/logout`);
-    },
-    onSuccess: () => {
-      router.replace("/register");
-    },
-    onError: (err: any) => {
-      toast.error(err?.response?.data?.message);
+      return res.data;
     },
   });
 
+  console.log(data);
+
+  if (!data) return null;
   return (
     <main className="min-h-screen bg-slate-50">
-      Dashboard
-      <Button onClick={() => mutation.mutate()} variant="destructive">
-        Logout
-      </Button>
+      <DashboardHeader />
+      <div className="mt-8 grid gap-6 lg:grid-cols-3 mx-auto max-w-7xl p-6">
+        <div className="lg:col-span-2 space-y-6">
+          <BalanceCard />
+          <QuickActions />
+          <TransactionHistory />
+        </div>
+      </div>
+      <EmailVerificationModal email={data?.email} open={!data?.emailVerified} />
     </main>
   );
 }

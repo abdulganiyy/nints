@@ -404,7 +404,7 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 7.9.0
+   * Prisma Client JS version: 7.9.1
    * Query Engine version: e922089b7d7502aff4249d5da3420f6fa55fc6ad
    */
   export type PrismaVersion = {
@@ -1767,6 +1767,7 @@ export namespace Prisma {
     pin: string | null
     status: $Enums.UserStatus | null
     phoneVerified: boolean | null
+    paystackCustomerId: string | null
     createdAt: Date | null
     updatedAt: Date | null
     deleted: boolean | null
@@ -1789,6 +1790,7 @@ export namespace Prisma {
     pin: string | null
     status: $Enums.UserStatus | null
     phoneVerified: boolean | null
+    paystackCustomerId: string | null
     createdAt: Date | null
     updatedAt: Date | null
     deleted: boolean | null
@@ -1811,6 +1813,7 @@ export namespace Prisma {
     pin: number
     status: number
     phoneVerified: number
+    paystackCustomerId: number
     createdAt: number
     updatedAt: number
     deleted: number
@@ -1835,6 +1838,7 @@ export namespace Prisma {
     pin?: true
     status?: true
     phoneVerified?: true
+    paystackCustomerId?: true
     createdAt?: true
     updatedAt?: true
     deleted?: true
@@ -1857,6 +1861,7 @@ export namespace Prisma {
     pin?: true
     status?: true
     phoneVerified?: true
+    paystackCustomerId?: true
     createdAt?: true
     updatedAt?: true
     deleted?: true
@@ -1879,6 +1884,7 @@ export namespace Prisma {
     pin?: true
     status?: true
     phoneVerified?: true
+    paystackCustomerId?: true
     createdAt?: true
     updatedAt?: true
     deleted?: true
@@ -1974,6 +1980,7 @@ export namespace Prisma {
     pin: string | null
     status: $Enums.UserStatus
     phoneVerified: boolean
+    paystackCustomerId: string | null
     createdAt: Date
     updatedAt: Date
     deleted: boolean
@@ -2013,6 +2020,7 @@ export namespace Prisma {
     pin?: boolean
     status?: boolean
     phoneVerified?: boolean
+    paystackCustomerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     deleted?: boolean
@@ -2039,6 +2047,7 @@ export namespace Prisma {
     pin?: boolean
     status?: boolean
     phoneVerified?: boolean
+    paystackCustomerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     deleted?: boolean
@@ -2061,6 +2070,7 @@ export namespace Prisma {
     pin?: boolean
     status?: boolean
     phoneVerified?: boolean
+    paystackCustomerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     deleted?: boolean
@@ -2083,13 +2093,14 @@ export namespace Prisma {
     pin?: boolean
     status?: boolean
     phoneVerified?: boolean
+    paystackCustomerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     deleted?: boolean
     deletedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "phone" | "fullname" | "password" | "emailVerified" | "emailOtpHash" | "emailOtpExpiresAt" | "otp" | "otpExpiresAt" | "resetPasswordToken" | "resetPasswordExpiresAt" | "pin" | "status" | "phoneVerified" | "createdAt" | "updatedAt" | "deleted" | "deletedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "phone" | "fullname" | "password" | "emailVerified" | "emailOtpHash" | "emailOtpExpiresAt" | "otp" | "otpExpiresAt" | "resetPasswordToken" | "resetPasswordExpiresAt" | "pin" | "status" | "phoneVerified" | "paystackCustomerId" | "createdAt" | "updatedAt" | "deleted" | "deletedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     wallet?: boolean | User$walletArgs<ExtArgs>
     userRoles?: boolean | User$userRolesArgs<ExtArgs>
@@ -2122,6 +2133,7 @@ export namespace Prisma {
       pin: string | null
       status: $Enums.UserStatus
       phoneVerified: boolean
+      paystackCustomerId: string | null
       createdAt: Date
       updatedAt: Date
       deleted: boolean
@@ -2567,6 +2579,7 @@ export namespace Prisma {
     readonly pin: FieldRef<"User", 'String'>
     readonly status: FieldRef<"User", 'UserStatus'>
     readonly phoneVerified: FieldRef<"User", 'Boolean'>
+    readonly paystackCustomerId: FieldRef<"User", 'String'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
     readonly deleted: FieldRef<"User", 'Boolean'>
@@ -10750,6 +10763,7 @@ export namespace Prisma {
     pin: 'pin',
     status: 'status',
     phoneVerified: 'phoneVerified',
+    paystackCustomerId: 'paystackCustomerId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     deleted: 'deleted',
@@ -11066,6 +11080,7 @@ export namespace Prisma {
     pin?: StringNullableFilter<"User"> | string | null
     status?: EnumUserStatusFilter<"User"> | $Enums.UserStatus
     phoneVerified?: BoolFilter<"User"> | boolean
+    paystackCustomerId?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     deleted?: BoolFilter<"User"> | boolean
@@ -11091,6 +11106,7 @@ export namespace Prisma {
     pin?: SortOrderInput | SortOrder
     status?: SortOrder
     phoneVerified?: SortOrder
+    paystackCustomerId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deleted?: SortOrder
@@ -11119,6 +11135,7 @@ export namespace Prisma {
     pin?: StringNullableFilter<"User"> | string | null
     status?: EnumUserStatusFilter<"User"> | $Enums.UserStatus
     phoneVerified?: BoolFilter<"User"> | boolean
+    paystackCustomerId?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     deleted?: BoolFilter<"User"> | boolean
@@ -11144,6 +11161,7 @@ export namespace Prisma {
     pin?: SortOrderInput | SortOrder
     status?: SortOrder
     phoneVerified?: SortOrder
+    paystackCustomerId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deleted?: SortOrder
@@ -11172,6 +11190,7 @@ export namespace Prisma {
     pin?: StringNullableWithAggregatesFilter<"User"> | string | null
     status?: EnumUserStatusWithAggregatesFilter<"User"> | $Enums.UserStatus
     phoneVerified?: BoolWithAggregatesFilter<"User"> | boolean
+    paystackCustomerId?: StringNullableWithAggregatesFilter<"User"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     deleted?: BoolWithAggregatesFilter<"User"> | boolean
@@ -11617,6 +11636,7 @@ export namespace Prisma {
     pin?: string | null
     status?: $Enums.UserStatus
     phoneVerified?: boolean
+    paystackCustomerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deleted?: boolean
@@ -11642,6 +11662,7 @@ export namespace Prisma {
     pin?: string | null
     status?: $Enums.UserStatus
     phoneVerified?: boolean
+    paystackCustomerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deleted?: boolean
@@ -11667,6 +11688,7 @@ export namespace Prisma {
     pin?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
     phoneVerified?: BoolFieldUpdateOperationsInput | boolean
+    paystackCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
@@ -11692,6 +11714,7 @@ export namespace Prisma {
     pin?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
     phoneVerified?: BoolFieldUpdateOperationsInput | boolean
+    paystackCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
@@ -11717,6 +11740,7 @@ export namespace Prisma {
     pin?: string | null
     status?: $Enums.UserStatus
     phoneVerified?: boolean
+    paystackCustomerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deleted?: boolean
@@ -11739,6 +11763,7 @@ export namespace Prisma {
     pin?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
     phoneVerified?: BoolFieldUpdateOperationsInput | boolean
+    paystackCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
@@ -11761,6 +11786,7 @@ export namespace Prisma {
     pin?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
     phoneVerified?: BoolFieldUpdateOperationsInput | boolean
+    paystackCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
@@ -12307,6 +12333,7 @@ export namespace Prisma {
     pin?: SortOrder
     status?: SortOrder
     phoneVerified?: SortOrder
+    paystackCustomerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deleted?: SortOrder
@@ -12329,6 +12356,7 @@ export namespace Prisma {
     pin?: SortOrder
     status?: SortOrder
     phoneVerified?: SortOrder
+    paystackCustomerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deleted?: SortOrder
@@ -12351,6 +12379,7 @@ export namespace Prisma {
     pin?: SortOrder
     status?: SortOrder
     phoneVerified?: SortOrder
+    paystackCustomerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deleted?: SortOrder
@@ -13785,6 +13814,7 @@ export namespace Prisma {
     pin?: string | null
     status?: $Enums.UserStatus
     phoneVerified?: boolean
+    paystackCustomerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deleted?: boolean
@@ -13809,6 +13839,7 @@ export namespace Prisma {
     pin?: string | null
     status?: $Enums.UserStatus
     phoneVerified?: boolean
+    paystackCustomerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deleted?: boolean
@@ -13876,6 +13907,7 @@ export namespace Prisma {
     pin?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
     phoneVerified?: BoolFieldUpdateOperationsInput | boolean
+    paystackCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
@@ -13900,6 +13932,7 @@ export namespace Prisma {
     pin?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
     phoneVerified?: BoolFieldUpdateOperationsInput | boolean
+    paystackCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
@@ -14116,6 +14149,7 @@ export namespace Prisma {
     pin?: string | null
     status?: $Enums.UserStatus
     phoneVerified?: boolean
+    paystackCustomerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deleted?: boolean
@@ -14140,6 +14174,7 @@ export namespace Prisma {
     pin?: string | null
     status?: $Enums.UserStatus
     phoneVerified?: boolean
+    paystackCustomerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deleted?: boolean
@@ -14207,6 +14242,7 @@ export namespace Prisma {
     pin?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
     phoneVerified?: BoolFieldUpdateOperationsInput | boolean
+    paystackCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
@@ -14231,6 +14267,7 @@ export namespace Prisma {
     pin?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
     phoneVerified?: BoolFieldUpdateOperationsInput | boolean
+    paystackCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
@@ -14377,6 +14414,7 @@ export namespace Prisma {
     pin?: string | null
     status?: $Enums.UserStatus
     phoneVerified?: boolean
+    paystackCustomerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deleted?: boolean
@@ -14401,6 +14439,7 @@ export namespace Prisma {
     pin?: string | null
     status?: $Enums.UserStatus
     phoneVerified?: boolean
+    paystackCustomerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     deleted?: boolean
@@ -14441,6 +14480,7 @@ export namespace Prisma {
     pin?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
     phoneVerified?: BoolFieldUpdateOperationsInput | boolean
+    paystackCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
@@ -14465,6 +14505,7 @@ export namespace Prisma {
     pin?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
     phoneVerified?: BoolFieldUpdateOperationsInput | boolean
+    paystackCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
