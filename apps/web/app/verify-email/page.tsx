@@ -40,6 +40,7 @@ export default function VerifyEmailPage() {
   });
 
   useEffect(() => {
+    if (!token || !email) return;
     verifyMutation.mutate();
   }, [token, email]);
 
@@ -96,7 +97,7 @@ export default function VerifyEmailPage() {
           </>
         )}
 
-        {verifyMutation.error?.message && (
+        {verifyMutation.isError && (
           <>
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-yellow-100">
               <Clock3 className="h-10 w-10 text-yellow-600" />
@@ -118,7 +119,7 @@ export default function VerifyEmailPage() {
           </>
         )}
 
-        {/* {verifyMutation.isError && (
+        {verifyMutation.isError && (
           <>
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-red-100">
               <XCircle className="h-10 w-10 text-red-600" />
@@ -134,9 +135,9 @@ export default function VerifyEmailPage() {
               <Link href="/verify-email">Request New Email</Link>
             </Button>
           </>
-        )} */}
+        )}
 
-        {/* {verifyMutation.isError && (
+        {verifyMutation.isError && (
           <>
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-red-100">
               <RefreshCw className="h-10 w-10 text-red-600" />
@@ -152,7 +153,8 @@ export default function VerifyEmailPage() {
               Retry
             </Button>
           </>
-        )} */}
+        )}
+
       </Card>
     </main>
   );
