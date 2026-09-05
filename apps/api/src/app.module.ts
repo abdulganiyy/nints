@@ -13,6 +13,8 @@ import { VirtualAccountModule } from './virtualaccount/virtualaccount.module';
 import { SmsModule } from './sms/sms.module';
 import { OtpModule } from './otp/otp.module';
 import { QueueModule } from './queue/queue.module';
+import { VtuModule } from './vtu/vtu.module';
+import { WebhookModule } from './webhook/webhook.module';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { QueueModule } from './queue/queue.module';
     SmsModule,
     OtpModule,
     QueueModule,
+    VtuModule,
+    WebhookModule,
   ],
   controllers: [AppController],
   providers: [AppService],
