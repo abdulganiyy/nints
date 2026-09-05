@@ -24,12 +24,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 7.9.1
- * Query Engine version: e922089b7d7502aff4249d5da3420f6fa55fc6ad
+ * Prisma Client JS version: 7.8.0
+ * Query Engine version: 3c6e192761c0362d496ed980de936e2f3cebcd3a
  */
 Prisma.prismaVersion = {
-  client: "7.9.1",
-  engine: "e922089b7d7502aff4249d5da3420f6fa55fc6ad"
+  client: "7.8.0",
+  engine: "3c6e192761c0362d496ed980de936e2f3cebcd3a"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -153,6 +153,42 @@ exports.Prisma.WalletScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.AccountScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  type: 'type',
+  currency: 'currency',
+  balance: 'balance',
+  walletId: 'walletId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.TransactionScalarFieldEnum = {
+  id: 'id',
+  reference: 'reference',
+  type: 'type',
+  status: 'status',
+  amount: 'amount',
+  currency: 'currency',
+  description: 'description',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.LedgerEntryScalarFieldEnum = {
+  id: 'id',
+  transactionId: 'transactionId',
+  accountId: 'accountId',
+  amount: 'amount',
+  direction: 'direction',
+  balanceBefore: 'balanceBefore',
+  balanceAfter: 'balanceAfter',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.VirtualAccountScalarFieldEnum = {
   id: 'id',
   walletId: 'walletId',
@@ -208,6 +244,11 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -216,6 +257,12 @@ exports.Prisma.QueryMode = {
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 exports.UserStatus = exports.$Enums.UserStatus = {
   PENDING_VERIFICATION: 'PENDING_VERIFICATION',
@@ -234,6 +281,41 @@ exports.WalletStatus = exports.$Enums.WalletStatus = {
   ACTIVE: 'ACTIVE',
   FROZEN: 'FROZEN',
   CLOSED: 'CLOSED'
+};
+
+exports.AccountType = exports.$Enums.AccountType = {
+  ASSET: 'ASSET',
+  LIABILITY: 'LIABILITY',
+  REVENUE: 'REVENUE',
+  EXPENSE: 'EXPENSE',
+  EQUITY: 'EQUITY'
+};
+
+exports.TransactionType = exports.$Enums.TransactionType = {
+  DEPOSIT: 'DEPOSIT',
+  WITHDRAWAL: 'WITHDRAWAL',
+  TRANSFER: 'TRANSFER',
+  AIRTIME_PURCHASE: 'AIRTIME_PURCHASE',
+  DATA_PURCHASE: 'DATA_PURCHASE',
+  BILL_PAYMENT: 'BILL_PAYMENT',
+  LOAN_DISBURSEMENT: 'LOAN_DISBURSEMENT',
+  LOAN_REPAYMENT: 'LOAN_REPAYMENT',
+  REFUND: 'REFUND',
+  REVERSAL: 'REVERSAL',
+  FEE: 'FEE',
+  ADJUSTMENT: 'ADJUSTMENT'
+};
+
+exports.TransactionStatus = exports.$Enums.TransactionStatus = {
+  PENDING: 'PENDING',
+  SUCCESS: 'SUCCESS',
+  FAILED: 'FAILED',
+  REVERSED: 'REVERSED'
+};
+
+exports.LedgerDirection = exports.$Enums.LedgerDirection = {
+  CREDIT: 'CREDIT',
+  DEBIT: 'DEBIT'
 };
 
 exports.VirtualAccountProvider = exports.$Enums.VirtualAccountProvider = {
@@ -266,6 +348,9 @@ exports.OtpPurpose = exports.$Enums.OtpPurpose = {
 exports.Prisma.ModelName = {
   User: 'User',
   Wallet: 'Wallet',
+  Account: 'Account',
+  Transaction: 'Transaction',
+  LedgerEntry: 'LedgerEntry',
   VirtualAccount: 'VirtualAccount',
   Role: 'Role',
   UserRole: 'UserRole',

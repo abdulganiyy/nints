@@ -49,17 +49,145 @@ model Wallet {
   userId        String        @unique
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  balance       Decimal       @db.Decimal(18, 2)
+  balance       Decimal       @default(0) @db.Decimal(18, 2)
   currency      Currency      @default(NGN)
 
   status        WalletStatus  @default(ACTIVE)
 
   virtualAccount VirtualAccount?
 
+  account     Account?
+
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
   @@index([userId])
+}
+
+model Account {
+  id          String      @id @default(cuid())
+
+  code        String      @unique
+  name        String
+  type        AccountType
+  currency    String      @default("NGN")
+
+  balance     Decimal     @default(0) @db.Decimal(18, 2)
+
+  walletId    String?     @unique
+
+  wallet      Wallet?     @relation(fields: [walletId], references: [id])
+
+  ledgerEntries LedgerEntry[]
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([type])
+  @@index([walletId])
+}
+
+enum AccountType {
+  ASSET
+  LIABILITY
+  REVENUE
+  EXPENSE
+  EQUITY
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+
+  reference   String   @unique
+
+  type        TransactionType
+  status      TransactionStatus
+
+  amount      Decimal  @db.Decimal(18, 2)
+  currency    String   @default("NGN")
+
+  description String?
+  metadata    Json?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  ledgerEntries LedgerEntry[]
+
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model LedgerEntry {
+  id            String   @id @default(cuid())
+
+  transactionId String
+  accountId      String
+
+  amount        Decimal  @db.Decimal(18, 2)
+  direction     LedgerDirection
+
+  balanceBefore Decimal? @db.Decimal(18, 2)
+  balanceAfter  Decimal? @db.Decimal(18, 2)
+
+  createdAt     DateTime @default(now())
+
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+
+  account        Account @relation(fields: [accountId], references: [id])
+
+  @@index([accountId, createdAt])
+  @@index([transactionId])
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  TRANSFER
+  AIRTIME_PURCHASE
+  DATA_PURCHASE
+  BILL_PAYMENT
+  LOAN_DISBURSEMENT
+  LOAN_REPAYMENT
+  REFUND
+  REVERSAL
+  FEE
+  ADJUSTMENT
+}
+
+enum TransactionStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REVERSED
+}
+
+enum LedgerDirection {
+  CREDIT
+  DEBIT
+}
+
+enum LedgerEntryType {
+  DEPOSIT
+  WITHDRAWAL
+
+  TRANSFER_IN
+  TRANSFER_OUT
+
+  AIRTIME_PURCHASE
+  DATA_PURCHASE
+
+  BILL_PAYMENT
+
+  LOAN_DISBURSEMENT
+  LOAN_REPAYMENT
+
+  REFUND
+  REVERSAL
+
+  FEE
+  ADJUSTMENT
 }
 
 model VirtualAccount {
@@ -156,7 +284,7 @@ enum Currency {
 }
 
 enum VirtualAccountProvider {
-  PAYSTACK
+  PAYSTACK //24
   MONNIFY
   FLUTTERWAVE
   SAFE_HAVEN

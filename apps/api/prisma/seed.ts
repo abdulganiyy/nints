@@ -1,4 +1,4 @@
-import { RoleName } from '../generated/prisma';
+import { AccountType, RoleName } from '../generated/prisma';
 import { PrismaService } from '../src/prisma/prisma.service';
 import * as argon2 from 'argon2';
 import { PERMISSIONS } from '../src/constants/permission.constant';
@@ -112,6 +112,42 @@ async function main() {
     },
   });
   console.log('Linked super admin user with user role');
+
+  await prisma.account.upsert({
+    where: {
+      code: '1100',
+    },
+
+    update: {},
+
+    create: {
+      code: '1100',
+      name: 'Bank / Cash',
+      type: AccountType.ASSET,
+      currency: 'NGN',
+      balance: 0,
+    },
+  });
+
+  console.log('Adding Bank / Cash account type');
+
+  await prisma.account.upsert({
+    where: {
+      code: '4100',
+    },
+
+    update: {},
+
+    create: {
+      code: '4100',
+      name: 'Transaction Fee Revenue',
+      type: AccountType.REVENUE,
+      currency: 'NGN',
+      balance: 0,
+    },
+  });
+
+  console.log('Adding Transaction Fee Revenue account type');
 }
 
 main()

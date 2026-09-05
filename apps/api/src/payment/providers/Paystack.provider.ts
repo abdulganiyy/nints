@@ -43,7 +43,7 @@ export class PaystackService implements PaymentProvider {
 
       {
         customer: customerId,
-        preferred_bank: 'titan-paystack',
+        preferred_bank: 'test-bank', //replace with titan-paystack
       },
 
       {
@@ -100,15 +100,20 @@ export class PaystackService implements PaymentProvider {
 
       const createdAccount = await this.createVirtualAccount(customer_code);
 
-      await this.virtualaccountService.create(user.wallet!.id, createdAccount);
+      await this.virtualaccountService.create(user.wallet!.id, {
+        ...createdAccount,
+        provider: 'PAYSTACK',
+      });
     } catch (error: unknown) {
-      if (error instanceof Error) {
+      if (error instanceof AxiosError) {
+        this.logger.error(error.response?.data?.message ?? error.message);
+      } else if (error instanceof Error) {
         this.logger.error(error.message);
-      } else if (error instanceof AxiosError) {
-        this.logger.error(error.response?.data);
       } else {
         this.logger.error('Error provisioning paystack account', String(error));
       }
+
+      throw new Error(String(error));
     }
   }
 }

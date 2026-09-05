@@ -24,10 +24,8 @@ export class VirtualAccountService {
   ) {
     return db.virtualAccount.upsert({
       where: { walletId },
-      data: {
-        ...data,
-        status: 'ACTIVE',
-      },
+      create: { ...data, status: 'ACTIVE', walletId },
+      update: { ...data, status: 'ACTIVE' },
     });
   }
 }

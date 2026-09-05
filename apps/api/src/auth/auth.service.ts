@@ -118,17 +118,19 @@ export class AuthService {
   }
 
   async verifyEmail(email: string, otp: string) {
-    return this.prisma.$transaction(async (tx) => {
+    const user = await this.prisma.$transaction(async (tx) => {
       const user = await this.userService.verifyEmail(email, otp, tx);
 
       await this.walletService.create(user.id, tx);
 
-      await this.paymentQueue.provisionVirtualAccount(user.id);
-
-      return {
-        message: 'Email verified successfully',
-      };
+      return user;
     });
+
+    await this.paymentQueue.provisionVirtualAccount(user.id);
+
+    return {
+      message: 'Email verified successfully',
+    };
   }
 
   async resendEmailOtp(email: string) {
