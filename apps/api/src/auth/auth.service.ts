@@ -62,7 +62,7 @@ export class AuthService {
     ];
 
     const { accessToken } = await this.signTokens({
-      sub: user!.id,
+      userId: user!.id,
       email: user!.email as string,
       roles,
       permissions,
@@ -99,7 +99,7 @@ export class AuthService {
     ];
 
     const { accessToken } = await this.signTokens({
-      sub: user.id,
+      userId: user.id,
       email: user.email as string,
       roles,
       permissions,

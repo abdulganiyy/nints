@@ -20,7 +20,7 @@ export class AirtimeService {
     walletId: string;
     phoneNumber: string;
     network: string;
-    amount: number;
+    amount: string;
   }) {
     const { walletId, phoneNumber, network, amount } = params;
 
@@ -34,6 +34,19 @@ export class AirtimeService {
      * and create a PENDING transaction.
      */
     const transaction = await this.prisma.$transaction(async (tx) => {
+      // 1. Get Bank/Cash account
+      const bankAccount = await tx.account.findFirst({
+        where: {
+          type: 'ASSET',
+          code: '1100',
+          name: 'Bank / Cash',
+        },
+      });
+
+      if (!bankAccount) {
+        throw new InternalServerErrorException('Bank/Cash account not found');
+      }
+
       const wallet = await tx.wallet.findUnique({
         where: {
           id: walletId,
@@ -123,6 +136,7 @@ export class AirtimeService {
         accountId: account.id,
         balanceBefore,
         balanceAfter,
+        bankAccount,
       };
     });
 
@@ -136,7 +150,7 @@ export class AirtimeService {
     try {
       providerResponse = await this.vtuProvider.purchaseAirtime({
         mobile_number: phoneNumber,
-        amount,
+        amount: purchaseAmount,
         network,
         reference,
       });
@@ -171,20 +185,36 @@ export class AirtimeService {
         /**
          * Create the actual accounting entry.
          */
-        await tx.ledgerEntry.create({
-          data: {
-            transactionId: transaction.transaction.id,
+        await tx.ledgerEntry.createMany({
+          data: [
+            {
+              transactionId: transaction.transaction.id,
 
-            accountId: transaction.accountId,
+              accountId: transaction.bankAccount.id,
 
-            amount: purchaseAmount,
+              direction: 'CREDIT',
 
-            direction: 'DEBIT',
+              amount,
 
-            balanceBefore: transaction.balanceBefore,
+              balanceBefore: transaction.balanceBefore,
 
-            balanceAfter: transaction.balanceAfter,
-          },
+              balanceAfter: transaction.balanceAfter,
+            },
+
+            {
+              transactionId: transaction.transaction.id,
+
+              accountId: transaction.accountId,
+
+              amount: purchaseAmount,
+
+              direction: 'DEBIT',
+
+              balanceBefore: transaction.balanceBefore,
+
+              balanceAfter: transaction.balanceAfter,
+            },
+          ],
         });
 
         /**
@@ -229,6 +259,8 @@ export class AirtimeService {
     await this.refundFailedPurchase({
       transactionId: transaction.transaction.id,
       accountId: transaction.accountId,
+      bankAccountId: transaction.bankAccount.id,
+
       amount: purchaseAmount,
       phoneNumber,
       network,
@@ -253,6 +285,8 @@ export class AirtimeService {
   private async refundFailedPurchase(params: {
     transactionId: string;
     accountId: string;
+    bankAccountId: string;
+
     amount: Prisma.Decimal;
     phoneNumber: string;
     network: string;
@@ -322,22 +356,38 @@ export class AirtimeService {
        *
        * CREDIT ₦5,000
        */
-      await tx.ledgerEntry.create({
-        data: {
-          transactionId: params.transactionId,
 
-          accountId: params.accountId,
+      await tx.ledgerEntry.createMany({
+        data: [
+          {
+            transactionId: params.transactionId,
 
-          amount: params.amount,
+            accountId: params.bankAccountId,
 
-          direction: 'CREDIT',
+            direction: 'DEBIT',
 
-          balanceBefore,
+            amount: params.amount,
 
-          balanceAfter,
-        },
+            balanceBefore,
+
+            balanceAfter,
+          },
+
+          {
+            transactionId: params.transactionId,
+
+            accountId: params.accountId,
+
+            amount: params.amount,
+
+            direction: 'CREDIT',
+
+            balanceBefore,
+
+            balanceAfter,
+          },
+        ],
       });
-
       /**
        * Mark the transaction as FAILED.
        */

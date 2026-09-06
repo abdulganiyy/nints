@@ -20,7 +20,7 @@ export class DataService {
     phoneNumber: string;
     network: string;
     planCode: string;
-    amount: number;
+    amount: string;
   }) {
     const { walletId, phoneNumber, network, planCode, amount } = params;
 
@@ -35,6 +35,19 @@ export class DataService {
      * and create a PENDING transaction.
      */
     const transaction = await this.prisma.$transaction(async (tx) => {
+      // 1. Get Bank/Cash account
+      const bankAccount = await tx.account.findFirst({
+        where: {
+          type: 'ASSET',
+          code: '1100',
+          name: 'Bank / Cash',
+        },
+      });
+
+      if (!bankAccount) {
+        throw new InternalServerErrorException('Bank/Cash account not found');
+      }
+
       const wallet = await tx.wallet.findUnique({
         where: {
           id: walletId,
@@ -75,6 +88,17 @@ export class DataService {
       if (result.count !== 1) {
         throw new BadRequestException('Insufficient wallet balance');
       }
+
+      await tx.wallet.update({
+        where: {
+          id: wallet.id,
+        },
+        data: {
+          balance: {
+            decrement: purchaseAmount,
+          },
+        },
+      });
 
       /**
        * Get the updated balance.
@@ -124,6 +148,8 @@ export class DataService {
         balanceBefore,
 
         balanceAfter,
+
+        bankAccount,
       };
     });
 
@@ -137,7 +163,7 @@ export class DataService {
     try {
       providerResponse = await this.vtuProvider.purchaseData({
         mobile_number: phoneNumber,
-
+        amount: purchaseAmount,
         plan_code: planCode,
 
         network,
@@ -171,20 +197,37 @@ export class DataService {
         /**
          * Create the accounting ledger entry.
          */
-        await tx.ledgerEntry.create({
-          data: {
-            transactionId: transaction.transaction.id,
 
-            accountId: transaction.accountId,
+        await tx.ledgerEntry.createMany({
+          data: [
+            {
+              transactionId: transaction.transaction.id,
 
-            amount: purchaseAmount,
+              accountId: transaction.bankAccount.id,
 
-            direction: 'DEBIT',
+              direction: 'CREDIT',
 
-            balanceBefore: transaction.balanceBefore,
+              amount,
 
-            balanceAfter: transaction.balanceAfter,
-          },
+              balanceBefore: transaction.balanceBefore,
+
+              balanceAfter: transaction.balanceAfter,
+            },
+
+            {
+              transactionId: transaction.transaction.id,
+
+              accountId: transaction.accountId,
+
+              amount: purchaseAmount,
+
+              direction: 'DEBIT',
+
+              balanceBefore: transaction.balanceBefore,
+
+              balanceAfter: transaction.balanceAfter,
+            },
+          ],
         });
 
         /**
@@ -238,6 +281,8 @@ export class DataService {
 
       accountId: transaction.accountId,
 
+      bankAccountId: transaction.bankAccount.id,
+
       amount: purchaseAmount,
 
       phoneNumber,
@@ -267,6 +312,8 @@ export class DataService {
    */
   private async refundFailedDataPurchase(params: {
     transactionId: string;
+
+    bankAccountId: string;
 
     accountId: string;
 
@@ -349,20 +396,37 @@ export class DataService {
       /**
        * Compensating CREDIT entry.
        */
-      await tx.ledgerEntry.create({
-        data: {
-          transactionId: params.transactionId,
 
-          accountId: params.accountId,
+      await tx.ledgerEntry.createMany({
+        data: [
+          {
+            transactionId: params.transactionId,
 
-          amount: params.amount,
+            accountId: params.bankAccountId,
 
-          direction: 'CREDIT',
+            direction: 'DEBIT',
 
-          balanceBefore,
+            amount: params.amount,
 
-          balanceAfter,
-        },
+            balanceBefore,
+
+            balanceAfter,
+          },
+
+          {
+            transactionId: params.transactionId,
+
+            accountId: params.accountId,
+
+            amount: params.amount,
+
+            direction: 'CREDIT',
+
+            balanceBefore,
+
+            balanceAfter,
+          },
+        ],
       });
 
       /**

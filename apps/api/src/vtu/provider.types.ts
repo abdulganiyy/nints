@@ -17,6 +17,7 @@ export interface DataRequest {
   plan_code?: string;
   network: string;
   reference?: string;
+  amount: number;
 }
 
 export interface DataResponse {

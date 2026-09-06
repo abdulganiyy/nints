@@ -17,6 +17,8 @@ export abstract class VtuProvider {
 
   abstract purchaseData(request: DataRequest): Promise<DataResponse>;
 
+  abstract getDataPlans(): Promise<any>;
+
   //   electricity(request: ElectricityRequest): Promise<ElectricityResponse>;
 
   //   cableTv(request: CableTvRequest): Promise<CableTvResponse>;
