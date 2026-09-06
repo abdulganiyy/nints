@@ -35,4 +35,23 @@ export class PeyflexClient {
 
     return response.data;
   }
+
+  async getDataplans() {
+    const networksResponse = await this.client.get('/data/networks');
+
+    const networks = networksResponse.data.networks;
+
+    const plansResponses = await Promise.all(
+      networks.map((network) =>
+        this.client.get(`/data/plans/?network=${network.identifier}`),
+      ),
+    );
+
+    return plansResponses.flatMap((response) =>
+      response.data.plans.map((plan) => ({
+        ...plan,
+        network: response.data.network,
+      })),
+    );
+  }
 }

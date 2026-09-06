@@ -38,6 +38,7 @@ export class PeyflexProvider extends VtuProvider {
       plan_code: request.plan_code,
       network: request.network,
       reference: request.reference,
+      amount: request.amount,
     });
 
     return {
@@ -45,5 +46,9 @@ export class PeyflexProvider extends VtuProvider {
       providerReference: response.requestId,
       message: response.response_description,
     };
+  }
+
+  getDataPlans() {
+    return this.client.getDataplans();
   }
 }

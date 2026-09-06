@@ -2,6 +2,7 @@ import {
   IsEnum,
   IsNotEmpty,
   IsNumber,
+  IsNumberString,
   IsString,
   Matches,
   Min,
@@ -23,7 +24,7 @@ export class PurchaseAirtimeDto {
   })
   phoneNumber!: string;
 
-  @IsNumber()
+  @IsNumberString()
   @Min(50)
-  amount!: number;
+  amount!: string;
 }

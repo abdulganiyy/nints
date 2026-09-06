@@ -1,5 +1,5 @@
 export type Token = {
-  sub: string;
+  userId: string;
   email: string;
   roles: string[];
   permissions: string[];

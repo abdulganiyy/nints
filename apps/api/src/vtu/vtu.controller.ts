@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get } from '@nestjs/common';
 import { VtuProvider } from './provider.interface';
 import { PurchaseAirtimeDto } from './dto/purchase-airtime.dto';
 import { PurchaseDataDto } from './dto/purchase-data.dto';
@@ -10,6 +10,7 @@ import { DataService } from './data.service';
 @UseGuards(JwtGuard)
 export class VtuController {
   constructor(
+    private vtuService: VtuProvider,
     private airtimeService: AirtimeService,
     private dataService: DataService,
   ) {}
@@ -22,5 +23,10 @@ export class VtuController {
   @Post('data')
   purchaseData(@Body() dto: PurchaseDataDto) {
     return this.dataService.purchaseData(dto);
+  }
+
+  @Get('dataplan')
+  getDataPlans() {
+    return this.vtuService.getDataPlans();
   }
 }

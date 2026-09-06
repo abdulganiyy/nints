@@ -9,6 +9,19 @@ type PrismaExecutor = PrismaClient | Prisma.TransactionClient;
 export class WalletService {
   constructor(private readonly prismaService: PrismaService) {}
 
+  async getUserWallet(userId: string) {
+    const wallet = await this.prismaService.wallet.findUnique({
+      where: {
+        userId,
+      },
+      include: {
+        virtualAccount: true,
+      },
+    });
+
+    return wallet;
+  }
+
   async create(userId: string, db: PrismaExecutor = this.prismaService) {
     return db.wallet.upsert({
       where: {
