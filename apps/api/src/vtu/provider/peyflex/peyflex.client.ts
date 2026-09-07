@@ -14,7 +14,7 @@ export class PeyflexClient {
 
   constructor(private readonly configService: ConfigService) {
     this.client = axios.create({
-      baseURL: ' https://client.peyflex.com.ng/api',
+      baseURL: 'https://client.peyflex.com.ng/api',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Token ${this.configService.getOrThrow<string>('PEYFLEX_API_TOKEN')}`,
@@ -31,9 +31,15 @@ export class PeyflexClient {
   }
 
   async purchaseData(request: DataRequest): Promise<DataResponse | any> {
-    const response = await this.client.post('/data/purchase', request);
+    try {
+      const response = await this.client.post('/data/purchase/', request);
+      console.log(response.data);
+      return response.data;
+    } catch (error: any) {
+      console.log(error.response);
 
-    return response.data;
+      throw new Error(error as string);
+    }
   }
 
   async getDataplans() {
