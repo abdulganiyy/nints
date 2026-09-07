@@ -23,7 +23,7 @@ export class WebhookController {
     @Headers('x-paystack-signature') signature: string,
     @Res() res: Response,
   ) {
-    console.log(req.body, req.rawBody, signature);
+    // console.log(req.body, req.rawBody, signature);
     if (!signature) {
       throw new UnauthorizedException('Missing Paystack signature');
     }

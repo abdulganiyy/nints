@@ -151,6 +151,9 @@ export class PaystackWebhookService {
           where: {
             id: virtualAccount.walletId,
           },
+          include: {
+            account: true,
+          },
         });
 
         if (!wallet) {
@@ -271,6 +274,29 @@ export class PaystackWebhookService {
             id: wallet.id,
           },
 
+          data: {
+            balance: {
+              increment: amount,
+            },
+          },
+        });
+
+        await tx.account.update({
+          where: {
+            id: wallet.account?.id,
+          },
+
+          data: {
+            balance: {
+              increment: amount,
+            },
+          },
+        });
+
+        await tx.account.update({
+          where: {
+            id: bankAccount.id,
+          },
           data: {
             balance: {
               increment: amount,

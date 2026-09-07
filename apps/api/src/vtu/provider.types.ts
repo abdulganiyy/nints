@@ -1,6 +1,6 @@
 export interface AirtimeRequest {
   mobile_number: string;
-  amount: number;
+  amount: string;
   network: string;
   reference?: string;
 }
@@ -10,20 +10,27 @@ export interface AirtimeResponse {
   status: string;
   reference?: string;
   message?: string;
+  amount: string;
+  charged: string;
+  discount: string;
 }
 
 export interface DataRequest {
   mobile_number: string;
+  amount: string;
   plan_code?: string;
   network: string;
   reference?: string;
-  amount: number;
 }
 
 export interface DataResponse {
   success: boolean;
-  providerReference?: string;
+  status: string;
+  reference?: string;
   message?: string;
+  amount: string;
+  charged: string;
+  discount: string;
 }
 
 export interface ElectricityRequest {

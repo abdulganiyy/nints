@@ -29,6 +29,9 @@ export class PeyflexProvider extends VtuProvider {
       success: response.status === 'SUCCESS',
       reference: response.requestId,
       message: response.response_description,
+      amount: response.amount,
+      charged: response.charged,
+      discount: response.discount,
     };
   }
 
@@ -37,14 +40,17 @@ export class PeyflexProvider extends VtuProvider {
       mobile_number: request.mobile_number,
       plan_code: request.plan_code,
       network: request.network,
-      reference: request.reference,
       amount: request.amount,
     });
 
     return {
-      success: response.code === '000',
-      providerReference: response.requestId,
+      status: response.status,
+      success: response.status === 'SUCCESS',
+      reference: response.requestId,
       message: response.response_description,
+      amount: response.amount,
+      charged: response.charged,
+      discount: response.discount,
     };
   }
 

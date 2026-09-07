@@ -36,6 +36,21 @@ export class DataService {
      */
     const transaction = await this.prisma.$transaction(async (tx) => {
       // 1. Get Bank/Cash account
+
+      const revenueAccount = await tx.account.findFirst({
+        where: {
+          type: 'REVENUE',
+          code: '4100',
+          name: 'Transaction Fee Revenue',
+        },
+      });
+
+      if (!revenueAccount) {
+        throw new InternalServerErrorException(
+          'Transaction Fee Revenue account not found',
+        );
+      }
+
       const bankAccount = await tx.account.findFirst({
         where: {
           type: 'ASSET',
@@ -92,6 +107,24 @@ export class DataService {
       await tx.wallet.update({
         where: {
           id: wallet.id,
+
+          balance: {
+            gte: purchaseAmount,
+          },
+        },
+        data: {
+          balance: {
+            decrement: purchaseAmount,
+          },
+        },
+      });
+
+      await tx.account.updateMany({
+        where: {
+          id: bankAccount.id,
+          balance: {
+            gte: purchaseAmount,
+          },
         },
         data: {
           balance: {
@@ -116,6 +149,21 @@ export class DataService {
       const balanceAfter = updatedAccount.balance;
 
       const balanceBefore = balanceAfter.plus(purchaseAmount);
+
+      const updatedBankAccount = await tx.account.findUnique({
+        where: {
+          id: bankAccount.id,
+        },
+      });
+
+      if (!updatedBankAccount) {
+        throw new InternalServerErrorException(
+          'Bank Account not found after credit',
+        );
+      }
+
+      const bankBalanceAfter = updatedBankAccount.balance;
+      const bankBalanceBefore = bankBalanceAfter.plus(purchaseAmount);
 
       /**
        * Create transaction as PENDING.
@@ -149,7 +197,13 @@ export class DataService {
 
         balanceAfter,
 
+        bankBalanceBefore,
+
+        bankBalanceAfter,
+
         bankAccount,
+
+        revenueAccount,
       };
     });
 
@@ -163,11 +217,9 @@ export class DataService {
     try {
       providerResponse = await this.vtuProvider.purchaseData({
         mobile_number: phoneNumber,
-        amount: purchaseAmount,
         plan_code: planCode,
-
+        amount,
         network,
-
         reference,
       });
     } catch (error) {
@@ -198,8 +250,30 @@ export class DataService {
          * Create the accounting ledger entry.
          */
 
+        const providerCost = new Prisma.Decimal(providerResponse.charged);
+
+        await tx.account.updateMany({
+          where: {
+            name: 'Transaction Fee Revenue',
+          },
+          data: {
+            balance: {
+              increment: purchaseAmount - providerCost,
+            },
+          },
+        });
+
         await tx.ledgerEntry.createMany({
           data: [
+            {
+              transactionId: transaction.transaction.id,
+
+              accountId: transaction.revenueAccount.id,
+
+              direction: 'CREDIT',
+
+              amount: purchaseAmount - providerCost,
+            },
             {
               transactionId: transaction.transaction.id,
 
@@ -209,9 +283,9 @@ export class DataService {
 
               amount,
 
-              balanceBefore: transaction.balanceBefore,
+              balanceBefore: transaction.bankBalanceBefore,
 
-              balanceAfter: transaction.balanceAfter,
+              balanceAfter: transaction.bankBalanceAfter,
             },
 
             {
@@ -356,6 +430,16 @@ export class DataService {
       /**
        * Get current account balance.
        */
+      const bankAccount = await tx.account.findUnique({
+        where: {
+          id: params.bankAccountId,
+        },
+      });
+
+      if (!bankAccount) {
+        throw new InternalServerErrorException('Bank Account not found');
+      }
+
       const account = await tx.account.findUnique({
         where: {
           id: params.accountId,
@@ -366,8 +450,10 @@ export class DataService {
         throw new InternalServerErrorException('Account not found');
       }
 
-      const balanceBefore = account.balance;
+      const bankBalanceBefore = bankAccount.balance;
+      const bankBalanceAfter = bankBalanceBefore.plus(params.amount);
 
+      const balanceBefore = account.balance;
       const balanceAfter = balanceBefore.plus(params.amount);
 
       /**
@@ -393,6 +479,15 @@ export class DataService {
         },
       });
 
+      await tx.account.update({
+        where: {
+          id: params.bankAccountId,
+        },
+        data: {
+          balance: bankBalanceAfter,
+        },
+      });
+
       /**
        * Compensating CREDIT entry.
        */
@@ -408,9 +503,9 @@ export class DataService {
 
             amount: params.amount,
 
-            balanceBefore,
+            balanceBefore: bankBalanceBefore,
 
-            balanceAfter,
+            balanceAfter: bankBalanceAfter,
           },
 
           {

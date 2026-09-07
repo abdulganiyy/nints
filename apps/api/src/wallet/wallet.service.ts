@@ -16,6 +16,7 @@ export class WalletService {
       },
       include: {
         virtualAccount: true,
+        account: true,
       },
     });
 
