@@ -8,6 +8,8 @@ import {
   CableTvRequest,
   CableTvResponse,
   VtuTransactionResponse,
+  VerifyMeterNumberRequest,
+  VerifyCableTvIUCRequest,
 } from './provider.types';
 
 export abstract class VtuProvider {
@@ -19,9 +21,19 @@ export abstract class VtuProvider {
 
   abstract getDataPlans(): Promise<any>;
 
-  //   electricity(request: ElectricityRequest): Promise<ElectricityResponse>;
+  abstract rechargeElectricity(
+    request: ElectricityRequest,
+  ): Promise<ElectricityResponse>;
 
-  //   cableTv(request: CableTvRequest): Promise<CableTvResponse>;
+  abstract rechargeCableTV(request: CableTvRequest): Promise<CableTvResponse>;
+
+  abstract getCableTVPlans(): Promise<any>;
+
+  abstract getElectricityPlans(): Promise<any>;
+
+  abstract verifyCableIUC(request: VerifyCableTvIUCRequest): Promise<any>;
+
+  abstract verifyMeterNumber(request: VerifyMeterNumberRequest): Promise<any>;
 
   //   getTransaction(transactionId: string): Promise<VtuTransactionResponse>;
 

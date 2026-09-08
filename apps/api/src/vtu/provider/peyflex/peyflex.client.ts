@@ -4,8 +4,14 @@ import { ConfigService } from '@nestjs/config';
 import {
   AirtimeRequest,
   AirtimeResponse,
+  CableTvRequest,
+  CableTvResponse,
   DataRequest,
   DataResponse,
+  ElectricityRequest,
+  ElectricityResponse,
+  VerifyCableTvIUCRequest,
+  VerifyMeterNumberRequest,
 } from '../../provider.types';
 
 @Injectable()
@@ -59,5 +65,65 @@ export class PeyflexClient {
         network: response.data.network,
       })),
     );
+  }
+
+  async getCableTVplans() {
+    const providersResponse = await this.client.get('/cable/providers/');
+
+    const providers = providersResponse.data.providers;
+
+    const plansResponses = await Promise.all(
+      providers.map((provider) =>
+        this.client.get(`/cable/plans/${provider.identifier}`),
+      ),
+    );
+
+    return plansResponses.flatMap((response) =>
+      response.data.plans.map((plan) => ({
+        ...plan,
+        provider: response.data.provider,
+      })),
+    );
+  }
+
+  async getElectricityplans() {
+    const plansResponse = await this.client.get(
+      '/electricity/plans/?identifier=electricity',
+    );
+
+    return plansResponse.data.plans;
+  }
+
+  async rechargeCableTV(
+    request: CableTvRequest,
+  ): Promise<CableTvResponse | any> {
+    const response = await this.client.post('/cable/subscribe/', request);
+
+    return response.data;
+  }
+
+  async rechargeElectricity(
+    request: ElectricityRequest,
+  ): Promise<ElectricityResponse | any> {
+    const response = await this.client.post('/electricity/subscribe/', request);
+
+    return response.data;
+  }
+
+  async verifyCableIUC(request: VerifyCableTvIUCRequest): Promise<any> {
+    const response = await this.client.post('/electricity/verify/', {
+      iuc: request.iuc,
+      identifier: request.identifier,
+    });
+
+    return response.data;
+  }
+
+  async verifyMeterNumber(request: VerifyMeterNumberRequest): Promise<any> {
+    const response = await this.client.get(
+      `/electricity/verify/?identifier=${request.identifier}&meter=${request.meter}2&plan=${request.plan}&type=${request.type}`,
+    );
+
+    return response.data;
   }
 }

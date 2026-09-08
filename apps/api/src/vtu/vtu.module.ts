@@ -5,6 +5,8 @@ import { VtuProvider } from './provider.interface';
 import { VtuController } from './vtu.controller';
 import { AirtimeService } from './airtime.service';
 import { DataService } from './data.service';
+import { CableService } from './cable.service';
+import { ElectricityService } from './electricity.service';
 
 @Module({
   imports: [PeyflexModule],
@@ -13,6 +15,8 @@ import { DataService } from './data.service';
     { provide: VtuProvider, useClass: PeyflexProvider },
     AirtimeService,
     DataService,
+    CableService,
+    ElectricityService,
   ],
   exports: [],
 })

@@ -34,31 +34,50 @@ export interface DataResponse {
 }
 
 export interface ElectricityRequest {
-  meterNumber: string;
-  amount: number;
-  disco: string;
-  meterType: 'PREPAID' | 'POSTPAID';
-  reference: string;
+  identifier: string;
+  meter: string;
+  amount: string;
+  plan: string;
+  type: 'PREPAID' | 'POSTPAID';
+  reference?: string;
+  mobile_number: string;
 }
-
 export interface ElectricityResponse {
   success: boolean;
   token?: string;
-  providerReference?: string;
+  reference?: string;
   message?: string;
+  amount: string;
+  charged: string;
+  discount: string;
 }
 
 export interface CableTvRequest {
-  smartCardNumber: string;
-  packageCode: string;
-  provider: string;
-  reference: string;
+  iuc: string;
+  plan: string;
+  identifier: string;
+  phone: string;
 }
 
 export interface CableTvResponse {
   success: boolean;
-  providerReference?: string;
+  reference?: string;
   message?: string;
+  amount: string;
+  charged: string;
+  discount: string;
+}
+
+export interface VerifyCableTvIUCRequest {
+  iuc: string;
+  identifier: string;
+}
+
+export interface VerifyMeterNumberRequest {
+  meter: string;
+  type: string;
+  plan: string;
+  identifier: string;
 }
 
 export interface VtuTransactionResponse {

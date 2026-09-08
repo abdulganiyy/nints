@@ -3,9 +3,14 @@ import { VtuProvider } from '../../provider.interface';
 import {
   AirtimeRequest,
   AirtimeResponse,
+  CableTvRequest,
+  CableTvResponse,
   DataRequest,
   DataResponse,
+  ElectricityRequest,
   ElectricityResponse,
+  VerifyCableTvIUCRequest,
+  VerifyMeterNumberRequest,
 } from '../../provider.types';
 import { PeyflexClient } from './peyflex.client';
 
@@ -36,12 +41,7 @@ export class PeyflexProvider extends VtuProvider {
   }
 
   async purchaseData(request: DataRequest): Promise<DataResponse> {
-    const response = await this.client.purchaseData({
-      mobile_number: request.mobile_number,
-      plan_code: request.plan_code,
-      network: request.network,
-      amount: request.amount,
-    });
+    const response = await this.client.purchaseData(request);
 
     return {
       status: response.status,
@@ -56,5 +56,70 @@ export class PeyflexProvider extends VtuProvider {
 
   getDataPlans() {
     return this.client.getDataplans();
+  }
+
+  getCableTVPlans() {
+    return this.client.getCableTVplans();
+  }
+
+  getElectricityPlans() {
+    return this.client.getElectricityplans();
+  }
+
+  async rechargeElectricity(
+    request: ElectricityRequest,
+  ): Promise<ElectricityResponse> {
+    const response = await this.client.rechargeElectricity(request);
+
+    return {
+      success: response.status === 'SUCCESS',
+      reference: response.requestId,
+      message: response.response_description,
+      amount: response.amount,
+      charged: response.charged,
+      discount: response.discount,
+    };
+  }
+
+  async rechargeCableTV(
+    request: CableTvRequest,
+  ): Promise<CableTvResponse | any> {
+    const response = await this.client.rechargeCableTV(request);
+
+    return {
+      status: response.status,
+      success: response.status === 'SUCCESS',
+      reference: response.requestId,
+      message: response.response_description,
+      amount: response.amount,
+      charged: response.charged,
+      discount: response.discount,
+    };
+  }
+
+  async verifyCableIUC(request: VerifyCableTvIUCRequest): Promise<any> {
+    const response = await this.client.verifyCableIUC(request);
+
+    return {
+      success: response.status === 'SUCCESS',
+      reference: response.requestId,
+      message: response.response_description,
+      amount: response.amount,
+      charged: response.charged,
+      discount: response.discount,
+    };
+  }
+
+  async verifyMeterNumber(request: VerifyMeterNumberRequest): Promise<any> {
+    const response = await this.client.verifyMeterNumber(request);
+
+    return {
+      success: response.status === 'SUCCESS',
+      reference: response.requestId,
+      message: response.response_description,
+      amount: response.amount,
+      charged: response.charged,
+      discount: response.discount,
+    };
   }
 }
