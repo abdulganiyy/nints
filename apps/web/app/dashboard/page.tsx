@@ -17,9 +17,16 @@ export default function DashboardPage() {
     },
   });
 
-  console.log(data);
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>{error.message}</div>;
+  }
 
   if (!data) return null;
+
   return (
     <main className="min-h-screen bg-slate-50">
       <DashboardHeader />
@@ -30,7 +37,7 @@ export default function DashboardPage() {
           <TransactionHistory />
         </div>
       </div>
-      <EmailVerificationModal email={data?.email} open={!data?.emailVerified} />
+      <EmailVerificationModal email={data.email} open={!data.emailVerified} />
     </main>
   );
 }

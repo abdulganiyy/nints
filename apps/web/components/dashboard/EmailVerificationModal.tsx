@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Mail, RefreshCw, LogOut, CheckCircle2 } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "sonner";
 import {
@@ -16,17 +16,11 @@ import { useRouter } from "next/navigation";
 interface EmailVerificationModalProps {
   email: string;
   open: boolean;
-  onCheckVerification?: () => Promise<void>;
-  onResend?: () => Promise<void>;
-  onLogout?: () => Promise<void>;
 }
 
 const EmailVerificationModal = ({
   email,
   open,
-  onCheckVerification,
-  onResend,
-  onLogout,
 }: EmailVerificationModalProps) => {
   const [seconds, setSeconds] = useState(60);
 
@@ -44,11 +38,19 @@ const EmailVerificationModal = ({
     },
   });
 
+  const queryClient = useQueryClient();
+
   const verifyMutation = useMutation({
-    mutationFn: async function verify() {
-      const response = await axios.get(`api/me`);
+    mutationFn: async () => {
+      const response = await axios.get("/api/me");
 
       return response.data;
+    },
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["me"],
+      });
     },
   });
 
@@ -86,15 +88,11 @@ const EmailVerificationModal = ({
     return () => clearInterval(timer);
   }, [seconds, open]);
 
+  console.log(open);
+
   return (
     <Dialog open={open}>
-      <DialogContent
-        className="sm:max-w-md"
-        showCloseButton={false}
-        // onEscapeKeyDown={(e) => e.preventDefault()}
-        // onPointerDownOutside={(e) => e.preventDefault()}
-        // onInteractOutside={(e) => e.preventDefault()}
-      >
+      <DialogContent className="sm:max-w-md" showCloseButton={false}>
         <DialogHeader>
           <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-100">
             <Mail className="h-10 w-10 text-emerald-600" />
@@ -119,7 +117,7 @@ const EmailVerificationModal = ({
         <div className="space-y-3 pt-4">
           <Button
             className="w-full"
-            onClick={() => verifyMutation.mutateAsync()}
+            onClick={() => verifyMutation.mutate()}
             disabled={verifyMutation.isPending}
           >
             <CheckCircle2 className="mr-2 h-4 w-4" />
