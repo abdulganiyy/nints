@@ -111,7 +111,7 @@ export class PeyflexClient {
   }
 
   async verifyCableIUC(request: VerifyCableTvIUCRequest): Promise<any> {
-    const response = await this.client.post('/electricity/verify/', {
+    const response = await this.client.post('/cable/verify/', {
       iuc: request.iuc,
       identifier: request.identifier,
     });

@@ -11,13 +11,12 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
   Landmark,
-  CreditCard,
-  TrendingUp,
-  TrendingDown,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 interface BalanceCardProps {
   availableBalance?: number;
@@ -29,13 +28,18 @@ interface BalanceCardProps {
   monthlyExpense?: number;
 }
 
-export default function BalanceCard({
-  availableBalance = 1250000.5,
-  ledgerBalance = 1260000.5,
-  accountName = "ABDULGANIYY BALOGUN",
-  accountNumber = "1234567890",
-  bankName = "Paystack-Titan",
-}: BalanceCardProps) {
+export default function BalanceCard() {
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["wallet"],
+    queryFn: async () => {
+      const res = await axios.get("api/wallet");
+
+      return res.data;
+    },
+  });
+
+  console.log(data);
+
   const [hidden, setHidden] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -49,7 +53,7 @@ export default function BalanceCard({
   );
 
   async function copyAccount() {
-    await navigator.clipboard.writeText(accountNumber);
+    await navigator.clipboard.writeText(data?.virtualAccount?.accountNumber);
 
     setCopied(true);
 
@@ -71,7 +75,7 @@ export default function BalanceCard({
 
             <div className="mt-3 flex items-center gap-3">
               <h1 className="text-4xl font-bold">
-                {hidden ? "••••••••" : formatter.format(availableBalance)}
+                {hidden ? "••••••••" : formatter.format(data?.balance)}
               </h1>
 
               <button
@@ -89,7 +93,7 @@ export default function BalanceCard({
             <p className="mt-3 text-sm text-emerald-100">
               Ledger Balance:{" "}
               <span className="font-semibold text-white">
-                {hidden ? "••••••••" : formatter.format(ledgerBalance)}
+                {hidden ? "••••••••" : formatter.format(data?.balance)}
               </span>
             </p>
           </div>
@@ -108,11 +112,17 @@ export default function BalanceCard({
                 Dedicated Virtual Account
               </p>
 
-              <h3 className="mt-2 text-xl font-semibold">{accountNumber}</h3>
+              <h3 className="mt-2 text-xl font-semibold">
+                {data?.virtualAccount?.accountNumber}
+              </h3>
 
-              <p className="mt-1 text-sm text-emerald-100">{accountName}</p>
+              <p className="mt-1 text-sm text-emerald-100">
+                {data?.virtualAccount?.accountName}
+              </p>
 
-              <p className="text-sm text-emerald-100">{bankName}</p>
+              <p className="text-sm text-emerald-100">
+                {data?.virtualAccount?.bankName}
+              </p>
             </div>
 
             <Button variant="secondary" size="icon" onClick={copyAccount}>
