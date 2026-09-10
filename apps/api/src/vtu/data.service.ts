@@ -252,13 +252,19 @@ export class DataService {
 
         const providerCost = new Prisma.Decimal(providerResponse.charged);
 
+        const feeAmount = purchaseAmount.minus(providerCost);
+
+        const revenueBalanceBefore = transaction.revenueAccount.balance;
+
+        const revenueBalanceAfter = revenueBalanceBefore.plus(feeAmount);
+
         await tx.account.updateMany({
           where: {
             name: 'Transaction Fee Revenue',
           },
           data: {
             balance: {
-              increment: purchaseAmount - providerCost,
+              increment: feeAmount,
             },
           },
         });
@@ -272,7 +278,11 @@ export class DataService {
 
               direction: 'CREDIT',
 
-              amount: purchaseAmount - providerCost,
+              amount: feeAmount,
+
+              balanceBefore: revenueBalanceBefore,
+
+              balanceAfter: revenueBalanceAfter,
             },
             {
               transactionId: transaction.transaction.id,

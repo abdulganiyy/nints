@@ -38,3 +38,45 @@ export type RegisterFormValues = {
   email: string;
   password: string;
 };
+
+export type TransactionStatus = "SUCCESS" | "FAILED";
+
+export type TransactionDetail = {
+  label: string;
+  value: string;
+};
+
+export type TransactionResult = {
+  status: TransactionStatus;
+  title?: string;
+  message?: string;
+  reference?: string;
+  amount?: string;
+  details?: TransactionDetail[];
+};
+
+export const AIRTIME_NETWORKS = ["MTN", "AIRTEL", "GLO", "9MOBILE"] as const;
+
+export type AirtimeNetwork = "MTN" | "AIRTEL" | "GLO" | "9MOBILE";
+
+export interface AirtimeProvider {
+  id: AirtimeNetwork;
+  name: string;
+  logo?: string;
+}
+
+export interface AirtimePurchasePayload {
+  network: AirtimeNetwork;
+  phoneNumber: string;
+  amount: string;
+}
+
+export interface AirtimePurchaseResponse {
+  success: boolean;
+  status: "SUCCESS" | "FAILED";
+  reference: string;
+  message: string;
+  amount: number;
+  phoneNumber: string;
+  network: AirtimeNetwork;
+}

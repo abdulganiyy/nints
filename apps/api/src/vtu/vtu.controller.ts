@@ -11,6 +11,7 @@ import { PurchaseCableTVPlanDto } from './dto/purchase-cabletv-plan.dto';
 import { PurchaseElectricityDto } from './dto/purchase-electricity-plan.dto';
 import { CableService } from './cable.service';
 import { ElectricityService } from './electricity.service';
+import { GetUser } from '../common/decorators/get-user.decorator';
 
 @Controller('vtu')
 @UseGuards(JwtGuard)
@@ -24,8 +25,11 @@ export class VtuController {
   ) {}
 
   @Post('airtime')
-  purchaseAirtime(@Body() dto: PurchaseAirtimeDto) {
-    return this.airtimeService.purchaseAirtime(dto);
+  purchaseAirtime(
+    @GetUser('userId') userId: string,
+    @Body() dto: PurchaseAirtimeDto,
+  ) {
+    return this.airtimeService.purchaseAirtime({ ...dto, userId });
   }
 
   @Post('data')

@@ -3,6 +3,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsNumberString,
+  IsOptional,
   IsString,
   Matches,
   Min,
@@ -10,9 +11,9 @@ import {
 import { NetworkProvider } from '../provider.enum';
 
 export class PurchaseAirtimeDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  walletId!: string;
+  userId?: string;
 
   @IsEnum(NetworkProvider)
   network!: NetworkProvider;

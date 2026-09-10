@@ -26,12 +26,12 @@ interface Action {
 }
 
 const actions: Action[] = [
-  {
-    title: "Transfer",
-    description: "Send money",
-    href: "/transfer",
-    icon: ArrowLeftRight,
-  },
+  // {
+  //   title: "Transfer",
+  //   description: "Send money",
+  //   href: "/transfer",
+  //   icon: ArrowLeftRight,
+  // },
   {
     title: "Airtime",
     description: "Recharge phone",
@@ -50,44 +50,44 @@ const actions: Action[] = [
     href: "/bills",
     icon: Receipt,
   },
-  {
-    title: "Savings",
-    description: "Grow savings",
-    href: "/savings",
-    icon: PiggyBank,
-  },
+  // {
+  //   title: "Savings",
+  //   description: "Grow savings",
+  //   href: "/savings",
+  //   icon: PiggyBank,
+  // },
   {
     title: "Loan",
     description: "Borrow funds",
     href: "/loan",
     icon: CreditCard,
   },
-  {
-    title: "Bank",
-    description: "Withdraw",
-    href: "/withdraw",
-    icon: Landmark,
-  },
-  {
-    title: "QR Pay",
-    description: "Scan & Pay",
-    href: "/qr-pay",
-    icon: ScanLine,
-    comingSoon: true,
-  },
-  {
-    title: "Exchange",
-    description: "NGN → AED",
-    href: "/exchange",
-    icon: Globe,
-    comingSoon: true,
-  },
-  {
-    title: "Rewards",
-    description: "Cashback",
-    href: "/rewards",
-    icon: Gift,
-  },
+  // {
+  //   title: "Bank",
+  //   description: "Withdraw",
+  //   href: "/withdraw",
+  //   icon: Landmark,
+  // },
+  // {
+  //   title: "QR Pay",
+  //   description: "Scan & Pay",
+  //   href: "/qr-pay",
+  //   icon: ScanLine,
+  //   comingSoon: true,
+  // },
+  // {
+  //   title: "Exchange",
+  //   description: "NGN → AED",
+  //   href: "/exchange",
+  //   icon: Globe,
+  //   comingSoon: true,
+  // },
+  // {
+  //   title: "Rewards",
+  //   description: "Cashback",
+  //   href: "/rewards",
+  //   icon: Gift,
+  // },
   {
     title: "More",
     description: "All services",
@@ -116,7 +116,7 @@ export default function QuickActions() {
           return (
             <Link
               key={action.title}
-              href={action.comingSoon ? "#" : action.href}
+              href={action.comingSoon ? "#" : `/dashboard/${action.href}`}
               className={action.comingSoon ? "pointer-events-none" : undefined}
             >
               <Card className="group relative h-full rounded-3xl border-0 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">

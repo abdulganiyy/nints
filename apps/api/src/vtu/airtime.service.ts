@@ -17,12 +17,12 @@ export class AirtimeService {
   ) {}
 
   async purchaseAirtime(params: {
-    walletId: string;
+    userId: string;
     phoneNumber: string;
     network: string;
     amount: string;
   }) {
-    const { walletId, phoneNumber, network, amount } = params;
+    const { userId, phoneNumber, network, amount } = params;
 
     const reference = `AIR-${randomUUID()}`;
     const purchaseAmount = new Prisma.Decimal(amount);
@@ -63,7 +63,7 @@ export class AirtimeService {
 
       const wallet = await tx.wallet.findUnique({
         where: {
-          id: walletId,
+          userId,
         },
         include: {
           account: true,
@@ -227,7 +227,7 @@ export class AirtimeService {
        */
       await this.handleProviderError({
         transactionId: transaction.transaction.id,
-        walletId,
+        walletId: transaction.walletId,
         accountId: transaction.accountId,
         amount: purchaseAmount,
       });
@@ -249,13 +249,19 @@ export class AirtimeService {
          */
         const providerCost = new Prisma.Decimal(providerResponse.charged);
 
+        const feeAmount = purchaseAmount.minus(providerCost);
+
+        const revenueBalanceBefore = transaction.revenueAccount.balance;
+
+        const revenueBalanceAfter = revenueBalanceBefore.plus(feeAmount);
+
         await tx.account.updateMany({
           where: {
             name: 'Transaction Fee Revenue',
           },
           data: {
             balance: {
-              increment: purchaseAmount - providerCost,
+              increment: feeAmount,
             },
           },
         });
@@ -269,13 +275,11 @@ export class AirtimeService {
 
               direction: 'CREDIT',
 
-              amount: purchaseAmount - providerCost,
+              amount: feeAmount,
 
-              balanceBefore: transaction.revenueAccount.balance,
+              balanceBefore: revenueBalanceBefore,
 
-              balanceAfter:
-                transaction.revenueAccount.balance +
-                (purchaseAmount - providerCost),
+              balanceAfter: revenueBalanceAfter,
             },
             {
               transactionId: transaction.transaction.id,
@@ -333,6 +337,12 @@ export class AirtimeService {
 
         reference,
 
+        amount: purchaseAmount,
+
+        phoneNumber,
+
+        network,
+
         providerReference: providerResponse.providerReference,
 
         message: providerResponse.message,
@@ -362,6 +372,12 @@ export class AirtimeService {
       success: false,
 
       reference,
+
+      amount: purchaseAmount,
+
+      phoneNumber,
+
+      network,
 
       providerReference: providerResponse.providerReference,
 

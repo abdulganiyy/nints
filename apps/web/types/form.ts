@@ -16,7 +16,12 @@ export type FieldConfig = {
     | "select"
     | "checkbox"
     | "radio"
-    | "file";
+    | "file"
+    | "date"
+    | "number"
+    | "array"
+    | "searchable-select"
+    | "multi-select";
 
   placeholder?: string;
 
@@ -31,6 +36,18 @@ export type FieldConfig = {
   hideLabel?: boolean;
 
   oneThirdWidth?: boolean;
+
+  fields?: FieldConfig[];
+  min?: number;
+  max?: number;
+
+  multiple?: boolean;
+  accept?: string;
+  maxFiles?: number;
+
+  disabled?: boolean;
+
+  captionLayout?: boolean;
 };
 
 export type FormConfig = {

@@ -23,22 +23,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import ImageDropZone from "./ImageDropZone";
+import { FileUpload } from "./FileUpload";
+import { DatePicker } from "../DatePicker";
+import { cloudinaryUploader } from "@/lib/upload";
+import { ArrayField } from "./ArrayField";
+import { SearchableSelect } from "./SearchableSelect";
+import { MultiSelectField } from "./MultiSelect";
 
 type Props = {
   field: FieldConfig;
 };
 
 export default function FieldRenderer({ field }: Props) {
-  const {
-    register,
-    formState: { errors },
-    control,
-  } = useFormContext();
-
-  const error = errors[field.name]?.message?.toString();
-
-  const inputStyle = "w-full rounded-lg border p-3 outline-none";
+  const { control, formState, register } = useFormContext();
 
   return (
     <Controller
@@ -56,13 +53,15 @@ export default function FieldRenderer({ field }: Props) {
 
           {field.type === "select" && (
             <Select
+              items={field.options}
               name={rhField.name}
-              value={rhField.value}
+              value={rhField.value ?? ""}
               onValueChange={rhField.onChange}
             >
               <SelectTrigger
                 id={rhField.name}
                 aria-invalid={rhFieldState.invalid}
+                className="w-full"
               >
                 <SelectValue placeholder={field.placeholder} />
               </SelectTrigger>
@@ -85,7 +84,7 @@ export default function FieldRenderer({ field }: Props) {
                     name={rhField.name}
                     aria-invalid={rhFieldState.invalid}
                     checked={rhField.value.includes(option.value)}
-                    onCheckedChange={(checked) => {
+                    onCheckedChange={(checked: any) => {
                       const newValue = checked
                         ? [...rhField.value, option.value]
                         : rhField.value.filter(
@@ -141,16 +140,82 @@ export default function FieldRenderer({ field }: Props) {
           )}
 
           {field.type == "file" && (
-            <ImageDropZone
-              {...rhField}
-              type={field.type}
+            <FileUpload
+              value={rhField.value ?? []}
+              onChange={rhField.onChange}
+              provider={cloudinaryUploader}
+              maxFiles={field.maxFiles}
+              accept={field.accept}
+              multiple={field.multiple}
+            />
+          )}
+
+          {field.type == "date" && (
+            <DatePicker
+              value={rhField.value}
+              onChange={rhField.onChange}
+              captionLayout={field.captionLayout}
+            />
+          )}
+
+          {field.type === "array" && (
+            <ArrayField
+              field={field}
+              control={control}
+              register={register}
+              errors={formState.errors}
+            />
+          )}
+
+          {field.type === "searchable-select" && (
+            <SearchableSelect field={field} control={control} />
+          )}
+          {field.type === "multi-select" && (
+            <MultiSelectField field={field} control={control} />
+          )}
+
+          {field.type === "number" && (
+            <Input
+              name={rhField.name}
+              ref={rhField.ref}
+              value={
+                rhField.value === undefined || rhField.value === null
+                  ? ""
+                  : Number(rhField.value).toLocaleString("en-US")
+              }
+              onBlur={rhField.onBlur}
+              onChange={(e) => {
+                const rawValue = e.target.value.replace(/,/g, "");
+
+                if (rawValue === "") {
+                  rhField.onChange(undefined);
+                  return;
+                }
+
+                const numberValue = Number(rawValue);
+
+                if (!Number.isNaN(numberValue)) {
+                  rhField.onChange(numberValue);
+                }
+              }}
+              type="text"
+              inputMode="decimal"
               placeholder={field.placeholder}
             />
           )}
 
-          {!["textarea", "select", "checkbox", "radio", "file"].includes(
-            field.type,
-          ) && (
+          {![
+            "number",
+            "textarea",
+            "select",
+            "checkbox",
+            "radio",
+            "file",
+            "date",
+            "array",
+            "multi-select",
+            "searchable-select",
+          ].includes(field.type) && (
             <Input
               {...rhField}
               type={field.type}
