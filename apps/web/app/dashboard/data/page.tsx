@@ -1,6 +1,6 @@
 "use client";
 
-import AirtimePurchase from "@/components/airtime/AirtimePurchase";
+import DataPurchase from "@/components/data/DataPurchase";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
@@ -8,7 +8,7 @@ type WalletResponse = {
   balance: number;
 };
 
-export default function AirtimePage() {
+export default function DataPage() {
   const { data, isLoading, isError, error } = useQuery<WalletResponse>({
     queryKey: ["wallet"],
     queryFn: async () => {
@@ -50,7 +50,7 @@ export default function AirtimePage() {
 
   return (
     <main className="min-h-screen bg-slate-50 p-6">
-      <AirtimePurchase walletBalance={data?.balance ?? 0} />
+      <DataPurchase walletBalance={data?.balance ?? 0} />
     </main>
   );
 }

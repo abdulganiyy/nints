@@ -38,8 +38,6 @@ export default function BalanceCard() {
     },
   });
 
-  console.log(data);
-
   const [hidden, setHidden] = useState(false);
   const [copied, setCopied] = useState(false);
 

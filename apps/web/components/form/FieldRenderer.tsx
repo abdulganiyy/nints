@@ -218,6 +218,7 @@ export default function FieldRenderer({ field }: Props) {
           ].includes(field.type) && (
             <Input
               {...rhField}
+              value={rhField.value ?? ""}
               type={field.type}
               placeholder={field.placeholder}
             />

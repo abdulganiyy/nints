@@ -14,3 +14,18 @@ export const airtimeSchema = z.object({
     .min(50, "Minimum airtime amount is ₦50")
     .max(100000, "Maximum airtime amount is ₦100,000"),
 });
+
+export const dataSchema = z.object({
+  network: z.string({
+    message: "Please select a network",
+  }),
+  phoneNumber: z
+    .string()
+    .min(1, { message: "Phone number is required." })
+    .regex(phoneRegex, { message: "Invalid phone number format." }),
+  planCode: z.coerce.string().min(1, { message: "Plan Code is required." }),
+  amount: z.coerce
+    .number()
+    .min(50, "Minimum airtime amount is ₦50")
+    .max(100000, "Maximum airtime amount is ₦100,000"),
+});

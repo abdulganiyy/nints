@@ -71,7 +71,7 @@ export const airtimeFieldsConfig: FieldConfig[] = [
   },
 ];
 
-export const dataFieldsCongig: FieldConfig[] = [
+export const dataFieldsConfig: FieldConfig[] = [
   {
     name: "network",
     label: "Network",
@@ -84,7 +84,7 @@ export const dataFieldsCongig: FieldConfig[] = [
     type: "text",
   },
   {
-    name: "plan",
+    name: "planCode",
     label: "Data Plan",
     type: "select",
     options: [],
