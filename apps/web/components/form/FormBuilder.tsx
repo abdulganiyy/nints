@@ -7,6 +7,7 @@ import {
   FormProvider,
   useForm,
   useWatch,
+  UseFormSetValue,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -26,7 +27,8 @@ type Props<T extends FieldValues> = {
   className?: string;
   footer?: ReactNode;
   values?: Partial<T>;
-  onValuesChange?: (values: Partial<T>) => void;
+
+  onValuesChange?: (values: Partial<T>, setValue: UseFormSetValue<T>) => void;
 };
 
 export default function FormBuilder<T extends FieldValues>({
@@ -73,7 +75,7 @@ export default function FormBuilder<T extends FieldValues>({
   });
 
   useEffect(() => {
-    onValuesChange?.(formValues as Partial<T>);
+    onValuesChange?.(formValues as Partial<T>, methods.setValue);
   }, [formValues, onValuesChange]);
 
   return (

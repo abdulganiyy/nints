@@ -80,3 +80,20 @@ export interface AirtimePurchaseResponse {
   phoneNumber: string;
   network: AirtimeNetwork;
 }
+
+export interface DataPurchasePayload {
+  network: string;
+  phoneNumber: string;
+  amount?: string;
+  planCode: string;
+}
+
+export interface DataPurchaseResponse {
+  success: boolean;
+  status: "SUCCESS" | "FAILED";
+  reference: string;
+  message: string;
+  amount: number;
+  phoneNumber: string;
+  network: AirtimeNetwork;
+}

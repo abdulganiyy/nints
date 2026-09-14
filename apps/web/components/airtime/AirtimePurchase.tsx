@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { z } from "zod";
 
 import FormBuilder from "@/components/form/FormBuilder";
@@ -19,6 +19,8 @@ import { TransactionResult } from "@/types";
 import { usePurchaseAirtime } from "@/hooks/usePurchaseAirtime";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { detectNetwork } from "@/lib/utils";
+import { UseFormSetValue } from "react-hook-form";
 
 type AirtimeFormValues = z.infer<typeof airtimeSchema>;
 
@@ -43,27 +45,12 @@ export default function AirtimePurchase({
 
   const purchaseMutation = usePurchaseAirtime();
 
-  /**
-   * First stage:
-   *
-   * User submits phone number + amount.
-   *
-   * We don't purchase anything yet.
-   * We simply open the confirmation modal.
-   */
   const handleSubmit = (values: AirtimeFormValues) => {
     setFormValues(values);
 
     setConfirmationOpen(true);
   };
 
-  /**
-   * Second stage:
-   *
-   * User has confirmed the transaction.
-   *
-   * Now we call the backend.
-   */
   const handleConfirm = async () => {
     if (!formValues) return;
 
@@ -188,6 +175,34 @@ export default function AirtimePurchase({
     setConfirmationOpen(true);
   };
 
+  const handleValuesChange = useCallback(
+    (
+      values: Partial<AirtimeFormValues>,
+      setValue: UseFormSetValue<AirtimeFormValues>,
+    ) => {
+      const phoneNumber = values.phoneNumber as string;
+
+      if (!phoneNumber) {
+        return;
+      }
+
+      const detectedNetwork = detectNetwork(phoneNumber);
+
+      if (!detectedNetwork) {
+        return;
+      }
+
+      if (values.network === detectedNetwork) {
+        return;
+      }
+
+      setValue("network", detectedNetwork, {
+        shouldValidate: true,
+      });
+    },
+    [],
+  );
+
   return (
     <div className="mx-auto w-full max-w-2xl px-4 py-8">
       {/* Header */}
@@ -200,6 +215,10 @@ export default function AirtimePurchase({
         <p className="mt-2 text-muted-foreground">
           Purchase airtime instantly from your wallet.
         </p>
+
+        <p className="mt-2 text-sm text-muted-foreground">
+          Wallet balance: ₦{walletBalance.toLocaleString()}
+        </p>
       </div>
 
       {/* Airtime form */}
@@ -208,6 +227,7 @@ export default function AirtimePurchase({
         schema={airtimeSchema}
         onSubmit={handleSubmit}
         submitText="Continue"
+        onValuesChange={handleValuesChange}
       />
 
       {/* Confirmation */}

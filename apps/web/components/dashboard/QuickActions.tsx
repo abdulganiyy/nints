@@ -116,7 +116,7 @@ export default function QuickActions() {
           return (
             <Link
               key={action.title}
-              href={action.comingSoon ? "#" : `/dashboard/${action.href}`}
+              href={action.comingSoon ? "#" : `/dashboard${action.href}`}
               className={action.comingSoon ? "pointer-events-none" : undefined}
             >
               <Card className="group relative h-full rounded-3xl border-0 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
