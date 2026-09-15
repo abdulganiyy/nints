@@ -15,6 +15,7 @@ import { OtpModule } from './otp/otp.module';
 import { QueueModule } from './queue/queue.module';
 import { VtuModule } from './vtu/vtu.module';
 import { WebhookModule } from './webhook/webhook.module';
+import { TransactionModule } from './transaction/transaction.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { WebhookModule } from './webhook/webhook.module';
     QueueModule,
     VtuModule,
     WebhookModule,
+    TransactionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

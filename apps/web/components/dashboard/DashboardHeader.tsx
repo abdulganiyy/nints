@@ -96,7 +96,7 @@ export default function DashboardHeader({
           {/* Settings */}
 
           <Button variant="ghost" size="icon">
-            <Link href="/settings">
+            <Link href="/dashboard">
               <Settings className="h-5 w-5" />
             </Link>
           </Button>
@@ -122,7 +122,7 @@ export default function DashboardHeader({
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuItem>
                 <Link
-                  href="/profile"
+                  href="/dashboard"
                   className="flex cursor-pointer items-center"
                 >
                   <User className="mr-2 h-4 w-4" />
@@ -132,7 +132,7 @@ export default function DashboardHeader({
 
               <DropdownMenuItem>
                 <Link
-                  href="/cards"
+                  href="/dashboard"
                   className="flex cursor-pointer items-center"
                 >
                   <CreditCard className="mr-2 h-4 w-4" />
@@ -142,7 +142,7 @@ export default function DashboardHeader({
 
               <DropdownMenuItem>
                 <Link
-                  href="/security"
+                  href="/dashboard"
                   className="flex cursor-pointer items-center"
                 >
                   <Shield className="mr-2 h-4 w-4" />

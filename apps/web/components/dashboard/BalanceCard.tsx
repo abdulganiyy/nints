@@ -136,20 +136,20 @@ export default function BalanceCard() {
         {/* Actions */}
 
         <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3">
-          <ActionButton
+          {/* <ActionButton
             href="/wallet/fund"
             icon={<ArrowDownLeft className="h-5 w-5" />}
             title="Fund"
-          />
+          /> */}
 
           <ActionButton
-            href="/transfer"
+            href="/dashboard"
             icon={<ArrowUpRight className="h-5 w-5" />}
             title="Transfer"
           />
 
           <ActionButton
-            href="/withdraw"
+            href="/dashboard"
             icon={<Landmark className="h-5 w-5" />}
             title="Withdraw"
           />

@@ -51,18 +51,18 @@ const actions: Action[] = [
     href: "/electricity",
     icon: Cable,
   },
-  {
-    title: "Loan",
-    description: "Borrow funds",
-    href: "/loan",
-    icon: CreditCard,
-  },
-  {
-    title: "More",
-    description: "All services",
-    href: "/services",
-    icon: MoreHorizontal,
-  },
+  // {
+  //   title: "Loan",
+  //   description: "Borrow funds",
+  //   href: "/loan",
+  //   icon: CreditCard,
+  // },
+  // {
+  //   title: "More",
+  //   description: "All services",
+  //   href: "/services",
+  //   icon: MoreHorizontal,
+  // },
 ];
 
 export default function QuickActions() {
