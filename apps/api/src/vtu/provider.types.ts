@@ -38,9 +38,9 @@ export interface ElectricityRequest {
   meter: string;
   amount: string;
   plan: string;
-  type: 'PREPAID' | 'POSTPAID';
+  type: 'prepaid' | 'postpaid';
   reference?: string;
-  mobile_number: string;
+  phone: string;
 }
 export interface ElectricityResponse {
   success: boolean;

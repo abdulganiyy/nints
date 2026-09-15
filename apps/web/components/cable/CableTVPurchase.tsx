@@ -56,7 +56,6 @@ export default function CableTVPurchase({
     },
   });
 
-  const iucNumber = watch("iucNumber");
   const selectedProvider = watch("provider");
 
   const [selectedPlan, setSelectedPlan] = useState<CablePlan | null>(null);
@@ -140,10 +139,10 @@ export default function CableTVPurchase({
 
     try {
       const response = await purchaseMutation.mutateAsync({
-        provider: selectedPlan!.provider,
-        iucNumber: formValues.iucNumber,
+        identifier: selectedPlan!.provider,
+        iuc: formValues.iucNumber,
         amount: String(formValues.amount),
-        planCode: formValues.planCode,
+        plan: formValues.planCode,
       });
 
       setConfirmationOpen(false);
@@ -151,17 +150,17 @@ export default function CableTVPurchase({
       if (response.success) {
         setResult({
           status: "SUCCESS",
-          title: "Data Purchase Successful",
-          message: "Data has been sent successfully.",
+          title: "TV Subscription Purchase Successful",
+          message: "TV Subscription has been sent successfully.",
           reference: response.reference,
           amount: String(response.amount ?? formValues.amount),
           details: [
             {
-              label: "Network",
+              label: "Provider",
               value: response.provider ?? formValues.provider,
             },
             {
-              label: "Phone Number",
+              label: "Smart Card Number",
               value: response.iucNumber ?? formValues.iucNumber,
             },
             {
@@ -178,16 +177,18 @@ export default function CableTVPurchase({
 
       setResult({
         status: "FAILED",
-        title: "Data Purchase Failed",
-        message: response.message ?? "We couldn't complete your data purchase.",
+        title: "TV Subscription Purchase Failed",
+        message:
+          response.message ??
+          "We couldn't complete your TV subscription purchase.",
         amount: String(response.amount ?? formValues.amount),
         details: [
           {
-            label: "Network",
+            label: "Provider",
             value: response.provider ?? formValues.provider,
           },
           {
-            label: "Phone Number",
+            label: "Smart Card Number",
             value: response.iucNumber ?? formValues.iucNumber,
           },
           {
@@ -203,19 +204,19 @@ export default function CableTVPurchase({
 
       setResult({
         status: "FAILED",
-        title: "Data Purchase Failed",
+        title: "TV Subscription Purchase Failed",
         message:
           error?.response?.data?.message ??
           error?.message ??
-          "We couldn't complete your data purchase.",
+          "We couldn't complete your TV subscription purchase.",
         amount: String(formValues.amount),
         details: [
           {
-            label: "Network",
+            label: "Provider",
             value: formValues.provider,
           },
           {
-            label: "Phone Number",
+            label: "Smart Card Number",
             value: formValues.iucNumber,
           },
           {
@@ -290,7 +291,7 @@ export default function CableTVPurchase({
               htmlFor="iucNumber"
               className="mb-2 block text-sm font-medium"
             >
-              IUC Number
+              Smart Card Number
             </label>
 
             <Input
@@ -419,12 +420,12 @@ export default function CableTVPurchase({
               value: formValues.planCode,
             },
             {
-              label: "Phone Number",
+              label: "Smart Card Number",
               value: formValues.iucNumber,
             },
             {
               label: "Amount",
-              value: Number(formValues.amount).toLocaleString(),
+              value: Number(formValues.amount).toString(),
             },
           ]}
           onCancel={handleConfirmationClose}

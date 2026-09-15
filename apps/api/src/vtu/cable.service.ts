@@ -22,9 +22,8 @@ export class CableService {
     identifier: string;
     amount?: string;
     iuc: string;
-    phone: string;
   }) {
-    const { userId, plan, identifier, phone, iuc, amount } = params;
+    const { userId, plan, identifier, iuc, amount } = params;
 
     const reference = `CAB-${randomUUID()}`;
     const purchaseAmount = new Prisma.Decimal(amount);
@@ -69,6 +68,7 @@ export class CableService {
         },
         include: {
           account: true,
+          user: true,
         },
       });
 
@@ -201,6 +201,7 @@ export class CableService {
         bankBalanceAfter,
         bankAccount,
         revenueAccount,
+        user: wallet.user,
       };
     });
 
@@ -214,8 +215,8 @@ export class CableService {
     try {
       providerResponse = await this.vtuProvider.rechargeCableTV({
         plan,
-        phone,
-        identifier,
+        phone: transaction.user.phone!,
+        identifier: identifier.toLowerCase(),
         iuc,
       });
     } catch (error) {
@@ -324,7 +325,7 @@ export class CableService {
             status: 'SUCCESS',
 
             metadata: {
-              phoneNumber: phone,
+              phoneNumber: transaction.user.phone!,
               identifier,
               provider: 'peyflex',
               providerReference: providerResponse.providerReference,
@@ -358,7 +359,7 @@ export class CableService {
       bankAccountId: transaction.bankAccount.id,
       walletId: transaction.walletId,
       amount: purchaseAmount,
-      phoneNumber: phone,
+      phoneNumber: transaction.user.phone!,
       identifier,
       providerReference: providerResponse.providerReference,
       message: providerResponse.message,

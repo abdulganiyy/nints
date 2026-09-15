@@ -47,10 +47,11 @@ export default function ElectricityPurchase({
   } = useForm<DataFormValues>({
     resolver: zodResolver(electricitySchema as any),
     defaultValues: {
-      meterNumber: "",
+      meter: "",
       provider: "",
       amount: 0,
-      planCode: "",
+      plan: "",
+      type: "PREPAID",
     },
   });
 
@@ -74,7 +75,7 @@ export default function ElectricityPurchase({
     isLoading: plansLoading,
     isError: plansError,
   } = useQuery<ElectricityPlan[]>({
-    queryKey: ["data-plans"],
+    queryKey: ["electricity-plans"],
     queryFn: async () => {
       const response = await axios.get("/api/vtu/electricityplan");
 
@@ -91,17 +92,13 @@ export default function ElectricityPurchase({
       shouldValidate: true,
     });
 
-    setValue("planCode", selectedPlan.plan_code, {
+    setValue("plan", selectedPlan.plan_code, {
       shouldValidate: true,
     });
-
-    // setValue("amount", selectedPlan.amount, {
-    //   shouldValidate: true,
-    // });
   }, [selectedPlan, setValue]);
 
   const onSubmit = (values: DataFormValues) => {
-    if (!values.planCode || !values.amount) {
+    if (!values.plan || !values.amount) {
       return;
     }
 
@@ -118,7 +115,53 @@ export default function ElectricityPurchase({
           },
           {
             label: "Meter Number",
-            value: values.meterNumber,
+            value: values.meter,
+          },
+        ],
+      });
+
+      setFailedOpen(true);
+
+      return;
+    }
+
+    if (values.amount > selectedPlan!.max_amount) {
+      setResult({
+        status: "FAILED",
+        title: `Adjust amount to continue`,
+        message: `You cant subscribe more than ₦${selectedPlan!.max_amount}`,
+        amount: values.amount.toString(),
+        details: [
+          {
+            label: "Provider",
+            value: values.provider,
+          },
+          {
+            label: "Meter Number",
+            value: values.meter,
+          },
+        ],
+      });
+
+      setFailedOpen(true);
+
+      return;
+    }
+
+    if (values.amount < selectedPlan!.min_amount) {
+      setResult({
+        status: "FAILED",
+        title: `Adjust amount to continue`,
+        message: `You cant subscribe below ₦${selectedPlan!.min_amount.toString()}`,
+        amount: values.amount.toString(),
+        details: [
+          {
+            label: "Provider",
+            value: values.provider,
+          },
+          {
+            label: "Meter Number",
+            value: values.meter,
           },
         ],
       });
@@ -140,9 +183,10 @@ export default function ElectricityPurchase({
     try {
       const response = await purchaseMutation.mutateAsync({
         provider: selectedPlan!.provider,
-        meterNumber: formValues.meterNumber,
+        meter: formValues.meter,
         amount: String(formValues.amount),
-        planCode: formValues.planCode,
+        plan: formValues.plan,
+        type: formValues.type.toLowerCase(),
       });
 
       setConfirmationOpen(false);
@@ -150,8 +194,8 @@ export default function ElectricityPurchase({
       if (response.success) {
         setResult({
           status: "SUCCESS",
-          title: "Data Purchase Successful",
-          message: "Data has been sent successfully.",
+          title: "Electricity Purchase Successful",
+          message: "Electricity has been sent successfully.",
           reference: response.reference,
           amount: String(response.amount ?? formValues.amount),
           details: [
@@ -161,11 +205,11 @@ export default function ElectricityPurchase({
             },
             {
               label: "Meter Number",
-              value: response.meterNumber ?? formValues.meterNumber,
+              value: response.meterNumber ?? formValues.meter,
             },
             {
               label: "Plan",
-              value: formValues.planCode,
+              value: formValues.plan,
             },
           ],
         });
@@ -177,8 +221,9 @@ export default function ElectricityPurchase({
 
       setResult({
         status: "FAILED",
-        title: "Data Purchase Failed",
-        message: response.message ?? "We couldn't complete your data purchase.",
+        title: "Electricity Purchase Failed",
+        message:
+          response.message ?? "We couldn't complete your electricity purchase.",
         amount: String(response.amount ?? formValues.amount),
         details: [
           {
@@ -187,11 +232,11 @@ export default function ElectricityPurchase({
           },
           {
             label: "Meter Number",
-            value: response.meterNumber ?? formValues.meterNumber,
+            value: response.meterNumber ?? formValues.meter,
           },
           {
             label: "Plan",
-            value: formValues.planCode,
+            value: formValues.plan,
           },
         ],
       });
@@ -202,11 +247,11 @@ export default function ElectricityPurchase({
 
       setResult({
         status: "FAILED",
-        title: "Data Purchase Failed",
+        title: "Electricity Purchase Failed",
         message:
           error?.response?.data?.message ??
           error?.message ??
-          "We couldn't complete your data purchase.",
+          "We couldn't complete your electricity purchase.",
         amount: String(formValues.amount),
         details: [
           {
@@ -215,11 +260,11 @@ export default function ElectricityPurchase({
           },
           {
             label: "Meter Number",
-            value: formValues.meterNumber,
+            value: formValues.meter,
           },
           {
             label: "Plan",
-            value: formValues.planCode,
+            value: formValues.plan,
           },
         ],
       });
@@ -243,10 +288,11 @@ export default function ElectricityPurchase({
     setSelectedPlan(null);
 
     reset({
-      meterNumber: "",
+      meter: "",
       provider: "",
       amount: 0,
-      planCode: "",
+      plan: "",
+      type: "PREPAID",
     });
   };
 
@@ -270,7 +316,6 @@ export default function ElectricityPurchase({
         Back
       </Link>
 
-      {JSON.stringify(watch())}
       <div className="mb-8 mt-4">
         <h1 className="text-3xl font-bold">Buy Electricity Subscription</h1>
 
@@ -286,23 +331,20 @@ export default function ElectricityPurchase({
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-6">
           <div>
-            <label
-              htmlFor="phoneNumber"
-              className="mb-2 block text-sm font-medium"
-            >
+            <label htmlFor="meter" className="mb-2 block text-sm font-medium">
               Meter Number
             </label>
 
             <Input
               id="meterNumber"
-              {...register("meterNumber")}
+              {...register("meter")}
               placeholder="31234567456"
               inputMode="numeric"
             />
 
-            {errors.meterNumber && (
+            {errors.meter && (
               <p className="mt-1 text-sm text-red-500">
-                {errors.meterNumber.message}
+                {errors.meter.message}
               </p>
             )}
           </div>
@@ -372,6 +414,49 @@ export default function ElectricityPurchase({
           )}
 
           <div>
+            <label htmlFor="type" className="mb-2 block text-sm font-medium">
+              Type
+            </label>
+
+            <Controller
+              name="type"
+              control={control}
+              render={({ field, fieldState }) => (
+                <>
+                  <Select
+                    value={field.value ?? "PREPAID"}
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                    }}
+                  >
+                    <SelectTrigger
+                      className="w-full"
+                      aria-invalid={fieldState.invalid}
+                    >
+                      <SelectValue placeholder="Select Type" />
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      <SelectItem value="PREPAID">PREPAID</SelectItem>
+                      <SelectItem value="POSTPAID">POSTPAID</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  {fieldState.error && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {fieldState.error.message}
+                    </p>
+                  )}
+                </>
+              )}
+            />
+
+            {errors.type && (
+              <p className="mt-1 text-sm text-red-500">{errors.type.message}</p>
+            )}
+          </div>
+
+          <div>
             <label htmlFor="amount" className="mb-2 block text-sm font-medium">
               Amount
             </label>
@@ -390,8 +475,8 @@ export default function ElectricityPurchase({
             )}
           </div>
 
-          {errors.planCode && (
-            <p className="text-sm text-red-500">{errors.planCode.message}</p>
+          {errors.plan && (
+            <p className="text-sm text-red-500">{errors.plan.message}</p>
           )}
 
           {errors.amount && (
@@ -415,7 +500,7 @@ export default function ElectricityPurchase({
       {formValues && (
         <TransactionConfirmationModal
           open={confirmationOpen}
-          title="Confirm Data Purchase"
+          title="Confirm Electricity Purchase"
           loading={purchaseMutation.isPending}
           details={[
             {
@@ -424,15 +509,15 @@ export default function ElectricityPurchase({
             },
             {
               label: "Plan",
-              value: formValues.planCode,
+              value: formValues.plan,
             },
             {
               label: "Meter Number",
-              value: formValues.meterNumber,
+              value: formValues.meter,
             },
             {
               label: "Amount",
-              value: Number(formValues.amount).toLocaleString(),
+              value: formValues.amount.toString(),
             },
           ]}
           onCancel={handleConfirmationClose}

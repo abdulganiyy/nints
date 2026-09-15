@@ -105,9 +105,18 @@ export class PeyflexClient {
   async rechargeElectricity(
     request: ElectricityRequest,
   ): Promise<ElectricityResponse | any> {
-    const response = await this.client.post('/electricity/subscribe/', request);
+    try {
+      const response = await this.client.post(
+        '/electricity/subscribe/',
+        request,
+      );
 
-    return response.data;
+      return response.data;
+    } catch (error: any) {
+      console.log(error.response.data);
+
+      throw new Error(error);
+    }
   }
 
   async verifyCableIUC(request: VerifyCableTvIUCRequest): Promise<any> {

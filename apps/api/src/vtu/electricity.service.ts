@@ -21,10 +21,16 @@ export class ElectricityService {
     identifier: string;
     amount: string;
     meter: string;
-    type: 'PREPAID' | 'POSTPAID';
-    phone: string;
+    type: 'prepaid' | 'postpaid';
   }) {
-    const { userId, phone, plan, identifier, type, meter, amount } = params;
+    const {
+      userId,
+      plan,
+      identifier = 'electricity',
+      type,
+      meter,
+      amount,
+    } = params;
 
     const reference = `ELE-${randomUUID()}`;
     const purchaseAmount = new Prisma.Decimal(amount);
@@ -69,6 +75,7 @@ export class ElectricityService {
         },
         include: {
           account: true,
+          user: true,
         },
       });
 
@@ -185,7 +192,7 @@ export class ElectricityService {
           currency: 'NGN',
 
           metadata: {
-            phoneNumber: phone,
+            phoneNumber: wallet.user.phone,
             identifier,
           },
         },
@@ -201,6 +208,7 @@ export class ElectricityService {
         bankBalanceAfter,
         bankAccount,
         revenueAccount,
+        user: wallet.user,
       };
     });
 
@@ -217,7 +225,7 @@ export class ElectricityService {
         amount: purchaseAmount,
         identifier,
         type,
-        mobile_number: phone,
+        phone: transaction.user.phone!,
         plan,
       });
     } catch (error) {
@@ -326,7 +334,7 @@ export class ElectricityService {
             status: 'SUCCESS',
 
             metadata: {
-              phoneNumber: phone,
+              phoneNumber: transaction.user.phone,
               identifier,
               provider: 'peyflex',
               providerReference: providerResponse.providerReference,
@@ -360,7 +368,7 @@ export class ElectricityService {
       bankAccountId: transaction.bankAccount.id,
       walletId: transaction.walletId,
       amount: purchaseAmount,
-      phoneNumber: phone,
+      phoneNumber: transaction.user.phone!,
       identifier,
       providerReference: providerResponse.providerReference,
       message: providerResponse.message,

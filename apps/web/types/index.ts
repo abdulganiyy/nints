@@ -99,10 +99,10 @@ export interface DataPurchaseResponse {
 }
 
 export interface CablePurchasePayload {
-  provider: string;
-  iucNumber: string;
+  identifier: string;
+  iuc: string;
   amount?: string;
-  planCode: string;
+  plan: string;
 }
 
 export interface CablePurchaseResponse {
@@ -117,9 +117,10 @@ export interface CablePurchaseResponse {
 
 export interface ElectricityPurchasePayload {
   provider: string;
-  meterNumber: string;
-  amount?: string;
-  planCode: string;
+  meter: string;
+  amount: string;
+  plan: string;
+  type: string;
 }
 
 export interface ElectricityPurchaseResponse {

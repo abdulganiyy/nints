@@ -46,10 +46,13 @@ export const electricitySchema = z.object({
   provider: z.string({
     message: "Please select a provider",
   }),
-  meterNumber: z.string().min(1, { message: "IUC number is required." }),
-  planCode: z.coerce.string().min(1, { message: "Plan Code is required." }),
+  type: z.enum(["PREPAID", "POSTPAID"], {
+    message: "Please select a provider",
+  }),
+  meter: z.string().min(1, { message: "IUC number is required." }),
+  plan: z.coerce.string().min(1, { message: "Plan Code is required." }),
   amount: z.coerce
     .number()
-    .min(50, "Minimum amount is ₦50")
-    .max(100000, "Maximum amount is ₦100,000"),
+    .min(100, "Minimum amount is ₦100")
+    .max(1000000, "Maximum amount is ₦1,000,000"),
 });

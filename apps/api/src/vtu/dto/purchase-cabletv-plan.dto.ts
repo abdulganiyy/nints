@@ -19,13 +19,6 @@ export class PurchaseCableTVPlanDto {
 
   @IsString()
   @IsNotEmpty()
-  @Matches(/^0[7-9][0-9]{9}$/, {
-    message: 'Invalid Nigerian phone number',
-  })
-  phone!: string;
-
-  @IsString()
-  @IsNotEmpty()
   plan!: string;
 
   @IsString()
