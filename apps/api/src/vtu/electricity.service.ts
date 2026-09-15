@@ -16,7 +16,7 @@ export class ElectricityService {
   ) {}
 
   async rechargeElectricity(params: {
-    walletId: string;
+    userId: string;
     plan: string;
     identifier: string;
     amount: string;
@@ -24,7 +24,7 @@ export class ElectricityService {
     type: 'PREPAID' | 'POSTPAID';
     phone: string;
   }) {
-    const { walletId, phone, plan, identifier, type, meter, amount } = params;
+    const { userId, phone, plan, identifier, type, meter, amount } = params;
 
     const reference = `ELE-${randomUUID()}`;
     const purchaseAmount = new Prisma.Decimal(amount);
@@ -65,7 +65,7 @@ export class ElectricityService {
 
       const wallet = await tx.wallet.findUnique({
         where: {
-          id: walletId,
+          userId,
         },
         include: {
           account: true,
@@ -231,13 +231,13 @@ export class ElectricityService {
        */
       await this.handleProviderError({
         transactionId: transaction.transaction.id,
-        walletId,
+        walletId: transaction.walletId,
         accountId: transaction.accountId,
         amount: purchaseAmount,
       });
 
       throw new InternalServerErrorException(
-        'Unable to complete airtime purchase',
+        'Unable to complete electricity subscription purchase',
       );
     }
 

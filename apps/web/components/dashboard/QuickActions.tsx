@@ -13,6 +13,7 @@ import {
   Globe,
   Gift,
   MoreHorizontal,
+  Cable,
 } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
@@ -26,12 +27,6 @@ interface Action {
 }
 
 const actions: Action[] = [
-  // {
-  //   title: "Transfer",
-  //   description: "Send money",
-  //   href: "/transfer",
-  //   icon: ArrowLeftRight,
-  // },
   {
     title: "Airtime",
     description: "Recharge phone",
@@ -45,49 +40,23 @@ const actions: Action[] = [
     icon: Wifi,
   },
   {
-    title: "Bills",
+    title: "Cable TV",
     description: "Utilities & TV",
-    href: "/bills",
+    href: "/cable",
     icon: Receipt,
   },
-  // {
-  //   title: "Savings",
-  //   description: "Grow savings",
-  //   href: "/savings",
-  //   icon: PiggyBank,
-  // },
+  {
+    title: "Electricity Bill",
+    description: "Electricity Bill",
+    href: "/electricity",
+    icon: Cable,
+  },
   {
     title: "Loan",
     description: "Borrow funds",
     href: "/loan",
     icon: CreditCard,
   },
-  // {
-  //   title: "Bank",
-  //   description: "Withdraw",
-  //   href: "/withdraw",
-  //   icon: Landmark,
-  // },
-  // {
-  //   title: "QR Pay",
-  //   description: "Scan & Pay",
-  //   href: "/qr-pay",
-  //   icon: ScanLine,
-  //   comingSoon: true,
-  // },
-  // {
-  //   title: "Exchange",
-  //   description: "NGN → AED",
-  //   href: "/exchange",
-  //   icon: Globe,
-  //   comingSoon: true,
-  // },
-  // {
-  //   title: "Rewards",
-  //   description: "Cashback",
-  //   href: "/rewards",
-  //   icon: Gift,
-  // },
   {
     title: "More",
     description: "All services",

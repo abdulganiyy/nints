@@ -17,14 +17,14 @@ export class CableService {
   ) {}
 
   async rechargeCableTV(params: {
-    walletId: string;
+    userId: string;
     plan: string;
     identifier: string;
     amount?: string;
     iuc: string;
     phone: string;
   }) {
-    const { walletId, plan, identifier, phone, iuc, amount } = params;
+    const { userId, plan, identifier, phone, iuc, amount } = params;
 
     const reference = `CAB-${randomUUID()}`;
     const purchaseAmount = new Prisma.Decimal(amount);
@@ -65,7 +65,7 @@ export class CableService {
 
       const wallet = await tx.wallet.findUnique({
         where: {
-          id: walletId,
+          userId,
         },
         include: {
           account: true,
@@ -229,13 +229,13 @@ export class CableService {
        */
       await this.handleProviderError({
         transactionId: transaction.transaction.id,
-        walletId,
+        walletId: transaction.walletId,
         accountId: transaction.accountId,
         amount: purchaseAmount,
       });
 
       throw new InternalServerErrorException(
-        'Unable to complete airtime purchase',
+        'Unable to complete cable tv subscription purchase',
       );
     }
 

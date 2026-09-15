@@ -26,6 +26,7 @@ const NETWORK_PREFIXES: Record<string, NigerianNetwork> = {
   "0916": NigerianNetwork.MTN,
   "0703": NigerianNetwork.MTN,
   "0704": NigerianNetwork.MTN,
+  "0702": NigerianNetwork.MTN,
 
   // Airtel
   "0802": NigerianNetwork.AIRTEL,
@@ -91,7 +92,7 @@ export type DataPlan = {
 
 export type Network = "MTN" | "AIRTEL" | "GLO" | "9MOBILE";
 
-const NETWORK_MAP: Record<string, Network> = {
+export const NETWORK_MAP: Record<string, Network> = {
   mtn_gifting_data: "MTN",
   mtn_data_share: "MTN",
 
@@ -136,3 +137,37 @@ export function getMtnCategory(plan: DataPlan) {
       return null;
   }
 }
+
+export type CableProvider = "Startimes" | "DSTV" | "GOTV";
+
+export type CablePlan = {
+  plan_code: string;
+  description: string;
+  display: string;
+  amount: number;
+  provider: CableProvider;
+};
+
+export function groupCablePlansByProvider(plans: CablePlan[]) {
+  return plans.reduce<Record<CableProvider, CablePlan[]>>(
+    (groups, plan) => {
+      groups[plan.provider].push(plan);
+
+      return groups;
+    },
+    {
+      Startimes: [],
+      GOTV: [],
+      DSTV: [],
+    },
+  );
+}
+
+export type ElectricityPlan = {
+  plan_code: string;
+  plan_name: string;
+  plan_id: string;
+  min_amount: number;
+  max_amount: number;
+  provider: CableProvider;
+};

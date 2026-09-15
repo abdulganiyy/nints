@@ -16,13 +16,13 @@ export class DataService {
   ) {}
 
   async purchaseData(params: {
-    walletId: string;
+    userId: string;
     phoneNumber: string;
     network: string;
     planCode: string;
     amount: string;
   }) {
-    const { walletId, phoneNumber, network, planCode, amount } = params;
+    const { userId, phoneNumber, network, planCode, amount } = params;
 
     const reference = `DATA-${randomUUID()}`;
 
@@ -65,7 +65,7 @@ export class DataService {
 
       const wallet = await tx.wallet.findUnique({
         where: {
-          id: walletId,
+          userId,
         },
         include: {
           account: true,

@@ -10,9 +10,9 @@ import {
 } from 'class-validator';
 
 export class PurchaseCableTVPlanDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  walletId!: string;
+  userId?: string;
 
   @IsString()
   identifier!: string;

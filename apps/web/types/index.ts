@@ -97,3 +97,37 @@ export interface DataPurchaseResponse {
   phoneNumber: string;
   network: AirtimeNetwork;
 }
+
+export interface CablePurchasePayload {
+  provider: string;
+  iucNumber: string;
+  amount?: string;
+  planCode: string;
+}
+
+export interface CablePurchaseResponse {
+  success: boolean;
+  status: "SUCCESS" | "FAILED";
+  reference: string;
+  message: string;
+  amount: number;
+  iucNumber: string;
+  provider: string;
+}
+
+export interface ElectricityPurchasePayload {
+  provider: string;
+  meterNumber: string;
+  amount?: string;
+  planCode: string;
+}
+
+export interface ElectricityPurchaseResponse {
+  success: boolean;
+  status: "SUCCESS" | "FAILED";
+  reference: string;
+  message: string;
+  amount: number;
+  meterNumber: string;
+  provider: string;
+}

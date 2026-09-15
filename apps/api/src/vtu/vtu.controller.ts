@@ -33,8 +33,11 @@ export class VtuController {
   }
 
   @Post('data')
-  purchaseData(@Body() dto: PurchaseDataDto) {
-    return this.dataService.purchaseData(dto);
+  purchaseData(
+    @GetUser('userId') userId: string,
+    @Body() dto: PurchaseDataDto,
+  ) {
+    return this.dataService.purchaseData({ ...dto, userId });
   }
 
   @Get('meter/verify')
@@ -48,13 +51,19 @@ export class VtuController {
   }
 
   @Post('cable')
-  purchaseCableTV(@Body() dto: PurchaseCableTVPlanDto) {
-    return this.cableService.rechargeCableTV(dto);
+  purchaseCableTV(
+    @GetUser('userId') userId: string,
+    @Body() dto: PurchaseCableTVPlanDto,
+  ) {
+    return this.cableService.rechargeCableTV({ ...dto, userId });
   }
 
   @Post('electricity')
-  purchaseElectricity(@Body() dto: PurchaseElectricityDto) {
-    return this.electricityService.rechargeElectricity(dto);
+  purchaseElectricity(
+    @GetUser('userId') userId: string,
+    @Body() dto: PurchaseElectricityDto,
+  ) {
+    return this.electricityService.rechargeElectricity({ ...dto, userId });
   }
 
   @Get('dataplan')

@@ -3,15 +3,16 @@ import {
   IsNotEmpty,
   IsNumber,
   IsNumberString,
+  IsOptional,
   IsString,
   Matches,
   Min,
 } from 'class-validator';
 
 export class PurchaseElectricityDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  walletId!: string;
+  userId?: string;
 
   @IsString()
   identifier!: string;

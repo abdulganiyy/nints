@@ -2,75 +2,65 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { groupDataPlansByNetwork, DataPlan, cn } from "@/lib/utils";
+import { cn, CablePlan, groupCablePlansByProvider } from "@/lib/utils";
 import { Check } from "lucide-react";
 
 type Props = {
-  plans: DataPlan[];
-  network: string;
-  onSelectNetwork: (network: string) => void;
-  selectedPlan: DataPlan | null;
-  onSelectPlan: (plan: DataPlan) => void;
+  plans: CablePlan[];
+  provider: string;
+  onSelectProvider: (provider: string) => void;
+  selectedPlan: CablePlan | null;
+  onSelectPlan: (plan: CablePlan) => void;
 };
 
-export default function DataPlans({
+export default function CablePlans({
   plans,
-  network = "MTN",
-  onSelectNetwork,
+  provider = "Startimes",
+  onSelectProvider,
   selectedPlan,
   onSelectPlan,
 }: Props) {
-  const groupedPlans = groupDataPlansByNetwork(plans);
+  const groupedPlans = groupCablePlansByProvider(plans);
 
   return (
     <Tabs
-      defaultValue="MTN"
-      value={network.toUpperCase()}
+      defaultValue="Startimes"
+      value={provider}
       onValueChange={(value) => {
-        console.log("Tabs value:", value);
-        onSelectNetwork(value);
+        console.log(value);
+        onSelectProvider(value);
       }}
       className="w-full"
     >
       <TabsList className="grid w-full grid-cols-4">
-        <TabsTrigger value="MTN">MTN</TabsTrigger>
+        <TabsTrigger value="Startimes">Startimes</TabsTrigger>
 
-        <TabsTrigger value="AIRTEL">Airtel</TabsTrigger>
+        <TabsTrigger value="GOTV">GOTV</TabsTrigger>
 
-        <TabsTrigger value="GLO">Glo</TabsTrigger>
-
-        <TabsTrigger value="9MOBILE">9mobile</TabsTrigger>
+        <TabsTrigger value="DSTV">DSTV</TabsTrigger>
       </TabsList>
 
-      <TabsContent value="MTN">
+      <TabsContent value="Startimes">
         <PlanList
           selectedPlan={selectedPlan}
           onSelectPlan={onSelectPlan}
-          plans={groupedPlans.MTN}
+          plans={groupedPlans.Startimes}
         />
       </TabsContent>
 
-      <TabsContent value="AIRTEL">
+      <TabsContent value="GOTV">
         <PlanList
           selectedPlan={selectedPlan}
           onSelectPlan={onSelectPlan}
-          plans={groupedPlans.AIRTEL}
+          plans={groupedPlans.GOTV}
         />
       </TabsContent>
 
-      <TabsContent value="GLO">
+      <TabsContent value="DSTV">
         <PlanList
           selectedPlan={selectedPlan}
           onSelectPlan={onSelectPlan}
-          plans={groupedPlans.GLO}
-        />
-      </TabsContent>
-
-      <TabsContent value="9MOBILE">
-        <PlanList
-          selectedPlan={selectedPlan}
-          onSelectPlan={onSelectPlan}
-          plans={groupedPlans["9MOBILE"]}
+          plans={groupedPlans.DSTV}
         />
       </TabsContent>
     </Tabs>
@@ -82,10 +72,12 @@ function PlanList({
   selectedPlan,
   onSelectPlan,
 }: {
-  plans: DataPlan[];
-  selectedPlan: DataPlan | null;
-  onSelectPlan: (plan: DataPlan) => void;
+  plans: CablePlan[];
+  selectedPlan: CablePlan | null;
+  onSelectPlan: (plan: CablePlan) => void;
 }) {
+  console.log(plans);
+
   if (plans.length === 0) {
     return (
       <p className="py-8 text-center text-muted-foreground">
@@ -100,7 +92,7 @@ function PlanList({
         const selected = selectedPlan?.plan_code === plan.plan_code;
         return (
           <button
-            key={plan.label}
+            key={plan.description}
             type="button"
             // className="rounded-lg border p-4 text-left hover:border-primary"
             onClick={() => onSelectPlan(plan)}
@@ -121,7 +113,7 @@ function PlanList({
               </div>
             )}
 
-            <p className="font-semibold">{plan.label}</p>
+            <p className="font-semibold">{plan.description}</p>
 
             <p className="mt-2 text-lg font-bold">
               ₦{plan.amount.toLocaleString()}

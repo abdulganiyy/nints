@@ -9,17 +9,13 @@ import axios from "axios";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
-import { detectNetwork, NigerianNetwork, NETWORK_MAP } from "@/lib/utils";
-import { dataSchema } from "@/schema";
+import { ElectricityPlan } from "@/lib/utils";
+import { electricitySchema } from "@/schema";
 import { TransactionResult } from "@/types";
-
-import { usePurchaseData } from "@/hooks/usePurchaseData";
 
 import TransactionConfirmationModal from "@/components/transaction/TransactionConfirmationModal";
 import TransactionSuccessModal from "@/components/transaction/TransactionSuccessModal";
 import TransactionFailedModal from "@/components/transaction/TransactionFailedModal";
-
-import DataPlans from "./DataPlans";
 
 import { Input } from "../ui/input";
 import {
@@ -30,17 +26,11 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Button } from "../ui/button";
+import { usePurchaseElectricity } from "@/hooks/usePurchaseElectricity";
 
-type DataFormValues = z.infer<typeof dataSchema>;
+type DataFormValues = z.infer<typeof electricitySchema>;
 
-type Plan = {
-  plan_code: string;
-  label: string;
-  network: string;
-  amount: number;
-};
-
-export default function DataPurchase({
+export default function ElectricityPurchase({
   walletBalance,
 }: {
   walletBalance: number;
@@ -55,19 +45,20 @@ export default function DataPurchase({
     control,
     formState: { errors },
   } = useForm<DataFormValues>({
-    resolver: zodResolver(dataSchema as any),
+    resolver: zodResolver(electricitySchema as any),
     defaultValues: {
-      phoneNumber: "",
-      network: "",
+      meterNumber: "",
+      provider: "",
       amount: 0,
       planCode: "",
     },
   });
 
-  const phoneNumber = watch("phoneNumber");
-  const selectedNetwork = watch("network");
+  const selectedProvider = watch("provider");
 
-  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<ElectricityPlan | null>(
+    null,
+  );
   const [formValues, setFormValues] = useState<DataFormValues | null>(null);
 
   const [confirmationOpen, setConfirmationOpen] = useState(false);
@@ -76,49 +67,27 @@ export default function DataPurchase({
 
   const [result, setResult] = useState<TransactionResult | null>(null);
 
-  const purchaseMutation = usePurchaseData();
+  const purchaseMutation = usePurchaseElectricity();
 
   const {
     data: plans = [],
     isLoading: plansLoading,
     isError: plansError,
-  } = useQuery<Plan[]>({
+  } = useQuery<ElectricityPlan[]>({
     queryKey: ["data-plans"],
     queryFn: async () => {
-      const response = await axios.get("/api/vtu/dataplan");
+      const response = await axios.get("/api/vtu/electricityplan");
 
       return Array.isArray(response.data) ? response.data : [];
     },
   });
 
   useEffect(() => {
-    if (!phoneNumber) {
-      return;
-    }
-
-    const detectedNetwork = detectNetwork(phoneNumber);
-
-    if (!detectedNetwork) {
-      return;
-    }
-
-    setValue("network", detectedNetwork, {
-      shouldValidate: true,
-    });
-  }, [phoneNumber, setValue]);
-
-  useEffect(() => {
     if (!selectedPlan) {
       return;
     }
 
-    const detectedNetwork = NETWORK_MAP[selectedPlan.network];
-
-    if (!detectedNetwork) {
-      return;
-    }
-
-    setValue("network", detectedNetwork, {
+    setValue("provider", selectedPlan.plan_name, {
       shouldValidate: true,
     });
 
@@ -126,9 +95,9 @@ export default function DataPurchase({
       shouldValidate: true,
     });
 
-    setValue("amount", selectedPlan.amount, {
-      shouldValidate: true,
-    });
+    // setValue("amount", selectedPlan.amount, {
+    //   shouldValidate: true,
+    // });
   }, [selectedPlan, setValue]);
 
   const onSubmit = (values: DataFormValues) => {
@@ -144,12 +113,12 @@ export default function DataPurchase({
         amount: values.amount.toString(),
         details: [
           {
-            label: "Network",
-            value: values.network,
+            label: "Provider",
+            value: values.provider,
           },
           {
-            label: "Phone Number",
-            value: values.phoneNumber,
+            label: "Meter Number",
+            value: values.meterNumber,
           },
         ],
       });
@@ -170,8 +139,8 @@ export default function DataPurchase({
 
     try {
       const response = await purchaseMutation.mutateAsync({
-        network: selectedPlan!.network,
-        phoneNumber: formValues.phoneNumber,
+        provider: selectedPlan!.provider,
+        meterNumber: formValues.meterNumber,
         amount: String(formValues.amount),
         planCode: formValues.planCode,
       });
@@ -187,12 +156,12 @@ export default function DataPurchase({
           amount: String(response.amount ?? formValues.amount),
           details: [
             {
-              label: "Network",
-              value: response.network ?? formValues.network,
+              label: "Provider",
+              value: response.provider ?? formValues.provider,
             },
             {
-              label: "Phone Number",
-              value: response.phoneNumber ?? formValues.phoneNumber,
+              label: "Meter Number",
+              value: response.meterNumber ?? formValues.meterNumber,
             },
             {
               label: "Plan",
@@ -213,12 +182,12 @@ export default function DataPurchase({
         amount: String(response.amount ?? formValues.amount),
         details: [
           {
-            label: "Network",
-            value: response.network ?? formValues.network,
+            label: "Provider",
+            value: response.provider ?? formValues.provider,
           },
           {
-            label: "Phone Number",
-            value: response.phoneNumber ?? formValues.phoneNumber,
+            label: "Meter Number",
+            value: response.meterNumber ?? formValues.meterNumber,
           },
           {
             label: "Plan",
@@ -241,12 +210,12 @@ export default function DataPurchase({
         amount: String(formValues.amount),
         details: [
           {
-            label: "Network",
-            value: formValues.network,
+            label: "Provider",
+            value: formValues.provider,
           },
           {
-            label: "Phone Number",
-            value: formValues.phoneNumber,
+            label: "Meter Number",
+            value: formValues.meterNumber,
           },
           {
             label: "Plan",
@@ -274,8 +243,8 @@ export default function DataPurchase({
     setSelectedPlan(null);
 
     reset({
-      phoneNumber: "",
-      network: "",
+      meterNumber: "",
+      provider: "",
       amount: 0,
       planCode: "",
     });
@@ -301,11 +270,12 @@ export default function DataPurchase({
         Back
       </Link>
 
+      {JSON.stringify(watch())}
       <div className="mb-8 mt-4">
-        <h1 className="text-3xl font-bold">Buy Data</h1>
+        <h1 className="text-3xl font-bold">Buy Electricity Subscription</h1>
 
         <p className="mt-2 text-muted-foreground">
-          Purchase data instantly from your wallet.
+          Purchase electricity subscription instantly from your wallet.
         </p>
 
         <p className="mt-2 text-sm text-muted-foreground">
@@ -320,28 +290,39 @@ export default function DataPurchase({
               htmlFor="phoneNumber"
               className="mb-2 block text-sm font-medium"
             >
-              Phone Number
+              Meter Number
             </label>
 
             <Input
-              id="phoneNumber"
-              {...register("phoneNumber")}
-              placeholder="08031234567"
+              id="meterNumber"
+              {...register("meterNumber")}
+              placeholder="31234567456"
               inputMode="numeric"
             />
 
-            {errors.phoneNumber && (
+            {errors.meterNumber && (
               <p className="mt-1 text-sm text-red-500">
-                {errors.phoneNumber.message}
+                {errors.meterNumber.message}
               </p>
             )}
           </div>
 
-          <div>
-            <label className="mb-2 block text-sm font-medium">Network</label>
+          {/* Plans */}
+          {plansLoading && (
+            <div className="rounded-lg border p-4 text-sm text-muted-foreground">
+              Loading electricity plans...
+            </div>
+          )}
 
+          {plansError && (
+            <div className="rounded-lg border border-red-200 p-4 text-sm text-red-500">
+              Unable to load electricity plans. Please refresh and try again.
+            </div>
+          )}
+
+          {!plansLoading && !plansError && plans.length > 0 && (
             <Controller
-              name="network"
+              name="provider"
               control={control}
               render={({ field, fieldState }) => (
                 <>
@@ -350,32 +331,33 @@ export default function DataPurchase({
                     onValueChange={(value) => {
                       field.onChange(value);
 
-                      if (selectedPlan && selectedPlan.network !== value) {
-                        setSelectedPlan(null);
-                        setValue("planCode", "");
-                        setValue("amount", 0);
-                      }
+                      const selected = plans.find(
+                        (plan: ElectricityPlan) => plan.plan_name == value,
+                      );
+
+                      if (!selected) return;
+
+                      setSelectedPlan(selected);
                     }}
                   >
                     <SelectTrigger
                       className="w-full"
                       aria-invalid={fieldState.invalid}
                     >
-                      <SelectValue placeholder="Select Network" />
+                      <SelectValue placeholder="Select Provider" />
                     </SelectTrigger>
 
                     <SelectContent>
-                      <SelectItem value={NigerianNetwork.MTN}>MTN</SelectItem>
-
-                      <SelectItem value={NigerianNetwork.AIRTEL}>
-                        AIRTEL
-                      </SelectItem>
-
-                      <SelectItem value={NigerianNetwork.GLO}>GLO</SelectItem>
-
-                      <SelectItem value={NigerianNetwork.NINEMOBILE}>
-                        9MOBILE
-                      </SelectItem>
+                      {plans.map((plan) => {
+                        return (
+                          <SelectItem
+                            key={plan.plan_name}
+                            value={plan.plan_name}
+                          >
+                            {plan.plan_name}
+                          </SelectItem>
+                        );
+                      })}
                     </SelectContent>
                   </Select>
 
@@ -387,36 +369,26 @@ export default function DataPurchase({
                 </>
               )}
             />
-          </div>
-
-          {/* Plans */}
-          {plansLoading && (
-            <div className="rounded-lg border p-4 text-sm text-muted-foreground">
-              Loading data plans...
-            </div>
           )}
 
-          {plansError && (
-            <div className="rounded-lg border border-red-200 p-4 text-sm text-red-500">
-              Unable to load data plans. Please refresh and try again.
-            </div>
-          )}
+          <div>
+            <label htmlFor="amount" className="mb-2 block text-sm font-medium">
+              Amount
+            </label>
 
-          {!plansLoading && !plansError && plans.length > 0 && (
-            <DataPlans
-              network={selectedNetwork}
-              plans={plans}
-              selectedPlan={selectedPlan}
-              onSelectNetwork={(value: string) => {
-                setValue("network", value, {
-                  shouldValidate: true,
-                });
-              }}
-              onSelectPlan={(plan: Plan) => {
-                setSelectedPlan(plan);
-              }}
+            <Input
+              id="amount"
+              {...register("amount")}
+              placeholder=""
+              inputMode="numeric"
             />
-          )}
+
+            {errors.amount && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.amount.message}
+              </p>
+            )}
+          </div>
 
           {errors.planCode && (
             <p className="text-sm text-red-500">{errors.planCode.message}</p>
@@ -431,7 +403,7 @@ export default function DataPurchase({
             className="w-full"
             type="submit"
             disabled={
-              purchaseMutation.isPending || !selectedPlan || !selectedNetwork
+              purchaseMutation.isPending || !selectedPlan || !selectedProvider
             }
           >
             Continue
@@ -447,16 +419,16 @@ export default function DataPurchase({
           loading={purchaseMutation.isPending}
           details={[
             {
-              label: "Network",
-              value: formValues.network,
+              label: "Provider",
+              value: formValues.provider,
             },
             {
               label: "Plan",
               value: formValues.planCode,
             },
             {
-              label: "Phone Number",
-              value: formValues.phoneNumber,
+              label: "Meter Number",
+              value: formValues.meterNumber,
             },
             {
               label: "Amount",
