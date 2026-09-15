@@ -3,7 +3,6 @@ import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { TransactionStatus } from '../../generated/prisma';
 import { Prisma } from '../../generated/prisma';
 import { randomUUID } from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
