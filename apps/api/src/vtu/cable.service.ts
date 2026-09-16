@@ -25,7 +25,7 @@ export class CableService {
     const { userId, plan, identifier, iuc, amount } = params;
 
     const reference = `CAB-${randomUUID()}`;
-    const purchaseAmount = new Prisma.Decimal(amount);
+    const purchaseAmount = new Prisma.Decimal(amount!);
 
     /**
      * STEP 1
