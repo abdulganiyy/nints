@@ -290,7 +290,7 @@ export class CableService {
 
               direction: 'CREDIT',
 
-              amount,
+              amount: purchaseAmount.toString(),
 
               balanceBefore: transaction.bankBalanceBefore,
 
