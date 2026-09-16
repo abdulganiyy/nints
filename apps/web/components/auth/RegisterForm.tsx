@@ -55,7 +55,7 @@ export default function RegisterForm() {
   }
 
   return (
-    <div className="rounded-3xl bg-white p-4 shadow-xl min-w-xl">
+    <div className="rounded-3xl bg-white p-4 shadow-xl w-full md:min-w-xl">
       <FormBuilder
         title="Create Account"
         description="  Start using your digital wallet today."

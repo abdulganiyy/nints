@@ -35,7 +35,7 @@ const LoginForm = () => {
     mutation.mutateAsync(values);
   }
   return (
-    <div className="rounded-3xl bg-white p-4 shadow-x min-w-xl">
+    <div className="rounded-3xl bg-white p-4 shadow-x w-full md:min-w-xl">
       <FormBuilder
         title="Sign in to your Account"
         description="Sign in and use your digital wallet today."

@@ -212,7 +212,7 @@ export class AirtimeService {
     try {
       providerResponse = await this.vtuProvider.purchaseAirtime({
         mobile_number: phoneNumber,
-        amount: purchaseAmount,
+        amount: purchaseAmount.toString(),
         network,
         reference,
       });

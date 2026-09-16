@@ -222,7 +222,7 @@ export class ElectricityService {
     try {
       providerResponse = await this.vtuProvider.rechargeElectricity({
         meter,
-        amount: purchaseAmount,
+        amount: purchaseAmount.toString(),
         identifier,
         type,
         phone: transaction.user.phone!,
