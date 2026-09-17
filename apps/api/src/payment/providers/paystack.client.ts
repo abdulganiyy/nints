@@ -32,7 +32,7 @@ export class PaystackClient {
   async createVirtualAccount(customerId: string) {
     const response = await this.client.post('/dedicated_account', {
       customer: customerId,
-      preferred_bank: 'test-bank', //replace with titan-paystack
+      preferred_bank: this.configService.getOrThrow<string>('PAYSTACK_BANK'),
     });
 
     return response;
