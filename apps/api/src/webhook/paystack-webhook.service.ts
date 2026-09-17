@@ -12,7 +12,7 @@ import { PaystackChargeSuccessEvent } from './type/paystack-charge-success.type'
 
 @Injectable()
 export class PaystackWebhookService {
-  private readonly secretKey = process.env.PAYSTACK_SECRET_TEST_KEY!;
+  private readonly secretKey = process.env.PAYSTACK_SECRET_KEY!;
 
   constructor(private readonly prisma: PrismaService) {}
 

@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PaymentProvider } from '../payment.interface';
-import axios from 'axios';
 import { PrismaService } from '../../prisma/prisma.service';
 import { VirtualAccountService } from '../../virtualaccount/virtualaccount.service';
 import { AxiosError } from 'axios';
+import { PaystackClient } from './paystack.client';
 
 @Injectable()
 export class PaystackService implements PaymentProvider {
@@ -12,6 +12,7 @@ export class PaystackService implements PaymentProvider {
   constructor(
     private prismaService: PrismaService,
     private virtualaccountService: VirtualAccountService,
+    private paystackClient: PaystackClient,
   ) {}
 
   async createCustomer(data: {
@@ -20,39 +21,13 @@ export class PaystackService implements PaymentProvider {
     last_name: string;
     phone?: string;
   }) {
-    const response = await axios.post(
-      'https://api.paystack.co/customer',
-
-      {
-        ...data,
-      },
-
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_TEST_KEY}`,
-        },
-      },
-    );
+    const response = await this.paystackClient.createCustomer(data);
 
     return response.data.data.customer_code;
   }
 
   async createVirtualAccount(customerId: string) {
-    const response = await axios.post(
-      'https://api.paystack.co/dedicated_account',
-
-      {
-        customer: customerId,
-        preferred_bank: 'test-bank', //replace with titan-paystack
-      },
-
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_TEST_KEY}`,
-        },
-      },
-    );
-
+    const response = await this.paystackClient.createVirtualAccount(customerId);
     return {
       provider: response.data.data.bank.id,
 

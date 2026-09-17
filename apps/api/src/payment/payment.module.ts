@@ -6,6 +6,7 @@ import { PaymentWorker } from './payment.worker';
 import { VirtualAccountModule } from '../virtualaccount/virtualaccount.module';
 import { BullModule } from '@nestjs/bullmq';
 import { PAYMENT_QUEUE } from './payment.constants';
+import { PaystackClient } from './providers/paystack.client';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { PAYMENT_QUEUE } from './payment.constants';
     { provide: PaymentProvider, useClass: PaystackService },
     PaymentQueue,
     PaymentWorker,
+    PaystackClient,
   ],
   exports: [PaymentProvider, PaymentQueue],
 })
