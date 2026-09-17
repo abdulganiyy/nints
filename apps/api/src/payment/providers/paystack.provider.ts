@@ -19,7 +19,7 @@ export class PaystackService implements PaymentProvider {
     email: string;
     first_name: string;
     last_name: string;
-    phone?: string;
+    phone: string;
   }) {
     const response = await this.paystackClient.createCustomer(data);
 
@@ -62,7 +62,7 @@ export class PaystackService implements PaymentProvider {
           email: user.email,
           first_name: user.fullname.split(' ')[0],
           last_name: user.fullname.split(' ')[1],
-          phone: user.phone ?? undefined,
+          phone: user.phone!,
         }));
 
       await this.prismaService.user.update({

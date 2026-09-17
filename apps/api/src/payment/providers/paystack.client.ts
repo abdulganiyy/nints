@@ -20,7 +20,7 @@ export class PaystackClient {
     email: string;
     first_name: string;
     last_name: string;
-    phone?: string;
+    phone: string;
   }) {
     const response = await this.client.post('/customer', {
       ...data,
