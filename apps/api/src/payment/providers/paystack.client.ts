@@ -7,6 +7,15 @@ export class PaystackClient {
   private readonly client: AxiosInstance;
 
   constructor(private readonly configService: ConfigService) {
+    console.log({
+      paystackKeyExists: !!this.configService.get<string>(
+        'PAYSTACK_SECRET_KEY',
+      ),
+      paystackKeyPrefix: this.configService
+        .get<string>('PAYSTACK_SECRET_KEY')
+        ?.slice(0, 8),
+    });
+
     this.client = axios.create({
       baseURL: 'https://api.paystack.co',
       headers: {

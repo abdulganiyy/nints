@@ -27,6 +27,7 @@ type Props<T extends FieldValues> = {
   className?: string;
   footer?: ReactNode;
   values?: Partial<T>;
+  isSubmitting?: boolean;
 
   onValuesChange?: (values: Partial<T>, setValue: UseFormSetValue<T>) => void;
 };
@@ -40,6 +41,7 @@ export default function FormBuilder<T extends FieldValues>({
   submitText,
   footer,
   values,
+  isSubmitting = false,
   onValuesChange,
 }: Props<T>) {
   const defaults = useMemo(() => {
@@ -76,7 +78,7 @@ export default function FormBuilder<T extends FieldValues>({
 
   useEffect(() => {
     onValuesChange?.(formValues as Partial<T>, methods.setValue);
-  }, [formValues, onValuesChange]);
+  }, [formValues, onValuesChange, methods.setValue]);
 
   return (
     <div className="w-full max-w-xl">
@@ -101,12 +103,17 @@ export default function FormBuilder<T extends FieldValues>({
             <Button
               size="lg"
               type="submit"
-              disabled={methods.formState.isSubmitting}
+              disabled={methods.formState.isSubmitting || isSubmitting}
               className="w-full px-5 py-3 text-white"
             >
-              {submitText ?? "Submit"}
-
-              {methods.formState.isSubmitting && <Spinner />}
+              {isSubmitting ? (
+                <>
+                  <Spinner />
+                  Signing In...
+                </>
+              ) : (
+                (submitText ?? "Submit")
+              )}
             </Button>
           </div>
         </form>

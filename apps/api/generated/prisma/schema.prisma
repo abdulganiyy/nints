@@ -47,7 +47,7 @@ model Wallet {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  balance  Decimal  @db.Decimal(18, 2)
+  balance  Decimal  @default(0) @db.Decimal(18, 2)
   currency Currency @default(NGN)
 
   status WalletStatus @default(ACTIVE)
@@ -70,7 +70,7 @@ model Account {
   type     AccountType
   currency String      @default("NGN")
 
-  balance Decimal @default(0) @db.Decimal(19, 4)
+  balance Decimal @default(0) @db.Decimal(18, 2)
 
   walletId String? @unique
 
@@ -101,7 +101,7 @@ model Transaction {
   type   TransactionType
   status TransactionStatus
 
-  amount   Decimal @db.Decimal(19, 4)
+  amount   Decimal @db.Decimal(18, 2)
   currency String  @default("NGN")
 
   description String?
@@ -123,11 +123,11 @@ model LedgerEntry {
   transactionId String
   accountId     String
 
-  amount    Decimal         @db.Decimal(19, 4)
+  amount    Decimal         @db.Decimal(18, 2)
   direction LedgerDirection
 
-  balanceBefore Decimal? @db.Decimal(19, 4)
-  balanceAfter  Decimal? @db.Decimal(19, 4)
+  balanceBefore Decimal? @db.Decimal(18, 2)
+  balanceAfter  Decimal? @db.Decimal(18, 2)
 
   createdAt DateTime @default(now())
 
@@ -280,7 +280,7 @@ enum Currency {
 }
 
 enum VirtualAccountProvider {
-  PAYSTACK
+  PAYSTACK //24
   MONNIFY
   FLUTTERWAVE
   SAFE_HAVEN

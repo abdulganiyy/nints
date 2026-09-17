@@ -16103,7 +16103,7 @@ export namespace Prisma {
 
   export type WalletCreateInput = {
     id?: string
-    balance: Decimal | DecimalJsLike | number | string
+    balance?: Decimal | DecimalJsLike | number | string
     currency?: $Enums.Currency
     status?: $Enums.WalletStatus
     createdAt?: Date | string
@@ -16116,7 +16116,7 @@ export namespace Prisma {
   export type WalletUncheckedCreateInput = {
     id?: string
     userId: string
-    balance: Decimal | DecimalJsLike | number | string
+    balance?: Decimal | DecimalJsLike | number | string
     currency?: $Enums.Currency
     status?: $Enums.WalletStatus
     createdAt?: Date | string
@@ -16152,7 +16152,7 @@ export namespace Prisma {
   export type WalletCreateManyInput = {
     id?: string
     userId: string
-    balance: Decimal | DecimalJsLike | number | string
+    balance?: Decimal | DecimalJsLike | number | string
     currency?: $Enums.Currency
     status?: $Enums.WalletStatus
     createdAt?: Date | string
@@ -18804,7 +18804,7 @@ export namespace Prisma {
 
   export type WalletCreateWithoutUserInput = {
     id?: string
-    balance: Decimal | DecimalJsLike | number | string
+    balance?: Decimal | DecimalJsLike | number | string
     currency?: $Enums.Currency
     status?: $Enums.WalletStatus
     createdAt?: Date | string
@@ -18815,7 +18815,7 @@ export namespace Prisma {
 
   export type WalletUncheckedCreateWithoutUserInput = {
     id?: string
-    balance: Decimal | DecimalJsLike | number | string
+    balance?: Decimal | DecimalJsLike | number | string
     currency?: $Enums.Currency
     status?: $Enums.WalletStatus
     createdAt?: Date | string
@@ -19218,7 +19218,7 @@ export namespace Prisma {
 
   export type WalletCreateWithoutAccountInput = {
     id?: string
-    balance: Decimal | DecimalJsLike | number | string
+    balance?: Decimal | DecimalJsLike | number | string
     currency?: $Enums.Currency
     status?: $Enums.WalletStatus
     createdAt?: Date | string
@@ -19230,7 +19230,7 @@ export namespace Prisma {
   export type WalletUncheckedCreateWithoutAccountInput = {
     id?: string
     userId: string
-    balance: Decimal | DecimalJsLike | number | string
+    balance?: Decimal | DecimalJsLike | number | string
     currency?: $Enums.Currency
     status?: $Enums.WalletStatus
     createdAt?: Date | string
@@ -19516,7 +19516,7 @@ export namespace Prisma {
 
   export type WalletCreateWithoutVirtualAccountInput = {
     id?: string
-    balance: Decimal | DecimalJsLike | number | string
+    balance?: Decimal | DecimalJsLike | number | string
     currency?: $Enums.Currency
     status?: $Enums.WalletStatus
     createdAt?: Date | string
@@ -19528,7 +19528,7 @@ export namespace Prisma {
   export type WalletUncheckedCreateWithoutVirtualAccountInput = {
     id?: string
     userId: string
-    balance: Decimal | DecimalJsLike | number | string
+    balance?: Decimal | DecimalJsLike | number | string
     currency?: $Enums.Currency
     status?: $Enums.WalletStatus
     createdAt?: Date | string

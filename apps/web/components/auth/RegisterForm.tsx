@@ -63,6 +63,7 @@ export default function RegisterForm() {
         schema={registerSchema}
         onSubmit={onSubmit}
         submitText="Create Account"
+        isSubmitting={mutation.isPending}
         footer={
           <p className="text-slate-500 text-center">
             Already have an account?{" "}

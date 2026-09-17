@@ -32,7 +32,7 @@ const LoginForm = () => {
   });
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
-    mutation.mutateAsync(values);
+    await mutation.mutateAsync(values);
   }
   return (
     <div className="rounded-3xl bg-white p-4 shadow-x w-full md:min-w-xl">
@@ -43,6 +43,7 @@ const LoginForm = () => {
         schema={loginSchema}
         onSubmit={onSubmit}
         submitText="Sign In"
+        isSubmitting={mutation.isPending}
         footer={
           <p className="text-slate-500 text-center">
             Don't have an account yet?{" "}
