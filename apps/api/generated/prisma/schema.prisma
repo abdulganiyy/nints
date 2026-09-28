@@ -39,6 +39,11 @@ model User {
 
   userRoles UserRole[]
   otps      Otp[]
+
+  referralCode     ReferralCode?
+  referralsGiven   Referral[]       @relation("Referrer")
+  referralReceived Referral?        @relation("ReferredUser")
+  referralRewards  ReferralReward[]
 }
 
 model Wallet {
@@ -313,4 +318,99 @@ model Otp {
 
   @@index([identifier])
   @@index([purpose])
+}
+
+model ReferralCode {
+  id     String @id @default(cuid())
+  code   String @unique
+  userId String @unique
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([code])
+}
+
+model Referral {
+  id String @id @default(cuid())
+
+  referrerId     String
+  referredUserId String @unique
+
+  code String
+
+  status ReferralStatus @default(PENDING)
+
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  referrer     User @relation("Referrer", fields: [referrerId], references: [id])
+  referredUser User @relation("ReferredUser", fields: [referredUserId], references: [id])
+
+  rewards ReferralReward[]
+
+  @@index([referrerId])
+  @@index([referredUserId])
+  @@index([status])
+}
+
+model ReferralReward {
+  id String @id @default(cuid())
+
+  referralId String
+  userId     String
+
+  type ReferralRewardType
+
+  amount   Decimal @db.Decimal(18, 2)
+  currency String  @default("NGN")
+
+  status ReferralRewardStatus @default(PENDING)
+
+  /**
+   * A unique key for the event that caused this reward.
+   * Example:
+   * FIRST_DEPOSIT
+   * FIRST_DEPOSIT:transaction-id
+   */
+  eventKey String @unique
+
+  transactionId String?
+
+  metadata Json?
+
+  createdAt DateTime  @default(now())
+  paidAt    DateTime?
+
+  referral Referral @relation(fields: [referralId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
+
+  @@index([referralId])
+  @@index([userId])
+  @@index([status])
+}
+
+enum ReferralStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+enum ReferralRewardType {
+  SIGNUP
+  FIRST_DEPOSIT
+  FIRST_TRANSACTION
+  BONUS
+}
+
+enum ReferralRewardStatus {
+  PENDING
+  PROCESSING
+  PAID
+  FAILED
+  CANCELLED
 }

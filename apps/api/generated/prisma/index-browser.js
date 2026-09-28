@@ -239,6 +239,40 @@ exports.Prisma.OtpScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.ReferralCodeScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  userId: 'userId',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ReferralScalarFieldEnum = {
+  id: 'id',
+  referrerId: 'referrerId',
+  referredUserId: 'referredUserId',
+  code: 'code',
+  status: 'status',
+  createdAt: 'createdAt',
+  completedAt: 'completedAt'
+};
+
+exports.Prisma.ReferralRewardScalarFieldEnum = {
+  id: 'id',
+  referralId: 'referralId',
+  userId: 'userId',
+  type: 'type',
+  amount: 'amount',
+  currency: 'currency',
+  status: 'status',
+  eventKey: 'eventKey',
+  transactionId: 'transactionId',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  paidAt: 'paidAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -345,6 +379,27 @@ exports.OtpPurpose = exports.$Enums.OtpPurpose = {
   LOGIN: 'LOGIN'
 };
 
+exports.ReferralStatus = exports.$Enums.ReferralStatus = {
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+};
+
+exports.ReferralRewardType = exports.$Enums.ReferralRewardType = {
+  SIGNUP: 'SIGNUP',
+  FIRST_DEPOSIT: 'FIRST_DEPOSIT',
+  FIRST_TRANSACTION: 'FIRST_TRANSACTION',
+  BONUS: 'BONUS'
+};
+
+exports.ReferralRewardStatus = exports.$Enums.ReferralRewardStatus = {
+  PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
+  PAID: 'PAID',
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Wallet: 'Wallet',
@@ -356,7 +411,10 @@ exports.Prisma.ModelName = {
   UserRole: 'UserRole',
   Permission: 'Permission',
   RolePermission: 'RolePermission',
-  Otp: 'Otp'
+  Otp: 'Otp',
+  ReferralCode: 'ReferralCode',
+  Referral: 'Referral',
+  ReferralReward: 'ReferralReward'
 };
 
 /**

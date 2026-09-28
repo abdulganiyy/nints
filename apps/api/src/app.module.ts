@@ -16,6 +16,7 @@ import { QueueModule } from './queue/queue.module';
 import { VtuModule } from './vtu/vtu.module';
 import { WebhookModule } from './webhook/webhook.module';
 import { TransactionModule } from './transaction/transaction.module';
+import { ReferralModule } from './referral/referral.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { TransactionModule } from './transaction/transaction.module';
     VtuModule,
     WebhookModule,
     TransactionModule,
+    ReferralModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -18,6 +18,7 @@ import { UserService } from '../user/user.service';
 import { WalletService } from '../wallet/wallet.service';
 import { PaymentQueue } from '../payment/payment.queue';
 import { EmailQueue } from '../email/email.queue';
+import { ReferralService } from '../referral/referral.service';
 
 @Injectable()
 export class AuthService {
@@ -30,19 +31,35 @@ export class AuthService {
     private walletService: WalletService,
     private paymentQueue: PaymentQueue,
     private emailQueue: EmailQueue,
+    private referralService: ReferralService,
   ) {}
 
   async register(dto: RegisterDto) {
-    const user = await this.userService.createUser(dto);
+    const { user, otp } = await this.prisma.$transaction(async (tx) => {
+      const user = await this.userService.createUser(dto, tx);
 
-    const { otp, hash } = generateOtp();
+      const { otp, hash } = generateOtp();
 
-    await this.prisma.user.update({
-      where: { id: user!.id },
-      data: {
-        emailOtpHash: hash,
-        emailOtpExpiresAt: new Date(Date.now() + 10 * 60 * 1000),
-      },
+      await tx.user.update({
+        where: { id: user!.id },
+        data: {
+          emailOtpHash: hash,
+          emailOtpExpiresAt: new Date(Date.now() + 10 * 60 * 1000),
+        },
+      });
+
+      if (dto.referralCode) {
+        await this.referralService.applyReferral(
+          user!.id,
+          { code: dto.referralCode },
+          tx,
+        );
+      }
+
+      return {
+        user,
+        otp,
+      };
     });
 
     await this.emailQueue.verifyEmail({
@@ -59,7 +76,7 @@ export class AuthService {
           ur.role.rolePermissions.map((rp) => rp.permission.name),
         ),
       ),
-    ];
+    ] as string[];
 
     const { accessToken } = await this.signTokens({
       userId: user!.id,

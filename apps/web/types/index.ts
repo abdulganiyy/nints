@@ -132,3 +132,29 @@ export interface ElectricityPurchaseResponse {
   meterNumber: string;
   provider: string;
 }
+
+export type ReferralStats = {
+  totalReferrals: number;
+  successfulReferrals: number;
+  pendingReferrals: number;
+  totalEarned: string;
+};
+
+export type ReferralUser = {
+  id: string;
+  name: string;
+  status: "PENDING" | "COMPLETED";
+  reward: string;
+  joinedAt: string;
+};
+
+export type ReferralInfo = {
+  referralCode: string;
+  referralLink: string;
+  // stats: ReferralStats;
+  totalReferrals: number;
+  completedReferrals: number;
+  pendingReferrals: number;
+  totalRewards: string;
+  referrals: ReferralUser[];
+};

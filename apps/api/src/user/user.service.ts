@@ -18,8 +18,10 @@ type PrismaExecutor = PrismaClient | Prisma.TransactionClient;
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async createUser(dto: CreateUserDto) {
-    const userExists = await this.prisma.user.findFirst({
+  async createUser(dto: CreateUserDto, tx?: Prisma.TransactionClient) {
+    const prisma = tx ?? this.prisma;
+
+    const userExists = await prisma.user.findFirst({
       where: {
         OR: [{ email: dto.email }, { phone: dto.phone }],
       },
@@ -39,7 +41,7 @@ export class UserService {
       dto.password ?? process.env.SUPER_ADMIN_PASSWORD!,
     );
 
-    return this.prisma.$transaction(async (tx) => {
+    return prisma.$transaction(async (tx) => {
       const user = await tx.user.create({
         data: {
           fullname: dto.fullname,

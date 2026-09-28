@@ -4,7 +4,7 @@ import FormBuilder from "@/components/form/FormBuilder";
 import { z } from "zod";
 import axios from "axios";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { registerFieldConfig } from "@/config";
 import { phoneRegex } from "@/utils/constants";
 import Link from "next/link";
@@ -33,9 +33,18 @@ export type RegisterForm = z.infer<typeof registerSchema>;
 export default function RegisterForm() {
   const router = useRouter();
 
+  const searchParams = useSearchParams();
+
+  const referralCode = searchParams.get("ref");
+
   const mutation = useMutation({
     mutationFn: async (
-      data: Omit<z.infer<typeof registerSchema>, "agreed" | "confirmPassword">,
+      data: Omit<
+        z.infer<typeof registerSchema>,
+        "agreed" | "confirmPassword"
+      > & {
+        referralCode?: string;
+      },
     ) => {
       const res = await axios.post(`api/register`, data);
 
@@ -51,7 +60,11 @@ export default function RegisterForm() {
 
   async function onSubmit(values: z.infer<typeof registerSchema>) {
     const { agreed, confirmPassword, ...rest } = values;
-    await mutation.mutateAsync(rest);
+
+    await mutation.mutateAsync({
+      ...rest,
+      ...(referralCode ? { referralCode } : {}),
+    });
   }
 
   return (
