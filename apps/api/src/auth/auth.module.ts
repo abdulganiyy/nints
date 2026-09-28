@@ -10,6 +10,7 @@ import { EmailModule } from '../email/email.module';
 import { WalletModule } from '../wallet/wallet.module';
 import { VirtualAccountModule } from '../virtualaccount/virtualaccount.module';
 import { PaymentModule } from '../payment/payment.module';
+import { ReferralModule } from '../referral/referral.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { PaymentModule } from '../payment/payment.module';
     WalletModule,
     VirtualAccountModule,
     PaymentModule,
+    ReferralModule,
   ],
   providers: [AuthService, JwtStrategy],
   controllers: [AuthController],
