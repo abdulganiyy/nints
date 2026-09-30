@@ -17,9 +17,6 @@ export class ReferralService {
     private configService: ConfigService,
   ) {}
 
-  /**
-   * Generate a unique referral code.
-   */
   private generateCode(): string {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
@@ -32,9 +29,6 @@ export class ReferralService {
     return code;
   }
 
-  /**
-   * Creates a referral code for a user.
-   */
   async createReferralCode(userId: string) {
     const existing = await this.prisma.referralCode.findUnique({
       where: {
@@ -67,9 +61,6 @@ export class ReferralService {
     throw new Error('Unable to generate referral code');
   }
 
-  /**
-   * Get user's referral code.
-   */
   async getMyReferralCode(userId: string) {
     let referralCode = await this.prisma.referralCode.findUnique({
       where: {
@@ -84,12 +75,6 @@ export class ReferralService {
     return referralCode;
   }
 
-  /**
-   * Apply a referral code.
-   *
-   * This should normally happen during registration,
-   * before the user completes onboarding.
-   */
   async applyReferral(
     referredUserId: string,
     dto: ApplyReferralDto,
@@ -136,13 +121,12 @@ export class ReferralService {
     });
   }
 
-  /**
-   * Get referral dashboard information.
-   */
   async getMyReferralStats(userId: string) {
-    const [referralCode, total, pending, completed, rewards] =
+    const [referralCode, referrals, total, pending, completed, rewards] =
       await Promise.all([
         this.getMyReferralCode(userId),
+
+        this.getMyReferrals(userId),
 
         this.prisma.referral.count({
           where: {
@@ -187,14 +171,12 @@ export class ReferralService {
       completedReferrals: completed,
       totalRewards: rewards._sum.amount ?? 0,
       currency: REFERRAL_CURRENCY,
+      referrals,
     };
   }
 
-  /**
-   * Get users referred by the authenticated user.
-   */
   async getMyReferrals(userId: string) {
-    return this.prisma.referral.findMany({
+    const referrals = await this.prisma.referral.findMany({
       where: {
         referrerId: userId,
       },
@@ -206,18 +188,26 @@ export class ReferralService {
             createdAt: true,
           },
         },
-        rewards: true,
+        rewards: {
+          select: {
+            amount: true,
+          },
+        },
       },
       orderBy: {
         createdAt: 'desc',
       },
     });
+
+    return referrals.map((referral) => ({
+      ...referral,
+      rewardAmount: referral.rewards.reduce(
+        (sum, reward) => sum.plus(reward.amount),
+        new Prisma.Decimal(0),
+      ),
+    }));
   }
 
-  /**
-   * Called after a referred user makes their first
-   * qualifying deposit.
-   */
   async processFirstDepositReward(userId: string, transactionId: string) {
     const referral = await this.prisma.referral.findUnique({
       where: {
@@ -235,9 +225,6 @@ export class ReferralService {
 
     const eventKey = `FIRST_DEPOSIT:${transactionId}`;
 
-    /**
-     * Idempotency protection.
-     */
     const existingReward = await this.prisma.referralReward.findUnique({
       where: {
         eventKey,
@@ -274,9 +261,6 @@ export class ReferralService {
     return reward;
   }
 
-  /**
-   * Get rewards belonging to a user.
-   */
   async getMyRewards(userId: string) {
     return this.prisma.referralReward.findMany({
       where: {

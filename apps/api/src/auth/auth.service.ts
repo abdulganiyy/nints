@@ -2,6 +2,7 @@ import {
   Injectable,
   ForbiddenException,
   BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as argon2 from 'argon2';
@@ -19,6 +20,7 @@ import { WalletService } from '../wallet/wallet.service';
 import { PaymentQueue } from '../payment/payment.queue';
 import { EmailQueue } from '../email/email.queue';
 import { ReferralService } from '../referral/referral.service';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class AuthService {
@@ -279,6 +281,50 @@ export class AuthService {
   async me(email: string) {
     const user = await this.userService.getUserByEmail(email);
 
-    return { email: user?.email, emailVerified: user?.emailVerified };
+    if (!user) throw new BadRequestException('Incorrect credentials');
+
+    const roles = user.userRoles.map((ur) => ur.role.name);
+
+    const permissions = [
+      ...new Set(
+        user.userRoles.flatMap((ur) =>
+          ur.role.rolePermissions.map((rp) => rp.permission.name),
+        ),
+      ),
+    ];
+
+    return {
+      emailVerified: user?.emailVerified,
+      email: user?.email,
+      phone: user?.phone,
+      fullname: user?.fullname,
+      profileImage: user?.profileImage,
+      roles,
+      permissions: roles.includes('SUPER_ADMIN') ? ['*'] : permissions,
+    };
+  }
+
+  async updateProfile(userId: string, dto: UpdateProfileDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...dto,
+      },
+      select: {
+        id: true,
+        email: true,
+        fullname: true,
+        profileImage: true,
+        emailVerified: true,
+      },
+    });
   }
 }

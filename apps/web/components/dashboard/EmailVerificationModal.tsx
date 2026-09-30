@@ -88,8 +88,6 @@ const EmailVerificationModal = ({
     return () => clearInterval(timer);
   }, [seconds, open]);
 
-  console.log(open);
-
   return (
     <Dialog open={open}>
       <DialogContent className="sm:max-w-md" showCloseButton={false}>

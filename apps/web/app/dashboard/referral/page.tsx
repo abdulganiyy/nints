@@ -184,7 +184,7 @@ export default function ReferralPage() {
       </div>
 
       {/* Referral History */}
-      {/* <Card>
+      <Card>
         <CardHeader>
           <CardTitle>Referral History</CardTitle>
         </CardHeader>
@@ -208,10 +208,12 @@ export default function ReferralPage() {
                   className="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div>
-                    <p className="font-medium">{referral.name}</p>
+                    <p className="font-medium">
+                      {referral.referredUser.fullname}
+                    </p>
 
                     <p className="text-sm text-muted-foreground">
-                      {formatDate(referral.joinedAt)}
+                      {formatDate(referral.referredUser.createdAt)}
                     </p>
                   </div>
 
@@ -226,14 +228,20 @@ export default function ReferralPage() {
                       {referral.status}
                     </span>
 
-                    <span className="font-semibold">₦{referral.reward}</span>
+                    <span className="font-semibold">
+                      {new Intl.NumberFormat("en-NG", {
+                        style: "currency",
+                        currency: "NGN",
+                        maximumFractionDigits: 2,
+                      }).format(Number(referral.rewardAmount))}
+                    </span>
                   </div>
                 </div>
               ))}
             </div>
           )}
         </CardContent>
-      </Card> */}
+      </Card>
     </div>
   );
 }
