@@ -142,9 +142,9 @@ export type ReferralStats = {
 
 export type ReferralUser = {
   id: string;
-  name: string;
+  referredUser: { fullname: string; createdAt: string };
   status: "PENDING" | "COMPLETED";
-  reward: string;
+  rewardAmount: string;
   joinedAt: string;
 };
 

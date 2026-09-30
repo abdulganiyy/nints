@@ -22,6 +22,7 @@ export const cloudinaryUploader: UploadProvider = {
 
     formData.append("file", file);
     formData.append("upload_preset", "jrlc8n92");
+    formData.append("folder", "nintpay/uploads");
 
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_CLOUDINARY_URL}/image/upload`,

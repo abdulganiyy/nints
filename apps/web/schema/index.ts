@@ -56,3 +56,16 @@ export const electricitySchema = z.object({
     .min(100, "Minimum amount is ₦100")
     .max(1000000, "Maximum amount is ₦1,000,000"),
 });
+
+const uploadSchema = z.object({
+  url: z.string(),
+  key: z.string().optional(),
+  filename: z.string().optional(),
+});
+
+export const updateProfileSchema = z.object({
+  fullname: z.string(),
+  email: z.email(),
+  phone: z.string(),
+  photo: z.array(uploadSchema),
+});

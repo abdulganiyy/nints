@@ -10,6 +10,7 @@ import {
   LogOut,
   CreditCard,
   Shield,
+  LinkIcon,
 } from "lucide-react";
 
 import { format } from "date-fns";
@@ -67,7 +68,7 @@ export default function DashboardHeader({
 
           <div>
             <h1 className="text-2xl font-bold text-slate-900">
-              Welcome back, {name} 👋
+              Welcome back, {name.split(" ")[0]} 👋
             </h1>
 
             <p className="text-sm text-slate-500">
@@ -122,7 +123,7 @@ export default function DashboardHeader({
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuItem>
                 <Link
-                  href="/dashboard"
+                  href="/dashboard/profile"
                   className="flex cursor-pointer items-center"
                 >
                   <User className="mr-2 h-4 w-4" />
@@ -135,12 +136,12 @@ export default function DashboardHeader({
                   href="/dashboard/referral"
                   className="flex cursor-pointer items-center"
                 >
-                  <User className="mr-2 h-4 w-4" />
+                  <LinkIcon className="mr-2 h-4 w-4" />
                   Referral
                 </Link>
               </DropdownMenuItem>
 
-              <DropdownMenuItem>
+              {/* <DropdownMenuItem>
                 <Link
                   href="/dashboard"
                   className="flex cursor-pointer items-center"
@@ -158,7 +159,7 @@ export default function DashboardHeader({
                   <Shield className="mr-2 h-4 w-4" />
                   Security
                 </Link>
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
 
               <DropdownMenuSeparator />
 

@@ -29,7 +29,7 @@ export default function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-slate-50">
-      <DashboardHeader />
+      <DashboardHeader avatar={data.profileImage} name={data.fullname} />
       <div className="mt-8 grid gap-6 lg:grid-cols-3 mx-auto max-w-7xl p-6">
         <div className="lg:col-span-2 space-y-6">
           <BalanceCard />

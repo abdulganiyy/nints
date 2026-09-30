@@ -109,3 +109,28 @@ export const electricityFieldsConfig: FieldConfig[] = [
     type: "text",
   },
 ];
+
+export const updateProfileFieldConfig: FieldConfig[] = [
+  {
+    name: "fullname",
+    label: "Full Name",
+    type: "text",
+  },
+  {
+    name: "email",
+    label: "Email",
+    type: "email",
+  },
+  {
+    name: "phone",
+    label: "Phone Number",
+    type: "text",
+  },
+  {
+    name: "photo",
+    label: "Profile Image",
+    type: "file",
+    multiple: false,
+    defaultValue: [],
+  },
+];
