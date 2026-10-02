@@ -17,6 +17,7 @@ import { VtuModule } from './vtu/vtu.module';
 import { WebhookModule } from './webhook/webhook.module';
 import { TransactionModule } from './transaction/transaction.module';
 import { ReferralModule } from './referral/referral.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { ReferralModule } from './referral/referral.module';
     WebhookModule,
     TransactionModule,
     ReferralModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],
