@@ -18,6 +18,7 @@ import { WebhookModule } from './webhook/webhook.module';
 import { TransactionModule } from './transaction/transaction.module';
 import { ReferralModule } from './referral/referral.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { RoleModule } from './role/role.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
     TransactionModule,
     ReferralModule,
     DashboardModule,
+    RoleModule
   ],
   controllers: [AppController],
   providers: [AppService],

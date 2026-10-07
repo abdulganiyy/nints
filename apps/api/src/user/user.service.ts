@@ -129,7 +129,7 @@ export class UserService {
     });
   }
 
-  async getUsers(query: GetUsersDto) {
+    async getUsers(query: GetUsersDto) {
     const { page = 1, limit = 1000, search } = query;
 
     const skip = (page - 1) * limit;
@@ -158,23 +158,47 @@ export class UserService {
           },
         },
         skip,
-        take: limit,
+        take: +limit,
         orderBy: { createdAt: 'desc' },
 
         select: {
+          userRoles: {
+            select: {
+              role: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
           id: true,
           fullname: true,
           email: true,
           phone: true,
+          status: true,
           createdAt: true,
+          profileImage: true,
         },
       }),
 
       this.prisma.user.count({ where }),
     ]);
 
+    const usersData = users.map((user) => {
+      const { userRoles, ...others } = user;
+
+      return {
+        ...others,
+        roles: userRoles.map((userRole) => ({
+          id: userRole.role.id,
+          name: userRole.role.name,
+        })),
+      };
+    });
+
     return {
-      data: users,
+      data: usersData,
       meta: {
         total,
         page,

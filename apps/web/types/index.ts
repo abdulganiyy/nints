@@ -14,6 +14,8 @@ export type User = {
   emailVerified: boolean;
   roles: string[];
   permissions?: string[];
+  profileImage?:string;
+  status?:string;
 };
 
 export type ResetPasswordFormData = {
