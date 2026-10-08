@@ -73,7 +73,7 @@ export default function BalanceCard() {
 
             <div className="mt-3 flex items-center gap-3">
               <h1 className="text-4xl font-bold">
-                {hidden ? "••••••••" : formatter.format(data?.balance)}
+                {hidden ? "••••••••" : formatter.format(data?.balance ?? 0)}
               </h1>
 
               <button
@@ -91,7 +91,7 @@ export default function BalanceCard() {
             <p className="mt-3 text-sm text-emerald-100">
               Ledger Balance:{" "}
               <span className="font-semibold text-white">
-                {hidden ? "••••••••" : formatter.format(data?.balance)}
+                {hidden ? "••••••••" : formatter.format(data?.balance ?? 0)}
               </span>
             </p>
           </div>

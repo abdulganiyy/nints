@@ -1,8 +1,11 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ReferralService } from './referral.service';
 import { ApplyReferralDto } from './dto/apply-referral.dto';
 import { JwtGuard } from '../common/guards/jwt.guard';
 import { GetUser } from '../common/decorators/get-user.decorator';
+import { Roles } from '../common/decorators/roles.decorator';
+import { RoleName } from '../../generated/prisma';
+import { GetReferralsDto } from './dto/get-referrals.dto';
 
 @Controller('referral')
 @UseGuards(JwtGuard)
@@ -41,4 +44,10 @@ export class ReferralController {
   async validateCode(@Param('code') code: string) {
     return this.referralService.validateReferralCode(code);
   }
+
+  @Get('admin')
+@Roles(RoleName.SUPER_ADMIN)
+async getAllReferrals(@Query() query:GetReferralsDto) {
+  return this.referralService.getAllReferrals(query);
+}
 }
