@@ -46,7 +46,7 @@ export const sidebarConfig: SidebarItem[] = [
       {
         icon: MessageCircleMore,
         label: "Settings",
-        href: "/admin/setting",
+        href: "/admin/dashboard/setting",
       },
     ],
   },
