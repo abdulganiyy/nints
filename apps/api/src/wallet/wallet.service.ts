@@ -135,9 +135,6 @@ export class WalletService {
       data: {
         reference: `DEP-${dto.paystackReference}`,
 
-        // provider: 'PAYSTACK',
-
-        // providerReference: dto.paystackReference,
 
         type: 'DEPOSIT',
 
@@ -328,9 +325,6 @@ export class WalletService {
       data: {
         reference: `WTH-${dto.providerReference}`,
 
-        // provider: 'PAYSTACK',
-
-        // providerReference: dto.providerReference,
 
         type: 'WITHDRAWAL',
 

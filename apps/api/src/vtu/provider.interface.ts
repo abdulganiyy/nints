@@ -35,7 +35,4 @@ export abstract class VtuProvider {
 
   abstract verifyMeterNumber(request: VerifyMeterNumberRequest): Promise<any>;
 
-  //   getTransaction(transactionId: string): Promise<VtuTransactionResponse>;
-
-  //   verifyTransaction(reference: string): Promise<VtuTransactionResponse>;
 }

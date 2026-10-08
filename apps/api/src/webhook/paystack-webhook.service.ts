@@ -171,7 +171,6 @@ export class PaystackWebhookService {
          * 5. Find accounting accounts
          */
 
-        // Customer's wallet liability account
         const customerWalletAccount = await tx.account.findFirst({
           where: {
             name: `Wallet - ${wallet.userId}`,
@@ -186,7 +185,6 @@ export class PaystackWebhookService {
           );
         }
 
-        // Bank / Cash account
         const bankAccount = await tx.account.findFirst({
           where: {
             name: 'Bank / Cash',

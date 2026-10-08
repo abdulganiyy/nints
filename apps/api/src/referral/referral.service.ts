@@ -51,7 +51,7 @@ export class ReferralService {
           },
         });
       } catch (error) {
-        // Retry if generated code already exists.
+
         if (attempt === 4) {
           throw error;
         }
