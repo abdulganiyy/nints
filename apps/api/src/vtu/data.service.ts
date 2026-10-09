@@ -35,7 +35,6 @@ export class DataService {
      * and create a PENDING transaction.
      */
     const transaction = await this.prisma.$transaction(async (tx) => {
-      // 1. Get Bank/Cash account
 
       const revenueAccount = await tx.account.findFirst({
         where: {
