@@ -37,6 +37,16 @@ export const sidebarConfig: SidebarItem[] = [
         label: "Transactions",
         href: "/admin/dashboard/transaction",
       },
+           {
+        icon: Monitor,
+        label: "Chart of Accounts",
+        href: "/admin/dashboard/chart-of-accounts",
+      },
+           {
+        icon: Monitor,
+        label: "Journal Entries",
+        href: "/admin/dashboard/journal-entries",
+      },
     ],
   },
 

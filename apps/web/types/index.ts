@@ -14,8 +14,8 @@ export type User = {
   emailVerified: boolean;
   roles: string[];
   permissions?: string[];
-  profileImage?:string;
-  status?:string;
+  profileImage?: string;
+  status?: string;
 };
 
 export type ResetPasswordFormData = {
@@ -144,8 +144,18 @@ export type ReferralStats = {
 
 export type Referral = {
   id: string;
-  referrer: { fullname: string; createdAt: string;email:string;phone:string };
-  referredUser: { fullname: string; createdAt: string;email:string;phone:string };
+  referrer: {
+    fullname: string;
+    createdAt: string;
+    email: string;
+    phone: string;
+  };
+  referredUser: {
+    fullname: string;
+    createdAt: string;
+    email: string;
+    phone: string;
+  };
   status: "PENDING" | "COMPLETED";
   rewards: any;
   createdAt: string;
@@ -154,7 +164,12 @@ export type Referral = {
 
 export type ReferralUser = {
   id: string;
-  referredUser: { fullname: string; createdAt: string;email:string;phone:string };
+  referredUser: {
+    fullname: string;
+    createdAt: string;
+    email: string;
+    phone: string;
+  };
   status: "PENDING" | "COMPLETED";
   rewardAmount: string;
   joinedAt: string;
@@ -169,4 +184,170 @@ export type ReferralInfo = {
   pendingReferrals: number;
   totalRewards: string;
   referrals: ReferralUser[];
+};
+
+export type AccountType =
+  | "ASSET"
+  | "LIABILITY"
+  | "EQUITY"
+  | "REVENUE"
+  | "EXPENSE";
+
+export type NormalBalance = "DEBIT" | "CREDIT";
+
+export type AccountStatus = "ACTIVE" | "INACTIVE";
+
+export type Account = {
+  id: string;
+  code: string;
+  name: string;
+  description?: string | null;
+  type: AccountType;
+  normalBalance: NormalBalance;
+  parentId?: string | null;
+  parent?: {
+    id: string;
+    code: string;
+    name: string;
+  } | null;
+  status: AccountStatus;
+  isSystem: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type CreateAccountPayload = {
+  code: string;
+  name: string;
+  description?: string;
+  type: AccountType;
+  parentId?: string;
+};
+
+export type UpdateAccountPayload = Partial<CreateAccountPayload> & {
+  status?: AccountStatus;
+};
+
+export type AccountQuery = {
+  page?: number;
+  limit?: number;
+  search?: string;
+  type?: AccountType | "ALL";
+  status?: AccountStatus | "ALL";
+};
+
+export type AccountSummary = {
+  totalAccounts: number;
+  assets: number;
+  liabilities: number;
+  equity: number;
+  revenue: number;
+  expenses: number;
+};
+
+export type PaginatedAccounts = {
+  data: Account[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+};
+
+export type JournalEntryStatus = "DRAFT" | "POSTED" | "REVERSED";
+
+export type JournalEntrySource =
+  | "MANUAL"
+  | "WALLET_DEPOSIT"
+  | "WALLET_TRANSFER"
+  | "AIRTIME_PURCHASE"
+  | "DATA_PURCHASE"
+  | "BILL_PAYMENT"
+  | "WITHDRAWAL"
+  | "LOAN_DISBURSEMENT"
+  | "LOAN_REPAYMENT"
+  | "REFERRAL_REWARD"
+  | "FEE";
+
+export type JournalEntryLine = {
+  id: string;
+  accountId: string;
+  accountCode: string;
+  accountName: string;
+  description?: string | null;
+  debit: string;
+  credit: string;
+};
+
+export type JournalEntry = {
+  id: string;
+  reference: string;
+  description: string;
+  direction: string;
+  account: { type: string };
+  transaction: {
+    reference: string;
+    description: string;
+    type: string;
+    status: string;
+  };
+  amount: string;
+  source: JournalEntrySource;
+  status: JournalEntryStatus;
+  currency: string;
+  transactionReference?: string | null;
+  effectiveDate: string;
+  postedAt?: string | null;
+  createdAt: string;
+  createdBy?: {
+    id: string;
+    name: string;
+  } | null;
+  lines: JournalEntryLine[];
+  totalDebit: string;
+  totalCredit: string;
+};
+
+export type JournalEntryQuery = {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: JournalEntryStatus | "ALL";
+  source?: JournalEntrySource | "ALL";
+  startDate?: string;
+  endDate?: string;
+};
+
+export type PaginatedJournalEntries = {
+  data: JournalEntry[];
+  meta: { total: number; page: number; limit: number; totalPages: number };
+};
+
+export type JournalEntrySummary = {
+  totalEntries: number;
+  postedEntries: number;
+  draftEntries: number;
+  reversedEntries: number;
+  totalDebits: string;
+  totalCredits: string;
+};
+
+export type CreateJournalEntryPayload = {
+  description: string;
+  effectiveDate: string;
+  currency: string;
+  lines: {
+    accountId: string;
+    description?: string;
+    direction: string;
+    amount: string;
+    // debit: string;
+    // credit: string;
+  }[];
+};
+
+export type Transaction = {
+  id: string;
+  description: string;
+  status: string;
+  createdAt:string;
 };
