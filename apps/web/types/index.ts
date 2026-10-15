@@ -201,6 +201,7 @@ export type Account = {
   id: string;
   code: string;
   name: string;
+  balance:string;
   description?: string | null;
   type: AccountType;
   normalBalance: NormalBalance;
