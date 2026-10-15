@@ -131,6 +131,63 @@ async function main() {
 
   console.log('Adding Bank / Cash account type');
 
+    await prisma.account.upsert({
+    where: {
+      code: '1200',
+    },
+
+    update: {},
+
+    create: {
+      code: '1200',
+      name: 'VTU Provider',
+      type: AccountType.ASSET,
+      currency: 'NGN',
+      balance: 0,
+    },
+  });
+
+  console.log('Adding VTU Provider account type');
+
+   await prisma.account.upsert({
+    where: {
+      code: '1300',
+    },
+
+    update: {},
+
+    create: {
+      code: '1300',
+      name: 'Loan Receivable',
+      type: AccountType.ASSET,
+      currency: 'NGN',
+      balance: 0,
+    },
+  });
+
+  console.log('Adding Loan Receivable account type');
+
+
+  await prisma.account.upsert({
+    where: {
+      code: '3100',
+    },
+
+    update: {},
+
+    create: {
+      code: '3100',
+      name: 'Founder Equity',
+      type: AccountType.EQUITY,
+      currency: 'NGN',
+      balance: 0,
+    },
+  });
+
+  console.log('Adding Founder Equity account type');
+  
+  
+
   await prisma.account.upsert({
     where: {
       code: '4100',
@@ -148,6 +205,43 @@ async function main() {
   });
 
   console.log('Adding Transaction Fee Revenue account type');
+
+    await prisma.account.upsert({
+    where: {
+      code: '4200',
+    },
+
+    update: {},
+
+    create: {
+      code: '4200',
+      name: 'Service Fee Revenue',
+      type: AccountType.REVENUE,
+      currency: 'NGN',
+      balance: 0,
+    },
+  });
+
+  console.log('Adding Service Fee Revenue account type');
+
+
+    await prisma.account.upsert({
+    where: {
+      code: '5100',
+    },
+
+    update: {},
+
+    create: {
+      code: '5100',
+      name: 'Referral Reward Expense',
+      type: AccountType.EXPENSE,
+      currency: 'NGN',
+      balance: 0,
+    },
+  });
+
+  console.log('Adding Referral Reward Expense account type');
 }
 
 main()

@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { getSessionForPage } from "./utils/session";
 import { BASE_URL } from "./utils/constants";
 
-const GUARDED_ROUTES: string[] = ["/dashboard"];
+const GUARDED_ROUTES: string[] = ["/dashboard", "/admin/dashboard"];
 
 export async function proxy(request: NextRequest) {
   const url = request.nextUrl.clone();
@@ -18,6 +18,13 @@ export async function proxy(request: NextRequest) {
     const user = session?.user;
 
     if (!user) {
+      return NextResponse.redirect(new URL(BASE_URL, request.url));
+    }
+
+    if (
+      matchedRoute == "/admin/dashboard" &&
+      !user.roles.includes("SUPER_ADMIN")
+    ) {
       return NextResponse.redirect(new URL(BASE_URL, request.url));
     }
   }

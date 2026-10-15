@@ -17,6 +17,10 @@ import { VtuModule } from './vtu/vtu.module';
 import { WebhookModule } from './webhook/webhook.module';
 import { TransactionModule } from './transaction/transaction.module';
 import { ReferralModule } from './referral/referral.module';
+import { DashboardModule } from './dashboard/dashboard.module';
+import { RoleModule } from './role/role.module';
+import { ChartOfAccountsModule } from './accountchart/accountchart.module';
+import { LedgerEntriesModule } from './ledgerentry/ledgerentry.module';
 
 @Module({
   imports: [
@@ -39,6 +43,10 @@ import { ReferralModule } from './referral/referral.module';
     WebhookModule,
     TransactionModule,
     ReferralModule,
+    DashboardModule,
+    RoleModule,
+    ChartOfAccountsModule,
+    LedgerEntriesModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -134,3 +134,36 @@ export const updateProfileFieldConfig: FieldConfig[] = [
     defaultValue: [],
   },
 ];
+
+
+export const createNewUserFieldConfig: FieldConfig[] = [
+  {
+    name: "fullname",
+    label: "Full Name",
+    type: "text",
+  },
+  {
+    name: "email",
+    label: "Email",
+    type: "email",
+  },
+  {
+    name: "phone",
+    label: "Phone Number",
+    type: "text",
+  },
+  {
+    name: "roleIds",
+    label: "Roles",
+    type: "multi-select",
+  },
+  {
+    name: "photo",
+    label: "User Image",
+    type: "file",
+    multiple: false,
+    defaultValue: [],
+  },
+];
+
+export const editUserFieldConfig: FieldConfig[] = [...createNewUserFieldConfig];

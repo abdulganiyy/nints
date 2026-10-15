@@ -9,6 +9,7 @@ import { ApplyReferralDto } from './dto/apply-referral.dto';
 import { REFERRAL_CURRENCY, REFERRAL_REWARD } from './referral.constants';
 import { Prisma } from '../../generated/prisma';
 import { ConfigService } from '@nestjs/config';
+import { GetReferralsDto } from './dto/get-referrals.dto';
 
 @Injectable()
 export class ReferralService {
@@ -331,4 +332,115 @@ export class ReferralService {
       valid: Boolean(referralCode && referralCode.isActive),
     };
   }
+async getAllReferrals(query: GetReferralsDto) {
+  const { page = 1, limit = 1000, search } = query;
+
+  const skip = (page - 1) * limit;
+
+  let where: any = {};
+
+  if (search) {
+    where.OR = [
+      {
+        code: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      },
+      {
+        referrer: {
+          fullname: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+      },
+      {
+        referrer: {
+          email: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+      },
+      {
+        referredUser: {
+          fullname: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+      },
+      {
+        referredUser: {
+          email: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+      },
+    ];
+  }
+
+  const [referrals, total] = await this.prisma.$transaction([
+    this.prisma.referral.findMany({
+      where,
+      skip,
+      take: +limit,
+      orderBy: {
+        createdAt: 'desc',
+      },
+
+      select: {
+        id: true,
+        code: true,
+        status: true,
+        createdAt: true,
+        completedAt: true,
+
+        referrer: {
+          select: {
+            id: true,
+            fullname: true,
+            email: true,
+          },
+        },
+
+        referredUser: {
+          select: {
+            id: true,
+            fullname: true,
+            email: true,
+          },
+        },
+
+        rewards: {
+          select: {
+            id: true,
+            type: true,
+            amount: true,
+            currency: true,
+            status: true,
+            createdAt: true,
+            paidAt: true,
+          },
+        },
+      },
+    }),
+
+    this.prisma.referral.count({
+      where,
+    }),
+  ]);
+
+  return {
+    data: referrals,
+    meta: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+}
 }
