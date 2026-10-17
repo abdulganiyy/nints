@@ -17,7 +17,6 @@ export class OtpService {
 
     const codeHash = await argon2.hash(code);
 
-    // Remove previous unused OTPs
     await this.prisma.otp.deleteMany({
       where: {
         identifier,
@@ -35,10 +34,6 @@ export class OtpService {
         expiresAt: new Date(Date.now() + 5 * 60 * 1000),
       },
     });
-
-    // TODO:
-    // SMS Provider
-    // Email Provider
 
     console.log(`OTP: ${code}`);
 
