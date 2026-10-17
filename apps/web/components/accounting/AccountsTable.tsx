@@ -6,9 +6,7 @@ import { Account } from "@/types";
 
 import { Button } from "@/components/ui/button";
 
-import {
-  Badge,
-} from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 
 import {
   DropdownMenu,
@@ -51,10 +49,7 @@ export default function AccountsTable({
     return (
       <div className="space-y-3 p-5">
         {[1, 2, 3, 4, 5].map((item) => (
-          <div
-            key={item}
-            className="h-12 animate-pulse rounded bg-muted"
-          />
+          <div key={item} className="h-12 animate-pulse rounded bg-muted" />
         ))}
       </div>
     );
@@ -80,7 +75,7 @@ export default function AccountsTable({
             <TableHead>Code</TableHead>
             <TableHead>Account Name</TableHead>
             <TableHead>Type</TableHead>
-            {/* <TableHead>Normal Balance</TableHead> */}
+            <TableHead>Amount</TableHead>
             {/* <TableHead>Status</TableHead> */}
             <TableHead>Account Class</TableHead>
             <TableHead className="text-right">Actions</TableHead>
@@ -106,11 +101,8 @@ export default function AccountsTable({
                 </div>
               </TableCell>
 
-              <TableCell>
-                {typeLabels[account.type]}
-              </TableCell>
+              <TableCell>{typeLabels[account.type]}</TableCell>
 
-         
               {/* <TableCell>
                 <Badge
                   variant={
@@ -124,25 +116,32 @@ export default function AccountsTable({
               </TableCell> */}
 
               <TableCell>
-                {account.isSystem ? "System" : "Custom"}
+                {new Intl.NumberFormat("en-NG", {
+                  style: "currency",
+                  currency: "NGN",
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                }).format(+account.balance)}
               </TableCell>
+
+              <TableCell>{account.isSystem ? "System" : "Custom"}</TableCell>
 
               <TableCell className="text-right">
                 <DropdownMenu>
-                  <DropdownMenuTrigger render={   <Button
-                      variant="ghost"
-                      size="icon"
-                      aria-label={`Actions for ${account.name}`}
-                    >
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>}>
-                 
-                  </DropdownMenuTrigger>
+                  <DropdownMenuTrigger
+                    render={
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label={`Actions for ${account.name}`}
+                      >
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    }
+                  ></DropdownMenuTrigger>
 
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      onClick={() => onEdit(account)}
-                    >
+                    <DropdownMenuItem onClick={() => onEdit(account)}>
                       <Pencil className="mr-2 h-4 w-4" />
                       Edit account
                     </DropdownMenuItem>

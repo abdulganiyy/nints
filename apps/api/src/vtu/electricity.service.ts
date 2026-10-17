@@ -42,31 +42,33 @@ export class ElectricityService {
      * and create a PENDING transaction.
      */
     const transaction = await this.prisma.$transaction(async (tx) => {
-\
-      const revenueAccount = await tx.account.findFirst({
+      
+const serviceFeeRevenueAccount = await tx.account.findFirst({
         where: {
           type: 'REVENUE',
-          code: '4100',
-          name: 'Transaction Fee Revenue',
+          code: '4200',
+          name: 'Service Fee Revenue',
         },
       });
 
-      if (!revenueAccount) {
+      if (!serviceFeeRevenueAccount) {
         throw new InternalServerErrorException(
-          'Transaction Fee Revenue account not found',
+          'Service Fee Revenue account not found',
         );
       }
 
-      const bankAccount = await tx.account.findFirst({
+      const vtuProviderAccount = await tx.account.findFirst({
         where: {
           type: 'ASSET',
-          code: '1100',
-          name: 'Bank / Cash',
+          code: '1200',
+          name: 'VTU Provider',
         },
       });
 
-      if (!bankAccount) {
-        throw new InternalServerErrorException('Bank/Cash account not found');
+      if (!vtuProviderAccount) {
+        throw new InternalServerErrorException(
+          'VTU Provider account not found',
+        );
       }
 
       const wallet = await tx.wallet.findUnique({
@@ -131,20 +133,7 @@ export class ElectricityService {
         },
       });
 
-      await tx.account.updateMany({
-        where: {
-          id: bankAccount.id,
-          balance: {
-            gte: purchaseAmount,
-          },
-        },
-        data: {
-          balance: {
-            decrement: purchaseAmount,
-          },
-        },
-      });
-
+   
       /**
        * We need the balance AFTER the atomic debit.
        */
@@ -161,20 +150,6 @@ export class ElectricityService {
       const balanceAfter = updatedAccount.balance;
       const balanceBefore = balanceAfter.plus(purchaseAmount);
 
-      const updatedBankAccount = await tx.account.findUnique({
-        where: {
-          id: bankAccount.id,
-        },
-      });
-
-      if (!updatedBankAccount) {
-        throw new InternalServerErrorException(
-          'Bank Account not found after credit',
-        );
-      }
-
-      const bankBalanceAfter = updatedBankAccount.balance;
-      const bankBalanceBefore = bankBalanceAfter.plus(purchaseAmount);
 
       /**
        * Create the transaction as PENDING.
@@ -183,7 +158,7 @@ export class ElectricityService {
         data: {
           reference,
 
-          type: 'AIRTIME_PURCHASE',
+          type: 'BILL_PAYMENT',
 
           status: 'PENDING',
 
@@ -204,10 +179,8 @@ export class ElectricityService {
         walletId: wallet.id,
         balanceBefore,
         balanceAfter,
-        bankBalanceBefore,
-        bankBalanceAfter,
-        bankAccount,
-        revenueAccount,
+        serviceFeeRevenueAccount,
+        vtuProviderAccount,
         user: wallet.user,
       };
     });
@@ -263,13 +236,23 @@ export class ElectricityService {
 
         const feeAmount = purchaseAmount.minus(providerCost);
 
-        const revenueBalanceBefore = transaction.revenueAccount.balance;
-
-        const revenueBalanceAfter = revenueBalanceBefore.plus(feeAmount);
+        await tx.account.updateMany({
+          where: {
+            id: transaction.vtuProviderAccount.id,
+            balance: {
+              gte: providerCost,
+            },
+          },
+          data: {
+            balance: {
+              decrement: providerCost,
+            },
+          },
+        });
 
         await tx.account.updateMany({
           where: {
-            name: 'Transaction Fee Revenue',
+            name: 'Service Fee Revenue',
           },
           data: {
             balance: {
@@ -278,12 +261,22 @@ export class ElectricityService {
           },
         });
 
+        const vtuProviderBalanceBefore = transaction.vtuProviderAccount.balance;
+        const vtuProviderBalanceAfter =
+          vtuProviderBalanceBefore.minus(providerCost);
+
+        const revenueBalanceBefore =
+          transaction.serviceFeeRevenueAccount.balance;
+
+        const revenueBalanceAfter = revenueBalanceBefore.plus(feeAmount);
+
+
         await tx.ledgerEntry.createMany({
           data: [
             {
               transactionId: transaction.transaction.id,
 
-              accountId: transaction.revenueAccount.id,
+              accountId: transaction.serviceFeeRevenueAccount.id,
 
               direction: 'CREDIT',
 
@@ -296,15 +289,15 @@ export class ElectricityService {
             {
               transactionId: transaction.transaction.id,
 
-              accountId: transaction.bankAccount.id,
+              accountId: transaction.vtuProviderAccount.id,
 
               direction: 'CREDIT',
 
               amount,
 
-              balanceBefore: transaction.bankBalanceBefore,
+              balanceBefore: vtuProviderBalanceBefore,
 
-              balanceAfter: transaction.bankBalanceAfter,
+              balanceAfter: vtuProviderBalanceAfter,
             },
 
             {
@@ -365,7 +358,7 @@ export class ElectricityService {
     await this.refundFailedPurchase({
       transactionId: transaction.transaction.id,
       accountId: transaction.accountId,
-      bankAccountId: transaction.bankAccount.id,
+      vtuProviderAccountId: transaction.vtuProviderAccount.id,
       walletId: transaction.walletId,
       amount: purchaseAmount,
       phoneNumber: transaction.user.phone!,
@@ -392,7 +385,7 @@ export class ElectricityService {
     transactionId: string;
     accountId: string;
     walletId: string;
-    bankAccountId: string;
+    vtuProviderAccountId: string;
     amount: Prisma.Decimal;
     phoneNumber: string;
     identifier: string;
@@ -426,16 +419,7 @@ export class ElectricityService {
       /**
        * Get current account balance.
        */
-      const bankAccount = await tx.account.findUnique({
-        where: {
-          id: params.bankAccountId,
-        },
-      });
-
-      if (!bankAccount) {
-        throw new InternalServerErrorException('Bank Account not found');
-      }
-
+    
       const account = await tx.account.findUnique({
         where: {
           id: params.accountId,
@@ -445,9 +429,6 @@ export class ElectricityService {
       if (!account) {
         throw new InternalServerErrorException('Account not found');
       }
-
-      const bankBalanceBefore = bankAccount.balance;
-      const bankBalanceAfter = bankBalanceBefore.plus(params.amount);
 
       const balanceBefore = account.balance;
       const balanceAfter = balanceBefore.plus(params.amount);
@@ -473,58 +454,6 @@ export class ElectricityService {
         },
       });
 
-      await tx.account.update({
-        where: {
-          id: params.bankAccountId,
-        },
-        data: {
-          balance: bankBalanceAfter,
-        },
-      });
-
-      /**
-       * Compensating ledger entry.
-       *
-       * Original:
-       *
-       * DEBIT ₦5,000
-       *
-       * Refund:
-       *
-       * CREDIT ₦5,000
-       */
-
-      await tx.ledgerEntry.createMany({
-        data: [
-          {
-            transactionId: params.transactionId,
-
-            accountId: params.bankAccountId,
-
-            direction: 'DEBIT',
-
-            amount: params.amount,
-
-            balanceBefore: bankBalanceBefore,
-
-            balanceAfter: bankBalanceAfter,
-          },
-
-          {
-            transactionId: params.transactionId,
-
-            accountId: params.accountId,
-
-            amount: params.amount,
-
-            direction: 'CREDIT',
-
-            balanceBefore,
-
-            balanceAfter,
-          },
-        ],
-      });
       /**
        * Mark the transaction as FAILED.
        */
