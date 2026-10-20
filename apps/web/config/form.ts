@@ -19,12 +19,12 @@ export const registerFieldConfig: FieldConfig[] = [
   {
     name: "password",
     label: "Password",
-    type: "text",
+    type: "password",
   },
   {
     name: "confirmPassword",
     label: "Confirm Password",
-    type: "text",
+    type: "password",
   },
   {
     name: "agreed",
@@ -43,7 +43,7 @@ export const loginFieldConfig: FieldConfig[] = [
   {
     name: "password",
     label: "Password",
-    type: "text",
+    type: "password",
   },
 ];
 

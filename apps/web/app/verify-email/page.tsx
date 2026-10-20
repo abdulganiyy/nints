@@ -14,7 +14,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
 
 export default function VerifyEmailPage() {
@@ -23,9 +23,7 @@ export default function VerifyEmailPage() {
   const token = searchParams.get("token");
   const email = searchParams.get("email");
 
-  console.log(email, token);
-
-  const verifyMutation = useMutation({
+  const verifyMutation = useMutation<any, AxiosError<any>>({
     mutationFn: verify,
   });
 
@@ -60,6 +58,17 @@ export default function VerifyEmailPage() {
 
     return response.data;
   }
+
+  const errorMessage =
+    verifyMutation.error?.response?.data?.message ||
+    verifyMutation.error?.message ||
+    "";
+
+  const isExpired = /OTP expired/i.test(errorMessage);
+
+  const isInvalidLink =
+    /invalid verification attempt|no OTP found|invalid OTP/i.test(errorMessage);
+
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-50 p-6">
@@ -99,62 +108,61 @@ export default function VerifyEmailPage() {
 
         {verifyMutation.isError && (
           <>
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-yellow-100">
-              <Clock3 className="h-10 w-10 text-yellow-600" />
-            </div>
+            {isExpired ? (
+              <>
+                <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-yellow-100">
+                  <Clock3 className="h-10 w-10 text-yellow-600" />
+                </div>
 
-            <h1 className="mt-8 text-3xl font-bold">Link Expired</h1>
+                <h1 className="mt-8 text-3xl font-bold">Link Expired</h1>
 
-            <p className="mt-4 text-slate-600">
-              This verification link has expired.
-            </p>
+                <p className="mt-4 text-slate-600">
+                  This verification link has expired.
+                </p>
 
-            <Button
-              className="mt-10 w-full"
-              onClick={() => resendVerificationMutation.mutate()}
-            >
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Send Another Email
-            </Button>
+                <Button
+                  className="mt-10 w-full"
+                  onClick={() => resendVerificationMutation.mutate()}
+                >
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Send Another Email
+                </Button>
+              </>
+            ) : isInvalidLink ? (
+              <>
+                <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-red-100">
+                  <XCircle className="h-10 w-10 text-red-600" />
+                </div>
+
+                <h1 className="mt-8 text-3xl font-bold">Invalid Link</h1>
+
+                <p className="mt-4 text-slate-600">
+                  This verification link is invalid or has already been used.
+                </p>
+
+                <Button className="mt-10 w-full">
+                  <Link href="/verify-email">Request New Email</Link>
+                </Button>
+              </>
+            ) : (
+              <>
+                <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-red-100">
+                  <RefreshCw className="h-10 w-10 text-red-600" />
+                </div>
+
+                <h1 className="mt-8 text-3xl font-bold">Connection Error</h1>
+
+                <p className="mt-4 text-slate-600">
+                  Unable to verify your email right now.
+                </p>
+
+                <Button className="mt-10 w-full" onClick={verify}>
+                  Retry
+                </Button>
+              </>
+            )}
           </>
         )}
-
-        {verifyMutation.isError && (
-          <>
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-red-100">
-              <XCircle className="h-10 w-10 text-red-600" />
-            </div>
-
-            <h1 className="mt-8 text-3xl font-bold">Invalid Link</h1>
-
-            <p className="mt-4 text-slate-600">
-              This verification link is invalid or has already been used.
-            </p>
-
-            <Button className="mt-10 w-full">
-              <Link href="/verify-email">Request New Email</Link>
-            </Button>
-          </>
-        )}
-
-        {verifyMutation.isError && (
-          <>
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-red-100">
-              <RefreshCw className="h-10 w-10 text-red-600" />
-            </div>
-
-            <h1 className="mt-8 text-3xl font-bold">Connection Error</h1>
-
-            <p className="mt-4 text-slate-600">
-              Unable to verify your email right now.
-            </p>
-
-            <Button className="mt-10 w-full" onClick={verify}>
-              Retry
-            </Button>
-          </>
-        )}
-
       </Card>
     </main>
   );

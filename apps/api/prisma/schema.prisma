@@ -48,6 +48,11 @@ model User {
   referralsGiven    Referral[] @relation("Referrer")
   referralReceived  Referral?  @relation("ReferredUser")
   referralRewards   ReferralReward[]
+
+  bankName                    String?
+  accountNumber               String?
+  accountName                 String?
+
 }
 
 model Wallet {

@@ -29,6 +29,14 @@ import { cloudinaryUploader } from "@/lib/upload";
 import { ArrayField } from "./ArrayField";
 import { SearchableSelect } from "./SearchableSelect";
 import { MultiSelectField } from "./MultiSelect";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText,
+} from "../ui/input-group";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { PasswordInput } from "./PasswordInput";
 
 type Props = {
   field: FieldConfig;
@@ -105,7 +113,7 @@ export default function FieldRenderer({ field }: Props) {
                 id={field.name}
                 name={rhField.name}
                 aria-invalid={rhFieldState.invalid}
-                checked={rhField.value}
+                checked={rhField.value ?? false}
                 onCheckedChange={rhField.onChange}
               />
               <Label htmlFor={field.name}>{field.label}</Label>
@@ -204,6 +212,10 @@ export default function FieldRenderer({ field }: Props) {
             />
           )}
 
+          {field.type == "password" && (
+            <PasswordInput field={field} rhField={rhField} />
+          )}
+
           {![
             "number",
             "textarea",
@@ -215,6 +227,7 @@ export default function FieldRenderer({ field }: Props) {
             "array",
             "multi-select",
             "searchable-select",
+            "password",
           ].includes(field.type) && (
             <Input
               {...rhField}

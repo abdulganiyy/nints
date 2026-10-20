@@ -12,4 +12,17 @@ export class WalletController {
   getUserWallet(@GetUser() user: any) {
     return this.walletService.getUserWallet(user.userId);
   }
+
+
+  @Post('withdraw')
+  withdraw(
+    @Body()
+    dto: {
+      walletId: string;
+      amount: string;
+      providerReference: string;
+    },
+  ) {
+    return this.walletService.withdraw(dto);
+  }
 }

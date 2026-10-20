@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { FundWalletDialog } from "../wallet/FundWalletDialog";
 
 interface BalanceCardProps {
   availableBalance?: number;
@@ -29,6 +30,8 @@ interface BalanceCardProps {
 }
 
 export default function BalanceCard() {
+  const [fundDialogOpen, setFundDialogOpen] = useState(false);
+
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["wallet"],
     queryFn: async () => {
@@ -136,13 +139,23 @@ export default function BalanceCard() {
         {/* Actions */}
 
         <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3">
+          <Button
+            variant="secondary"
+            className="h-20 flex-col gap-2 rounded-2xl bg-white/15 text-white backdrop-blur hover:bg-white/25"
+            onClick={() => setFundDialogOpen(true)}
+          >
+            Fund wallet
+          </Button>
+          <FundWalletDialog
+            open={fundDialogOpen}
+            onOpenChange={setFundDialogOpen}
+          />
           {/* <ActionButton
             href="/wallet/fund"
             icon={<ArrowDownLeft className="h-5 w-5" />}
             title="Fund"
           /> */}
-
-          <ActionButton
+          {/* <ActionButton
             href="/dashboard"
             icon={<ArrowUpRight className="h-5 w-5" />}
             title="Transfer"
@@ -152,7 +165,7 @@ export default function BalanceCard() {
             href="/dashboard"
             icon={<Landmark className="h-5 w-5" />}
             title="Withdraw"
-          />
+          /> */}
         </div>
       </div>
     </Card>

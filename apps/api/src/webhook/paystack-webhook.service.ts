@@ -196,6 +196,27 @@ export class PaystackWebhookService {
           throw new BadRequestException('Paystack clearing account not found');
         }
 
+        const transactionFeeRevenueAccount = await tx.account.findFirst({
+          where: {
+            name: 'Transaction Fee Revenue',
+            type: 'REVENUE',
+          },
+        });
+
+        if (!transactionFeeRevenueAccount) {
+          throw new BadRequestException(
+            'Transaction Fee Revenue account not found',
+          );
+        }
+
+        const totalFee = (data.fees ?? 0) / 100 + 100;
+
+        const walletAmount = amount - totalFee;
+
+        if (walletAmount <= 0) {
+          return {};
+        }
+
         /**
          * 6. Create transaction
          */
@@ -205,7 +226,7 @@ export class PaystackWebhookService {
 
             status: 'SUCCESS',
 
-            amount,
+            amount: walletAmount,
 
             currency: data.currency,
 
@@ -249,7 +270,7 @@ export class PaystackWebhookService {
 
               direction: 'DEBIT',
 
-              amount,
+              amount: walletAmount + 100,
             },
 
             {
@@ -259,7 +280,16 @@ export class PaystackWebhookService {
 
               direction: 'CREDIT',
 
-              amount,
+              amount: walletAmount,
+            },
+            {
+              transactionId: transaction.id,
+
+              accountId: transactionFeeRevenueAccount.id,
+
+              direction: 'CREDIT',
+
+              amount: 100,
             },
           ],
         });
@@ -274,7 +304,7 @@ export class PaystackWebhookService {
 
           data: {
             balance: {
-              increment: amount,
+              increment: walletAmount,
             },
           },
         });
@@ -286,7 +316,7 @@ export class PaystackWebhookService {
 
           data: {
             balance: {
-              increment: amount,
+              increment: walletAmount,
             },
           },
         });
@@ -297,7 +327,7 @@ export class PaystackWebhookService {
           },
           data: {
             balance: {
-              increment: amount,
+              increment: walletAmount + 100,
             },
           },
         });
