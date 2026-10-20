@@ -34,11 +34,13 @@ import { toast } from "sonner";
 interface DashboardHeaderProps {
   name?: string;
   avatar?: string;
+  roles: string[];
 }
 
 export default function DashboardHeader({
   name = "Abdulganiyy",
   avatar,
+  roles,
 }: DashboardHeaderProps) {
   const router = useRouter();
 
@@ -85,6 +87,10 @@ export default function DashboardHeader({
           <Button variant="ghost" size="icon" className="lg:hidden">
             <Search className="h-5 w-5" />
           </Button>
+
+          {roles.includes("SUPER_ADMIN") && (
+            <Link href="/admin/dashboard">Admin Dashboard</Link>
+          )}
 
           {/* Notifications */}
 

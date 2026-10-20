@@ -9,6 +9,6 @@ export function useUser() {
 
       return response.data;
     },
-    queryKey: ["user"],
+    queryKey: ["me"],
   });
 }

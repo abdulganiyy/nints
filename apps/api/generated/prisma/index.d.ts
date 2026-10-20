@@ -2530,6 +2530,9 @@ export namespace Prisma {
     updatedAt: Date | null
     deleted: boolean | null
     deletedAt: Date | null
+    bankName: string | null
+    accountNumber: string | null
+    accountName: string | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -2554,6 +2557,9 @@ export namespace Prisma {
     updatedAt: Date | null
     deleted: boolean | null
     deletedAt: Date | null
+    bankName: string | null
+    accountNumber: string | null
+    accountName: string | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -2578,6 +2584,9 @@ export namespace Prisma {
     updatedAt: number
     deleted: number
     deletedAt: number
+    bankName: number
+    accountNumber: number
+    accountName: number
     _all: number
   }
 
@@ -2604,6 +2613,9 @@ export namespace Prisma {
     updatedAt?: true
     deleted?: true
     deletedAt?: true
+    bankName?: true
+    accountNumber?: true
+    accountName?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -2628,6 +2640,9 @@ export namespace Prisma {
     updatedAt?: true
     deleted?: true
     deletedAt?: true
+    bankName?: true
+    accountNumber?: true
+    accountName?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -2652,6 +2667,9 @@ export namespace Prisma {
     updatedAt?: true
     deleted?: true
     deletedAt?: true
+    bankName?: true
+    accountNumber?: true
+    accountName?: true
     _all?: true
   }
 
@@ -2749,6 +2767,9 @@ export namespace Prisma {
     updatedAt: Date
     deleted: boolean
     deletedAt: Date | null
+    bankName: string | null
+    accountNumber: string | null
+    accountName: string | null
     _count: UserCountAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
@@ -2790,6 +2811,9 @@ export namespace Prisma {
     updatedAt?: boolean
     deleted?: boolean
     deletedAt?: boolean
+    bankName?: boolean
+    accountNumber?: boolean
+    accountName?: boolean
     wallet?: boolean | User$walletArgs<ExtArgs>
     userRoles?: boolean | User$userRolesArgs<ExtArgs>
     otps?: boolean | User$otpsArgs<ExtArgs>
@@ -2822,6 +2846,9 @@ export namespace Prisma {
     updatedAt?: boolean
     deleted?: boolean
     deletedAt?: boolean
+    bankName?: boolean
+    accountNumber?: boolean
+    accountName?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -2846,6 +2873,9 @@ export namespace Prisma {
     updatedAt?: boolean
     deleted?: boolean
     deletedAt?: boolean
+    bankName?: boolean
+    accountNumber?: boolean
+    accountName?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
@@ -2870,9 +2900,12 @@ export namespace Prisma {
     updatedAt?: boolean
     deleted?: boolean
     deletedAt?: boolean
+    bankName?: boolean
+    accountNumber?: boolean
+    accountName?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "phone" | "fullname" | "password" | "profileImage" | "emailVerified" | "emailOtpHash" | "emailOtpExpiresAt" | "otp" | "otpExpiresAt" | "resetPasswordToken" | "resetPasswordExpiresAt" | "pin" | "status" | "phoneVerified" | "paystackCustomerId" | "createdAt" | "updatedAt" | "deleted" | "deletedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "phone" | "fullname" | "password" | "profileImage" | "emailVerified" | "emailOtpHash" | "emailOtpExpiresAt" | "otp" | "otpExpiresAt" | "resetPasswordToken" | "resetPasswordExpiresAt" | "pin" | "status" | "phoneVerified" | "paystackCustomerId" | "createdAt" | "updatedAt" | "deleted" | "deletedAt" | "bankName" | "accountNumber" | "accountName", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     wallet?: boolean | User$walletArgs<ExtArgs>
     userRoles?: boolean | User$userRolesArgs<ExtArgs>
@@ -2919,6 +2952,9 @@ export namespace Prisma {
       updatedAt: Date
       deleted: boolean
       deletedAt: Date | null
+      bankName: string | null
+      accountNumber: string | null
+      accountName: string | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -3370,6 +3406,9 @@ export namespace Prisma {
     readonly updatedAt: FieldRef<"User", 'DateTime'>
     readonly deleted: FieldRef<"User", 'Boolean'>
     readonly deletedAt: FieldRef<"User", 'DateTime'>
+    readonly bankName: FieldRef<"User", 'String'>
+    readonly accountNumber: FieldRef<"User", 'String'>
+    readonly accountName: FieldRef<"User", 'String'>
   }
     
 
@@ -18586,7 +18625,10 @@ export namespace Prisma {
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     deleted: 'deleted',
-    deletedAt: 'deletedAt'
+    deletedAt: 'deletedAt',
+    bankName: 'bankName',
+    accountNumber: 'accountNumber',
+    accountName: 'accountName'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -19122,6 +19164,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
     deleted?: BoolFilter<"User"> | boolean
     deletedAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    bankName?: StringNullableFilter<"User"> | string | null
+    accountNumber?: StringNullableFilter<"User"> | string | null
+    accountName?: StringNullableFilter<"User"> | string | null
     wallet?: XOR<WalletNullableScalarRelationFilter, WalletWhereInput> | null
     userRoles?: UserRoleListRelationFilter
     otps?: OtpListRelationFilter
@@ -19153,6 +19198,9 @@ export namespace Prisma {
     updatedAt?: SortOrder
     deleted?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
+    bankName?: SortOrderInput | SortOrder
+    accountNumber?: SortOrderInput | SortOrder
+    accountName?: SortOrderInput | SortOrder
     wallet?: WalletOrderByWithRelationInput
     userRoles?: UserRoleOrderByRelationAggregateInput
     otps?: OtpOrderByRelationAggregateInput
@@ -19187,6 +19235,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
     deleted?: BoolFilter<"User"> | boolean
     deletedAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    bankName?: StringNullableFilter<"User"> | string | null
+    accountNumber?: StringNullableFilter<"User"> | string | null
+    accountName?: StringNullableFilter<"User"> | string | null
     wallet?: XOR<WalletNullableScalarRelationFilter, WalletWhereInput> | null
     userRoles?: UserRoleListRelationFilter
     otps?: OtpListRelationFilter
@@ -19218,6 +19269,9 @@ export namespace Prisma {
     updatedAt?: SortOrder
     deleted?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
+    bankName?: SortOrderInput | SortOrder
+    accountNumber?: SortOrderInput | SortOrder
+    accountName?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
@@ -19248,6 +19302,9 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     deleted?: BoolWithAggregatesFilter<"User"> | boolean
     deletedAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+    bankName?: StringNullableWithAggregatesFilter<"User"> | string | null
+    accountNumber?: StringNullableWithAggregatesFilter<"User"> | string | null
+    accountName?: StringNullableWithAggregatesFilter<"User"> | string | null
   }
 
   export type WalletWhereInput = {
@@ -20161,6 +20218,9 @@ export namespace Prisma {
     updatedAt?: Date | string
     deleted?: boolean
     deletedAt?: Date | string | null
+    bankName?: string | null
+    accountNumber?: string | null
+    accountName?: string | null
     wallet?: WalletCreateNestedOneWithoutUserInput
     userRoles?: UserRoleCreateNestedManyWithoutUserInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -20192,6 +20252,9 @@ export namespace Prisma {
     updatedAt?: Date | string
     deleted?: boolean
     deletedAt?: Date | string | null
+    bankName?: string | null
+    accountNumber?: string | null
+    accountName?: string | null
     wallet?: WalletUncheckedCreateNestedOneWithoutUserInput
     userRoles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -20223,6 +20286,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    accountName?: NullableStringFieldUpdateOperationsInput | string | null
     wallet?: WalletUpdateOneWithoutUserNestedInput
     userRoles?: UserRoleUpdateManyWithoutUserNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -20254,6 +20320,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    accountName?: NullableStringFieldUpdateOperationsInput | string | null
     wallet?: WalletUncheckedUpdateOneWithoutUserNestedInput
     userRoles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -20285,6 +20354,9 @@ export namespace Prisma {
     updatedAt?: Date | string
     deleted?: boolean
     deletedAt?: Date | string | null
+    bankName?: string | null
+    accountNumber?: string | null
+    accountName?: string | null
   }
 
   export type UserUpdateManyMutationInput = {
@@ -20309,6 +20381,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    accountName?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -20333,6 +20408,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    accountName?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type WalletCreateInput = {
@@ -21409,6 +21487,9 @@ export namespace Prisma {
     updatedAt?: SortOrder
     deleted?: SortOrder
     deletedAt?: SortOrder
+    bankName?: SortOrder
+    accountNumber?: SortOrder
+    accountName?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -21433,6 +21514,9 @@ export namespace Prisma {
     updatedAt?: SortOrder
     deleted?: SortOrder
     deletedAt?: SortOrder
+    bankName?: SortOrder
+    accountNumber?: SortOrder
+    accountName?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -21457,6 +21541,9 @@ export namespace Prisma {
     updatedAt?: SortOrder
     deleted?: SortOrder
     deletedAt?: SortOrder
+    bankName?: SortOrder
+    accountNumber?: SortOrder
+    accountName?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -24224,6 +24311,9 @@ export namespace Prisma {
     updatedAt?: Date | string
     deleted?: boolean
     deletedAt?: Date | string | null
+    bankName?: string | null
+    accountNumber?: string | null
+    accountName?: string | null
     userRoles?: UserRoleCreateNestedManyWithoutUserInput
     otps?: OtpCreateNestedManyWithoutUserInput
     referralCode?: ReferralCodeCreateNestedOneWithoutUserInput
@@ -24254,6 +24344,9 @@ export namespace Prisma {
     updatedAt?: Date | string
     deleted?: boolean
     deletedAt?: Date | string | null
+    bankName?: string | null
+    accountNumber?: string | null
+    accountName?: string | null
     userRoles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
     referralCode?: ReferralCodeUncheckedCreateNestedOneWithoutUserInput
@@ -24356,6 +24449,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    accountName?: NullableStringFieldUpdateOperationsInput | string | null
     userRoles?: UserRoleUpdateManyWithoutUserNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
     referralCode?: ReferralCodeUpdateOneWithoutUserNestedInput
@@ -24386,6 +24482,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    accountName?: NullableStringFieldUpdateOperationsInput | string | null
     userRoles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
     referralCode?: ReferralCodeUncheckedUpdateOneWithoutUserNestedInput
@@ -24945,6 +25044,9 @@ export namespace Prisma {
     updatedAt?: Date | string
     deleted?: boolean
     deletedAt?: Date | string | null
+    bankName?: string | null
+    accountNumber?: string | null
+    accountName?: string | null
     wallet?: WalletCreateNestedOneWithoutUserInput
     otps?: OtpCreateNestedManyWithoutUserInput
     referralCode?: ReferralCodeCreateNestedOneWithoutUserInput
@@ -24975,6 +25077,9 @@ export namespace Prisma {
     updatedAt?: Date | string
     deleted?: boolean
     deletedAt?: Date | string | null
+    bankName?: string | null
+    accountNumber?: string | null
+    accountName?: string | null
     wallet?: WalletUncheckedCreateNestedOneWithoutUserInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
     referralCode?: ReferralCodeUncheckedCreateNestedOneWithoutUserInput
@@ -25048,6 +25153,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    accountName?: NullableStringFieldUpdateOperationsInput | string | null
     wallet?: WalletUpdateOneWithoutUserNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
     referralCode?: ReferralCodeUpdateOneWithoutUserNestedInput
@@ -25078,6 +25186,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    accountName?: NullableStringFieldUpdateOperationsInput | string | null
     wallet?: WalletUncheckedUpdateOneWithoutUserNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
     referralCode?: ReferralCodeUncheckedUpdateOneWithoutUserNestedInput
@@ -25230,6 +25341,9 @@ export namespace Prisma {
     updatedAt?: Date | string
     deleted?: boolean
     deletedAt?: Date | string | null
+    bankName?: string | null
+    accountNumber?: string | null
+    accountName?: string | null
     wallet?: WalletCreateNestedOneWithoutUserInput
     userRoles?: UserRoleCreateNestedManyWithoutUserInput
     referralCode?: ReferralCodeCreateNestedOneWithoutUserInput
@@ -25260,6 +25374,9 @@ export namespace Prisma {
     updatedAt?: Date | string
     deleted?: boolean
     deletedAt?: Date | string | null
+    bankName?: string | null
+    accountNumber?: string | null
+    accountName?: string | null
     wallet?: WalletUncheckedCreateNestedOneWithoutUserInput
     userRoles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     referralCode?: ReferralCodeUncheckedCreateNestedOneWithoutUserInput
@@ -25306,6 +25423,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    accountName?: NullableStringFieldUpdateOperationsInput | string | null
     wallet?: WalletUpdateOneWithoutUserNestedInput
     userRoles?: UserRoleUpdateManyWithoutUserNestedInput
     referralCode?: ReferralCodeUpdateOneWithoutUserNestedInput
@@ -25336,6 +25456,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    accountName?: NullableStringFieldUpdateOperationsInput | string | null
     wallet?: WalletUncheckedUpdateOneWithoutUserNestedInput
     userRoles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     referralCode?: ReferralCodeUncheckedUpdateOneWithoutUserNestedInput
@@ -25366,6 +25489,9 @@ export namespace Prisma {
     updatedAt?: Date | string
     deleted?: boolean
     deletedAt?: Date | string | null
+    bankName?: string | null
+    accountNumber?: string | null
+    accountName?: string | null
     wallet?: WalletCreateNestedOneWithoutUserInput
     userRoles?: UserRoleCreateNestedManyWithoutUserInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -25396,6 +25522,9 @@ export namespace Prisma {
     updatedAt?: Date | string
     deleted?: boolean
     deletedAt?: Date | string | null
+    bankName?: string | null
+    accountNumber?: string | null
+    accountName?: string | null
     wallet?: WalletUncheckedCreateNestedOneWithoutUserInput
     userRoles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -25442,6 +25571,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    accountName?: NullableStringFieldUpdateOperationsInput | string | null
     wallet?: WalletUpdateOneWithoutUserNestedInput
     userRoles?: UserRoleUpdateManyWithoutUserNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -25472,6 +25604,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    accountName?: NullableStringFieldUpdateOperationsInput | string | null
     wallet?: WalletUncheckedUpdateOneWithoutUserNestedInput
     userRoles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -25502,6 +25637,9 @@ export namespace Prisma {
     updatedAt?: Date | string
     deleted?: boolean
     deletedAt?: Date | string | null
+    bankName?: string | null
+    accountNumber?: string | null
+    accountName?: string | null
     wallet?: WalletCreateNestedOneWithoutUserInput
     userRoles?: UserRoleCreateNestedManyWithoutUserInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -25532,6 +25670,9 @@ export namespace Prisma {
     updatedAt?: Date | string
     deleted?: boolean
     deletedAt?: Date | string | null
+    bankName?: string | null
+    accountNumber?: string | null
+    accountName?: string | null
     wallet?: WalletUncheckedCreateNestedOneWithoutUserInput
     userRoles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -25567,6 +25708,9 @@ export namespace Prisma {
     updatedAt?: Date | string
     deleted?: boolean
     deletedAt?: Date | string | null
+    bankName?: string | null
+    accountNumber?: string | null
+    accountName?: string | null
     wallet?: WalletCreateNestedOneWithoutUserInput
     userRoles?: UserRoleCreateNestedManyWithoutUserInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -25597,6 +25741,9 @@ export namespace Prisma {
     updatedAt?: Date | string
     deleted?: boolean
     deletedAt?: Date | string | null
+    bankName?: string | null
+    accountNumber?: string | null
+    accountName?: string | null
     wallet?: WalletUncheckedCreateNestedOneWithoutUserInput
     userRoles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -25681,6 +25828,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    accountName?: NullableStringFieldUpdateOperationsInput | string | null
     wallet?: WalletUpdateOneWithoutUserNestedInput
     userRoles?: UserRoleUpdateManyWithoutUserNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -25711,6 +25861,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    accountName?: NullableStringFieldUpdateOperationsInput | string | null
     wallet?: WalletUncheckedUpdateOneWithoutUserNestedInput
     userRoles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -25752,6 +25905,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    accountName?: NullableStringFieldUpdateOperationsInput | string | null
     wallet?: WalletUpdateOneWithoutUserNestedInput
     userRoles?: UserRoleUpdateManyWithoutUserNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -25782,6 +25938,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    accountName?: NullableStringFieldUpdateOperationsInput | string | null
     wallet?: WalletUncheckedUpdateOneWithoutUserNestedInput
     userRoles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput
@@ -25853,6 +26012,9 @@ export namespace Prisma {
     updatedAt?: Date | string
     deleted?: boolean
     deletedAt?: Date | string | null
+    bankName?: string | null
+    accountNumber?: string | null
+    accountName?: string | null
     wallet?: WalletCreateNestedOneWithoutUserInput
     userRoles?: UserRoleCreateNestedManyWithoutUserInput
     otps?: OtpCreateNestedManyWithoutUserInput
@@ -25883,6 +26045,9 @@ export namespace Prisma {
     updatedAt?: Date | string
     deleted?: boolean
     deletedAt?: Date | string | null
+    bankName?: string | null
+    accountNumber?: string | null
+    accountName?: string | null
     wallet?: WalletUncheckedCreateNestedOneWithoutUserInput
     userRoles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     otps?: OtpUncheckedCreateNestedManyWithoutUserInput
@@ -25960,6 +26125,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    accountName?: NullableStringFieldUpdateOperationsInput | string | null
     wallet?: WalletUpdateOneWithoutUserNestedInput
     userRoles?: UserRoleUpdateManyWithoutUserNestedInput
     otps?: OtpUpdateManyWithoutUserNestedInput
@@ -25990,6 +26158,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    accountName?: NullableStringFieldUpdateOperationsInput | string | null
     wallet?: WalletUncheckedUpdateOneWithoutUserNestedInput
     userRoles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     otps?: OtpUncheckedUpdateManyWithoutUserNestedInput

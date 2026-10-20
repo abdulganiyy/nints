@@ -141,7 +141,10 @@ exports.Prisma.UserScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deleted: 'deleted',
-  deletedAt: 'deletedAt'
+  deletedAt: 'deletedAt',
+  bankName: 'bankName',
+  accountNumber: 'accountNumber',
+  accountName: 'accountName'
 };
 
 exports.Prisma.WalletScalarFieldEnum = {

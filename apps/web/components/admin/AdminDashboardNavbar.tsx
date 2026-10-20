@@ -37,6 +37,8 @@ export const AdminDashboardNavbar = () => {
     },
   });
 
+  if (!data) return null;
+
   return (
     <div className="py-5 px-7.25 border-b flex justify-between text-[#627B87]">
       <div>
@@ -46,6 +48,9 @@ export const AdminDashboardNavbar = () => {
         {/* <Button variant="ghost" size="icon" className="">
           <Search className="h-5 w-5" />
         </Button> */}
+        {data.roles.includes("USER") && (
+          <Link href="/dashboard">User Dashboard</Link>
+        )}
       </div>
 
       <div className="flex items-center gap-2">
