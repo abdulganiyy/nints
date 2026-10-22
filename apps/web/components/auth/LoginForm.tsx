@@ -45,12 +45,20 @@ const LoginForm = () => {
         submitText="Sign In"
         isSubmitting={mutation.isPending}
         footer={
+          <>
           <p className="text-slate-500 text-center">
             Don't have an account yet?{" "}
             <Link href="/register" className="font-semibold text-emerald-600">
               Register
             </Link>
           </p>
+          <p className="text-slate-500 text-center">
+            Forgot Password?{" "}
+            <Link href="/forgot-password" className="font-semibold text-emerald-600">
+              Reset Password
+            </Link>
+          </p>
+          </>
         }
       />
     </div>
