@@ -1,10 +1,19 @@
-import { AccountType, RoleName } from '../generated/prisma';
-import { PrismaService } from '../src/prisma/prisma.service';
+import { AccountType, PrismaClient, RoleName } from '../generated/prisma';
 import * as argon2 from 'argon2';
 import { PERMISSIONS } from '../src/constants/permission.constant';
 import { ROLE_PERMISSIONS } from '../src/constants/role_permission.constant';
+import { PrismaPg } from '@prisma/adapter-pg';
 
-const prisma = new PrismaService();
+const connectionString = process.env.DATABASE_URL;
+
+if (!connectionString) {
+  throw new Error('DATABASE_URL is missing');
+}
+
+const adapter = new PrismaPg({ connectionString });
+
+const prisma = new PrismaClient({ adapter });
+
 
 async function main() {
   const superAdminPassword = await argon2.hash(
@@ -249,7 +258,7 @@ main()
     await prisma.$disconnect();
   })
   .catch(async (e) => {
-    console.error(e);
+      console.dir(e, { depth: null });
     await prisma.$disconnect();
     process.exit(1);
   });
