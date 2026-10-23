@@ -178,7 +178,7 @@ export function FundWalletDialog({
                 </p>
               ) : (
                 <p className="mt-1 text-2xl font-semibold tracking-tight">
-                  {formatMoney(wallet!.balance, wallet!.currency)}
+                  {formatMoney(wallet!.balance ?? 0, wallet!.currency ?? "NGN")}
                 </p>
               )}
             </div>
