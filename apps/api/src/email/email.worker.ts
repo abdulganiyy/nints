@@ -17,11 +17,11 @@ export class EmailWorker extends WorkerHost {
           subject: 'Verify Your Email',
           template: 'verify-email',
           context: {
-            appName: 'Nints',
+            appName: 'NintPay',
             name: job.data.fullname,
             verificationUrl: `${process.env.FRONTEND_URL}/verify-email?token=${job.data.token}&email=${job.data.email}`,
             expiryMinutes: '10',
-            supportEmail: 'support@nints.com',
+            supportEmail: 'info@nintpay.com',
             year: new Date().getFullYear(),
           },
         });

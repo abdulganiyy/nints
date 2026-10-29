@@ -111,7 +111,8 @@ export const TransactionType: {
   REFUND: 'REFUND',
   REVERSAL: 'REVERSAL',
   FEE: 'FEE',
-  ADJUSTMENT: 'ADJUSTMENT'
+  ADJUSTMENT: 'ADJUSTMENT',
+  REFERRAL_REWARD: 'REFERRAL_REWARD'
 };
 
 export type TransactionType = (typeof TransactionType)[keyof typeof TransactionType]

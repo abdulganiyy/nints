@@ -2,6 +2,7 @@ import {
   Injectable,
   UnauthorizedException,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 
 import * as crypto from 'crypto';
@@ -9,12 +10,18 @@ import * as crypto from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 
 import { PaystackChargeSuccessEvent } from './type/paystack-charge-success.type';
+import { ReferralService } from '../referral/referral.service';
 
 @Injectable()
 export class PaystackWebhookService {
   private readonly secretKey = process.env.PAYSTACK_SECRET_KEY!;
 
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly logger = new Logger(PaystackWebhookService.name);
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private referralService: ReferralService,
+  ) {}
 
   async handle(
     rawBody: Buffer | undefined,
@@ -89,22 +96,12 @@ export class PaystackWebhookService {
 
     const reference = data.reference;
 
-    /**
-     * Paystack sends amount in kobo.
-     *
-     * Example:
-     *
-     * 500000 = ₦5,000
-     */
     const amount = data.amount / 100;
 
     if (amount <= 0) {
       throw new BadRequestException('Invalid transaction amount');
     }
 
-    /**
-     * Identify the virtual account.
-     */
     const accountNumber = data.authorization?.receiver_bank_account_number;
 
     if (!accountNumber) {
@@ -114,24 +111,8 @@ export class PaystackWebhookService {
     /**
      * Everything below happens atomically.
      */
-    return this.prisma.$transaction(
+    const result: any = await this.prisma.$transaction(
       async (tx) => {
-        /**
-         * 1. Idempotency check
-         */
-        const existingTransaction = await tx.transaction.findUnique({
-          where: {
-            reference,
-          },
-        });
-
-        if (existingTransaction) {
-          return existingTransaction;
-        }
-
-        /**
-         * 2. Find virtual account
-         */
         const virtualAccount = await tx.virtualAccount.findUnique({
           where: {
             accountNumber,
@@ -144,9 +125,6 @@ export class PaystackWebhookService {
           );
         }
 
-        /**
-         * 3. Find wallet
-         */
         const wallet = await tx.wallet.findUnique({
           where: {
             id: virtualAccount.walletId,
@@ -160,16 +138,22 @@ export class PaystackWebhookService {
           throw new BadRequestException('Wallet not found');
         }
 
-        /**
-         * 4. Check wallet status
-         */
         if (wallet.status !== 'ACTIVE') {
           throw new BadRequestException('Wallet is not active');
         }
 
-        /**
-         * 5. Find accounting accounts
-         */
+        const existingTransaction = await tx.transaction.findUnique({
+          where: {
+            reference,
+          },
+        });
+
+        if (existingTransaction) {
+          return {
+            transaction: existingTransaction,
+            userId: wallet.userId,
+          };
+        }
 
         const customerWalletAccount = await tx.account.findFirst({
           where: {
@@ -217,9 +201,6 @@ export class PaystackWebhookService {
           return {};
         }
 
-        /**
-         * 6. Create transaction
-         */
         const transaction = await tx.transaction.create({
           data: {
             type: 'DEPOSIT',
@@ -254,13 +235,6 @@ export class PaystackWebhookService {
           },
         });
 
-        /**
-         * 7. Create DOUBLE-ENTRY ledger
-         *
-         * DR Bank / Cash
-         * CR Customer Wallet
-         */
-
         await tx.ledgerEntry.createMany({
           data: [
             {
@@ -294,9 +268,6 @@ export class PaystackWebhookService {
           ],
         });
 
-        /**
-         * 8. Update wallet balance
-         */
         await tx.wallet.update({
           where: {
             id: wallet.id,
@@ -332,14 +303,34 @@ export class PaystackWebhookService {
           },
         });
 
-        /**
-         * 9. Return transaction
-         */
-        return transaction;
+        return {
+          transaction,
+          userId: wallet.userId,
+        };
       },
       {
         isolationLevel: 'Serializable',
       },
     );
+
+    // This point is reached only after the Prisma transaction commits.
+    if (
+      result.transaction.status === 'SUCCESS' &&
+      Number(result.transaction.amount) > 0
+    ) {
+      try {
+        await this.referralService.processFirstDepositReward(
+          result.userId,
+          result.transaction.id,
+        );
+      } catch (error) {
+        this.logger.error(
+          `Referral reward processing failed for deposit ${result.transaction.id}`,
+          error instanceof Error ? error.stack : String(error),
+        );
+      }
+    }
+
+    return result.transaction;
   }
 }

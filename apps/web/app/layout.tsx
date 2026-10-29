@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Nints",
+  title: "NintPay",
   description: "Easy to use wallet system",
 };
 

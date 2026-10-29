@@ -113,7 +113,7 @@ export default function Footer() {
               </div>
 
               <div>
-                <h2 className="text-2xl font-bold text-white">Nints</h2>
+                <h2 className="text-2xl font-bold text-white">NintPay</h2>
 
                 <p className="text-sm text-slate-400">
                   Smart Financial Platform
@@ -133,13 +133,13 @@ export default function Footer() {
               <div className="flex items-center gap-3">
                 <Mail className="h-5 w-5 text-emerald-500" />
 
-                <span>support@nints.com</span>
+                <span>info@nintpay.com</span>
               </div>
 
               <div className="flex items-center gap-3">
                 <Phone className="h-5 w-5 text-emerald-500" />
 
-                <span>+234 800 000 0000</span>
+                <span>+234 702 598 3758</span>
               </div>
 
               <div className="flex items-center gap-3">
@@ -240,7 +240,7 @@ export default function Footer() {
         {/* Bottom */}
 
         <div className="flex flex-col items-center justify-between gap-4 py-8 text-sm text-slate-500 md:flex-row">
-          <p>© {new Date().getFullYear()} Nints. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} NintPay. All rights reserved.</p>
 
           <div className="flex flex-wrap items-center gap-6">
             <span>Built for modern digital finance.</span>

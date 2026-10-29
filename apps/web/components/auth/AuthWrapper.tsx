@@ -32,7 +32,7 @@ export default function AuthSideBanner() {
     <div className="flex h-full flex-col justify-between bg-linear-to-br from-emerald-700 via-emerald-600 to-teal-600 p-12 text-white">
       <div>
         <Link href="/">
-          <h1 className="text-4xl font-bold">Nints</h1>
+          <h1 className="text-4xl font-bold">NintPay</h1>
         </Link>
 
         <p className="mt-8 text-5xl font-bold leading-tight">
