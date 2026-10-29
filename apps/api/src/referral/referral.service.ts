@@ -52,7 +52,6 @@ export class ReferralService {
           },
         });
       } catch (error) {
-
         if (attempt === 4) {
           throw error;
         }
@@ -209,59 +208,173 @@ export class ReferralService {
     }));
   }
 
-  async processFirstDepositReward(userId: string, transactionId: string) {
-    const referral = await this.prisma.referral.findUnique({
-      where: {
-        referredUserId: userId,
+  async processFirstDepositReward(
+    userId: string,
+    depositTransactionId: string,
+  ) {
+    const eventKey = `FIRST_DEPOSIT:${depositTransactionId}`;
+
+    return this.prisma.$transaction(
+      async (tx) => {
+        // 1. Idempotency check
+        const existingReward = await tx.referralReward.findUnique({
+          where: { eventKey },
+        });
+
+        if (existingReward) {
+          return existingReward;
+        }
+
+        // 2. Find and validate referral
+        const referral = await tx.referral.findUnique({
+          where: { referredUserId: userId },
+        });
+
+        if (!referral || referral.status !== 'PENDING') {
+          return null;
+        }
+
+        // 3. Verify the originating deposit exists and succeeded
+        const deposit = await tx.transaction.findUnique({
+          where: { id: depositTransactionId },
+        });
+
+        if (
+          !deposit ||
+          deposit.status !== 'SUCCESS' ||
+          deposit.type !== 'DEPOSIT'
+        ) {
+          throw new BadRequestException(
+            'A successful deposit is required for this reward',
+          );
+        }
+
+        // 4. Find and validate the referrer's wallet
+        const wallet = await tx.wallet.findUnique({
+          where: { userId: referral.referrerId },
+          include: { account: true },
+        });
+
+        if (!wallet) {
+          throw new BadRequestException('Referrer wallet not found');
+        }
+
+        if (wallet.status !== 'ACTIVE') {
+          throw new BadRequestException('Referrer wallet is not active');
+        }
+
+        const customerWalletAccount = wallet.account;
+
+        if (!customerWalletAccount) {
+          throw new BadRequestException(
+            'Customer wallet ledger account not found',
+          );
+        }
+
+        const referralExpenseAccount = await tx.account.findFirst({
+          where: {
+            code: '5100',
+            name: 'Referral Reward Expense',
+            type: 'EXPENSE',
+          },
+        });
+
+        if (!referralExpenseAccount) {
+          throw new BadRequestException(
+            'Referral Reward Expense account not found',
+          );
+        }
+
+        const rewardAmount = REFERRAL_REWARD.FIRST_DEPOSIT;
+
+        // 5. Create a separate financial transaction for the reward
+        const rewardTransaction = await tx.transaction.create({
+          data: {
+            type: 'REFERRAL_REWARD',
+            status: 'SUCCESS',
+            amount: rewardAmount,
+            currency: REFERRAL_CURRENCY,
+            reference: `REF-${depositTransactionId}`,
+            description: 'First deposit referral reward',
+            metadata: {
+              eventKey,
+              referralId: referral.id,
+              referredUserId: userId,
+              depositTransactionId,
+            },
+          },
+        });
+
+        // 6. Create the reward record
+        const reward = await tx.referralReward.create({
+          data: {
+            referralId: referral.id,
+            userId: referral.referrerId,
+            type: 'FIRST_DEPOSIT',
+            amount: rewardAmount,
+            currency: REFERRAL_CURRENCY,
+            status: 'PAID',
+            eventKey,
+            transactionId: rewardTransaction.id,
+          },
+        });
+
+        // 7. Record double-entry accounting
+        await tx.ledgerEntry.createMany({
+          data: [
+            {
+              transactionId: rewardTransaction.id,
+              accountId: referralExpenseAccount.id,
+              direction: 'DEBIT',
+              amount: rewardAmount,
+            },
+            {
+              transactionId: rewardTransaction.id,
+              accountId: customerWalletAccount.id,
+              direction: 'CREDIT',
+              amount: rewardAmount,
+            },
+          ],
+        });
+
+        // 8. Update balances
+        await tx.wallet.update({
+          where: { id: wallet.id },
+          data: {
+            balance: { increment: rewardAmount },
+          },
+        });
+
+        await tx.account.update({
+          where: { id: customerWalletAccount.id },
+          data: {
+            balance: { increment: rewardAmount },
+          },
+        });
+
+        await tx.account.update({
+          where: { id: referralExpenseAccount.id },
+          data: {
+            balance: { increment: rewardAmount },
+          },
+        });
+
+        // 9. Complete referral
+        await tx.referral.update({
+          where: { id: referral.id },
+          data: {
+            status: 'COMPLETED',
+            completedAt: new Date(),
+          },
+        });
+
+        return reward;
       },
-    });
-
-    if (!referral) {
-      return null;
-    }
-
-    if (referral.status === 'CANCELLED') {
-      return null;
-    }
-
-    const eventKey = `FIRST_DEPOSIT:${transactionId}`;
-
-    const existingReward = await this.prisma.referralReward.findUnique({
-      where: {
-        eventKey,
+      {
+        isolationLevel: 'Serializable',
       },
-    });
-
-    if (existingReward) {
-      return existingReward;
-    }
-
-    const reward = await this.prisma.referralReward.create({
-      data: {
-        referralId: referral.id,
-        userId: referral.referrerId,
-        type: 'FIRST_DEPOSIT',
-        amount: REFERRAL_REWARD.FIRST_DEPOSIT,
-        currency: REFERRAL_CURRENCY,
-        status: 'PENDING',
-        eventKey,
-        transactionId,
-      },
-    });
-
-    await this.prisma.referral.update({
-      where: {
-        id: referral.id,
-      },
-      data: {
-        status: 'COMPLETED',
-        completedAt: new Date(),
-      },
-    });
-
-    return reward;
+    );
   }
-
   async getMyRewards(userId: string) {
     return this.prisma.referralReward.findMany({
       where: {
@@ -332,115 +445,115 @@ export class ReferralService {
       valid: Boolean(referralCode && referralCode.isActive),
     };
   }
-async getAllReferrals(query: GetReferralsDto) {
-  const { page = 1, limit = 1000, search } = query;
+  async getAllReferrals(query: GetReferralsDto) {
+    const { page = 1, limit = 1000, search } = query;
 
-  const skip = (page - 1) * limit;
+    const skip = (page - 1) * limit;
 
-  let where: any = {};
+    let where: any = {};
 
-  if (search) {
-    where.OR = [
-      {
-        code: {
-          contains: search,
-          mode: 'insensitive',
-        },
-      },
-      {
-        referrer: {
-          fullname: {
+    if (search) {
+      where.OR = [
+        {
+          code: {
             contains: search,
             mode: 'insensitive',
           },
         },
-      },
-      {
-        referrer: {
-          email: {
-            contains: search,
-            mode: 'insensitive',
+        {
+          referrer: {
+            fullname: {
+              contains: search,
+              mode: 'insensitive',
+            },
           },
         },
-      },
-      {
-        referredUser: {
-          fullname: {
-            contains: search,
-            mode: 'insensitive',
+        {
+          referrer: {
+            email: {
+              contains: search,
+              mode: 'insensitive',
+            },
           },
         },
-      },
-      {
-        referredUser: {
-          email: {
-            contains: search,
-            mode: 'insensitive',
+        {
+          referredUser: {
+            fullname: {
+              contains: search,
+              mode: 'insensitive',
+            },
           },
         },
+        {
+          referredUser: {
+            email: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+        },
+      ];
+    }
+
+    const [referrals, total] = await this.prisma.$transaction([
+      this.prisma.referral.findMany({
+        where,
+        skip,
+        take: +limit,
+        orderBy: {
+          createdAt: 'desc',
+        },
+
+        select: {
+          id: true,
+          code: true,
+          status: true,
+          createdAt: true,
+          completedAt: true,
+
+          referrer: {
+            select: {
+              id: true,
+              fullname: true,
+              email: true,
+            },
+          },
+
+          referredUser: {
+            select: {
+              id: true,
+              fullname: true,
+              email: true,
+            },
+          },
+
+          rewards: {
+            select: {
+              id: true,
+              type: true,
+              amount: true,
+              currency: true,
+              status: true,
+              createdAt: true,
+              paidAt: true,
+            },
+          },
+        },
+      }),
+
+      this.prisma.referral.count({
+        where,
+      }),
+    ]);
+
+    return {
+      data: referrals,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
       },
-    ];
+    };
   }
-
-  const [referrals, total] = await this.prisma.$transaction([
-    this.prisma.referral.findMany({
-      where,
-      skip,
-      take: +limit,
-      orderBy: {
-        createdAt: 'desc',
-      },
-
-      select: {
-        id: true,
-        code: true,
-        status: true,
-        createdAt: true,
-        completedAt: true,
-
-        referrer: {
-          select: {
-            id: true,
-            fullname: true,
-            email: true,
-          },
-        },
-
-        referredUser: {
-          select: {
-            id: true,
-            fullname: true,
-            email: true,
-          },
-        },
-
-        rewards: {
-          select: {
-            id: true,
-            type: true,
-            amount: true,
-            currency: true,
-            status: true,
-            createdAt: true,
-            paidAt: true,
-          },
-        },
-      },
-    }),
-
-    this.prisma.referral.count({
-      where,
-    }),
-  ]);
-
-  return {
-    data: referrals,
-    meta: {
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
-    },
-  };
-}
 }

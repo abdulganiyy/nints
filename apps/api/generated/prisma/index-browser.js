@@ -341,7 +341,8 @@ exports.TransactionType = exports.$Enums.TransactionType = {
   REFUND: 'REFUND',
   REVERSAL: 'REVERSAL',
   FEE: 'FEE',
-  ADJUSTMENT: 'ADJUSTMENT'
+  ADJUSTMENT: 'ADJUSTMENT',
+  REFERRAL_REWARD: 'REFERRAL_REWARD'
 };
 
 exports.TransactionStatus = exports.$Enums.TransactionStatus = {

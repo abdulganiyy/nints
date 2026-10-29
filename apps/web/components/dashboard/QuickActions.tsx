@@ -51,12 +51,13 @@ const actions: Action[] = [
     href: "/electricity",
     icon: Cable,
   },
-  // {
-  //   title: "Loan",
-  //   description: "Borrow funds",
-  //   href: "/loan",
-  //   icon: CreditCard,
-  // },
+  {
+    title: "Loan",
+    description: "Interest Free Loan/Financing",
+    href: "/loan",
+    icon: CreditCard,
+    comingSoon:true
+  },
   // {
   //   title: "More",
   //   description: "All services",

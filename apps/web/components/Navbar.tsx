@@ -57,7 +57,7 @@ export default function Navbar() {
           </div>
 
           <div>
-            <h2 className="text-xl font-bold text-slate-900">Nints</h2>
+            <h2 className="text-xl font-bold text-slate-900">NintPay</h2>
 
             {/* <p className="text-xs text-slate-500">Wallet • Savings • Loans</p> */}
           </div>
@@ -155,7 +155,7 @@ export default function Navbar() {
                 <Wallet className="h-8 w-8 text-emerald-600" />
 
                 <div>
-                  <h2 className="font-bold">Nints</h2>
+                  <h2 className="font-bold">NintPay</h2>
 
                   <p className="text-xs text-slate-500">Smart Finance</p>
                 </div>
