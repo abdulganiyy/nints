@@ -303,6 +303,17 @@ export class PaystackWebhookService {
           },
         });
 
+        await tx.account.update({
+          where: {
+            id: transactionFeeRevenueAccount.id,
+          },
+          data: {
+            balance: {
+              increment: 100,
+            },
+          },
+        });
+
         return {
           transaction,
           userId: wallet.userId,
