@@ -19,38 +19,39 @@ export interface FundingQuote {
   amountCredited: number;
 }
 
-const FUNDING_FEE_RATE = 0.01; // Example: 1.5%
-const PLATFORM_FEE_RATE = 0.005; // Example: 0.5%
-const PLATFORM_FEE_FLAT = 100; // Example: ₦50
-const MAXIMUM_FEE = 300; // Example: ₦20
 
-export function calculateFundingQuote(
-  amount: number,
-): FundingQuote {
-  if (!Number.isFinite(amount) || amount <= 0) {
-    return {
-      amount: 0,
-      fee: 0,
-      totalToTransfer: 0,
-      amountCredited: 0,
-    };
-  }
+export function calculateFundingQuote(amountKobo: number) {
+  const platformFeeKobo = 10_000; // ₦100
+  const paystackRate = 0.01;
+  const paystackCapKobo = 30_000; // ₦300
 
-  // Calculate in kobo to avoid common floating-point
-  // rounding errors when dealing with naira amounts.
-  const amountKobo = Math.round(amount * 100);
+  // Calculate total before processing fee
+  const baseAmountKobo = amountKobo + platformFeeKobo;
 
-  const feeKobo = Math.min(
-    Math.round(amountKobo * FUNDING_FEE_RATE),
-    MAXIMUM_FEE * 100,
-  ) + PLATFORM_FEE_FLAT * 100;
+  // Gross up to account for Paystack's 1% charge
+  const totalAmountKobo = Math.ceil(
+    baseAmountKobo / (1 - paystackRate),
+  );
 
-  const totalKobo = amountKobo + feeKobo ;
+  const paystackFeeKobo = Math.min(
+    Math.ceil(totalAmountKobo * paystackRate),
+    paystackCapKobo,
+  );
+
+  const finalTotalKobo = amountKobo + platformFeeKobo + paystackFeeKobo;
 
   return {
-    amount: amountKobo / 100,
-    fee: feeKobo / 100,
-    totalToTransfer: totalKobo / 100,
+    amountKobo,
+    platformFeeKobo,
+    paystackFeeKobo,
+    totalAmountKobo: finalTotalKobo,
+
+    // Naira values for display
+    amount:amountKobo/ 100,
     amountCredited: amountKobo / 100,
+    fee:(platformFeeKobo + paystackFeeKobo)/ 100,
+    totalToTransfer: finalTotalKobo / 100,
+    platformFee: platformFeeKobo / 100,
+    paystackFee: paystackFeeKobo / 100,
   };
 }

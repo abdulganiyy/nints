@@ -64,12 +64,12 @@ export default function DashboardHeader({
         <div className="flex items-center gap-4">
           {/* Mobile Menu */}
 
-          <Button variant="ghost" size="icon" className="lg:hidden">
+          {/* <Button variant="ghost" size="icon" className="lg:hidden">
             <Menu className="h-5 w-5" />
-          </Button>
+          </Button> */}
 
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">
+            <h1 className="max-w-[220px] truncate text-2xl font-bold text-slate-900 sm:max-w-none sm:whitespace-normal">
               Welcome back, {name.split(" ")[0]} 👋
             </h1>
 
@@ -84,9 +84,9 @@ export default function DashboardHeader({
         <div className="flex items-center gap-2">
           {/* Search Mobile */}
 
-          <Button variant="ghost" size="icon" className="lg:hidden">
+          {/* <Button variant="ghost" size="icon" className="lg:hidden">
             <Search className="h-5 w-5" />
-          </Button>
+          </Button> */}
 
           {roles.includes("SUPER_ADMIN") && (
             <Link href="/admin/dashboard">Admin Dashboard</Link>
@@ -94,19 +94,19 @@ export default function DashboardHeader({
 
           {/* Notifications */}
 
-          <Button variant="ghost" size="icon" className="relative">
+          {/* <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5" />
 
             <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500" />
-          </Button>
+          </Button> */}
 
           {/* Settings */}
 
-          <Button variant="ghost" size="icon">
+          {/* <Button variant="ghost" size="icon">
             <Link href="/dashboard">
               <Settings className="h-5 w-5" />
             </Link>
-          </Button>
+          </Button> */}
 
           {/* User */}
 

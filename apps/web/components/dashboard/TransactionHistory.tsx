@@ -247,9 +247,9 @@ export default function TransactionHistory() {
             const isCredit = item.direction === "CREDIT";
 
             return (
-              <Link
+              <div
                 key={transaction.id}
-                href={`/transactions/${transaction.id}`}
+                // href={`/transactions/${transaction.id}`}
                 className="block"
               >
                 <div className="group flex items-center justify-between rounded-2xl border p-4 transition hover:bg-slate-50">
@@ -304,7 +304,7 @@ export default function TransactionHistory() {
                     </Badge>
                   </div>
                 </div>
-              </Link>
+              </div>
             );
           })
         )}
