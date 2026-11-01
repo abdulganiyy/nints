@@ -14,8 +14,6 @@ import {
 import { toast } from "sonner";
 
 import {
-  getFundingQuote,
-  getVirtualAccount,
   getWalletBalance,
 } from "@/services/funding.service";
 
@@ -143,7 +141,7 @@ export function FundWalletDialog({
       return null;
     }
 
-    return calculateFundingQuote(parsedAmount);
+    return calculateFundingQuote(parsedAmount * 100);
   }, [amount]);
 
 
