@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import Provider from "@/components/Provider";
 import { Toaster } from "@/components/ui/sonner";
 import { Suspense } from "react";
+import { Analytics } from "@vercel/analytics/react";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -45,6 +46,7 @@ export default function RootLayout({
           <Suspense>{children}</Suspense>
         </Provider>
         <Toaster />
+        <Analytics />
       </body>
     </html>
   );

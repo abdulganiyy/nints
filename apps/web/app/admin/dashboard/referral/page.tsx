@@ -114,7 +114,7 @@ export default function ReferralPage() {
             style: "currency",
             currency: "NGN",
             maximumFractionDigits: 2,
-          }).format(Number(row.original.rewards))}</span>
+          }).format(Number(row.original.rewards?.reduce((acc:number,reward:any) => { return acc + reward.amount},0)))}</span>
                 }
             },
             {
