@@ -22,7 +22,7 @@ export default function HomePage() {
         <Providers />
         <FinancialCalculator />
         <Security />
-        <Testimonials />
+        {/* <Testimonials /> */}
         <FAQs />
         <CTA />
         <Footer />
