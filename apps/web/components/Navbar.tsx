@@ -14,6 +14,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import Image from "next/image";
 
 const navigation = [
   {
@@ -52,9 +53,13 @@ export default function Navbar() {
         {/* Logo */}
 
         <Link href="/" className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-600 text-white">
-            <Wallet className="h-6 w-6" />
-          </div>
+          <Image
+            src="/logo.png"
+            alt="Company Logo"
+            width={50}
+            height={50}
+            priority 
+          />
 
           <div>
             <h2 className="text-xl font-bold text-slate-900">NintPay</h2>
