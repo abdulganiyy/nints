@@ -222,15 +222,6 @@ export class DashboardService {
         amount: true,
         currency: true,
         createdAt: true,
-
-        // user: {
-        //   select: {
-        //     id: true,
-        //     fullname: true,
-        //     email: true,
-        //     phone: true,
-        //   },
-        // },
       },
     });
   }

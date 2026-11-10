@@ -30,9 +30,9 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
         <table className="w-full">
           <thead>
             <tr className="border-b bg-slate-50 text-left">
-              <th className="px-6 py-3 text-xs font-medium uppercase tracking-wide text-slate-500">
+              {/* <th className="px-6 py-3 text-xs font-medium uppercase tracking-wide text-slate-500">
                 User
-              </th>
+              </th> */}
 
               <th className="px-6 py-3 text-xs font-medium uppercase tracking-wide text-slate-500">
                 Reference
@@ -82,19 +82,21 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
 }
 
 function TransactionRow({ transaction }: { transaction: any }) {
+
+  console.log(transaction)
   return (
     <tr className="hover:bg-slate-50">
-      <td className="px-6 py-4">
+      {/* <td className="px-6 py-4">
         <div>
           <p className="text-sm font-medium text-slate-900">
-            {transaction.user?.fullName ?? "Unknown user"}
+            {transaction.user?.fullname ?? "Unknown user"}
           </p>
 
           <p className="text-xs text-slate-500">
             {transaction.user?.email ?? transaction.user?.phone}
           </p>
         </div>
-      </td>
+      </td> */}
 
       <td className="px-6 py-4">
         <span className="font-mono text-xs text-slate-600">
