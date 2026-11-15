@@ -72,11 +72,11 @@ const legal = [
   },
   {
     label: "Cookie Policy",
-    href: "/cookies",
+    href: "/cookies-policy",
   },
   {
     label: "Help Center",
-    href: "/help",
+    href: "/help-center",
   },
 ];
 
