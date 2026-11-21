@@ -1,12 +1,21 @@
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { colors } from "../constants/theme";
+import { QueryProvider } from "../providers/query.provider";
+
+import { AuthProvider } from "../auth/auth.provider";
+
+import { AuthGuard } from "../auth/auth.guard";
+
 
 export default function RootLayout() {
   return (
     <>
+    <QueryProvider>
+      <AuthProvider>
       <StatusBar style="dark" />
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.white } }} />
+        <AuthGuard />
+      </AuthProvider>
+      </QueryProvider>
     </>
   );
 }

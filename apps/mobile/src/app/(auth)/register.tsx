@@ -1,52 +1,186 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Alert, StyleSheet } from "react-native";
+import React from "react";
+
+import {
+  Alert,
+  TouchableOpacity,
+  Text,
+} from "react-native";
+
 import { router } from "expo-router";
+
+import { useForm } from "react-hook-form";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { registerSchema, RegisterFormData } from "../../schemas/auth.schema";
+
+import { useRegister } from "../../auth/auth.hooks";
+
+import { FormInput } from "../../components/FormInput";
+
 import { Screen } from "../../components/Screen";
+
 import { Brand } from "../../components/Brand";
+
 import { PageHeading } from "../../components/PageHeading";
-import { Field } from "../../components/Field";
+
 import { PrimaryButton } from "../../components/PrimaryButton";
-import { colors } from "../../constants/theme";
+
+import { Controller } from "react-hook-form";
+import { Checkbox } from "expo-checkbox";
+import {  View, Pressable } from "react-native";
 
 export default function RegisterScreen() {
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const submit = () => {
-    if (!fullName.trim() || !email.trim() || !phone.trim() || password.length < 8) {
-      Alert.alert("Check your details", "Complete all fields. Password must be at least 8 characters.");
-      return;
-    }
-    setLoading(true);
-    // TODO: POST /auth/register, then route after successful API response.
-    setTimeout(() => {
-      setLoading(false);
-      router.push({ pathname: "/(auth)/verify-email", params: { email } });
-    }, 350);
+  const registerMutation = useRegister();
+
+  const {
+    control,
+    handleSubmit,
+      formState: { errors },
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
+
+    defaultValues: {
+      fullname: "",
+      email: "",
+      phone: "",
+      password: "",
+
+    },
+  });
+
+  const onSubmit = (data: RegisterFormData) => {
+
+    registerMutation.mutate(data, {
+
+      onSuccess: () => {
+
+        router.push({
+          pathname: "/(auth)/verify-email",
+          params: {
+            email: data.email,
+          },
+        });
+
+      },
+
+      onError: (error: any) => {
+
+        const message =
+          error.response?.data?.message ||
+          "Unable to create account. Please try again.";
+
+        Alert.alert("Registration failed", message);
+
+      },
+
+    });
+
   };
 
   return (
     <Screen>
       <Brand />
-      <PageHeading title="Create your account" subtitle="A few details and you’ll be ready to get started with NintPay." />
-      <Field label="Full name" value={fullName} onChangeText={setFullName} placeholder="Enter your full name" autoCapitalize="words" />
-      <Field label="Email address" value={email} onChangeText={setEmail} placeholder="you@example.com" keyboardType="email-address" autoCapitalize="none" />
-      <Field label="Phone number" value={phone} onChangeText={setPhone} placeholder="08012345678" keyboardType="phone-pad" />
-      <Field label="Password" value={password} onChangeText={setPassword} placeholder="At least 8 characters" secureTextEntry />
-      <Text style={styles.hint}>Use a strong password you do not use on other services.</Text>
-      <PrimaryButton title="Create account" onPress={submit} loading={loading} />
-      <TouchableOpacity style={styles.bottom} onPress={() => router.replace("/(auth)/login")}>
-        <Text style={styles.bottomText}>Already registered? <Text style={styles.link}>Log in</Text></Text>
+
+      <PageHeading
+        title="Create your account"
+        subtitle="Enter your details to get started with NintPay."
+      />
+
+      <FormInput
+        control={control}
+        name="fullname"
+        label="Full name"
+        placeholder="Enter your full name"
+        autoCapitalize="words"
+      />
+
+      <FormInput
+        control={control}
+        name="email"
+        label="Email address"
+        placeholder="you@example.com"
+        keyboardType="email-address"
+        autoCapitalize="none"
+      />
+
+      <FormInput
+        control={control}
+        name="phone"
+        label="Phone number"
+        placeholder="08012345678"
+        keyboardType="phone-pad"
+      />
+
+      <FormInput
+        control={control}
+        name="password"
+        label="Password"
+        placeholder="Enter your password"
+        secureTextEntry
+      />
+
+      <Controller
+  control={control}
+  name="agreed"
+  render={({ field: { value, onChange } }) => (
+    <View style={{ marginVertical: 16 }}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <Checkbox
+          value={value}
+          onValueChange={onChange}
+          color={value ? "#16A34A" : undefined}
+        />
+
+        <Text style={{ marginLeft: 10, flex: 1 }}>
+          I agree to the{" "}
+          <Text
+            style={{ color: "#16A34A", fontWeight: "600" }}
+            // onPress={() => router.push("/terms")}
+          >
+            Terms and Conditions
+          </Text>
+          {" "}and{" "}
+          <Text
+            style={{ color: "#16A34A", fontWeight: "600" }}
+            // onPress={() => router.push("/privacy")}
+          >
+            Privacy Policy
+          </Text>
+          .
+        </Text>
+      </View>
+
+      {errors.agreed && (
+        <Text style={{ color: "#DC2626", marginTop: 6 }}>
+          {errors.agreed.message}
+        </Text>
+      )}
+    </View>
+  )}
+/>
+
+      <PrimaryButton
+        title="Create account"
+        onPress={handleSubmit(onSubmit)}
+        loading={registerMutation.isPending}
+        disabled={registerMutation.isPending}
+      />
+
+      <TouchableOpacity
+        onPress={() => router.replace("/(auth)/login")}
+      >
+        <Text style={{ textAlign: "center", marginTop: 20 }}>
+          Already have an account? Log in
+        </Text>
       </TouchableOpacity>
+
     </Screen>
   );
 }
-const styles = StyleSheet.create({
-  hint: { color: colors.muted, fontSize: 11, marginTop: -7, marginBottom: 20 },
-  bottom: { alignItems: "center", padding: 20 },
-  bottomText: { color: colors.muted, fontSize: 13 },
-  link: { color: colors.green, fontWeight: "800" },
-});

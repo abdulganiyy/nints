@@ -1,37 +1,110 @@
-import React, { useState } from "react";
-import { Text, Alert, StyleSheet } from "react-native";
+import { Alert } from "react-native";
+
 import { router } from "expo-router";
+
+import { useForm } from "react-hook-form";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import {
+  createPinSchema,
+  CreatePinFormData,
+} from "../../schemas/auth.schema";
+
+import { useCreatePin } from "../../auth/auth.hooks";
+
+import { FormInput } from "../../components/FormInput";
+
 import { Screen } from "../../components/Screen";
+
 import { Brand } from "../../components/Brand";
+
 import { PageHeading } from "../../components/PageHeading";
-import { Field } from "../../components/Field";
+
 import { PrimaryButton } from "../../components/PrimaryButton";
-import { colors } from "../../constants/theme";
+
+import { useAuthContext } from "../../auth/auth.context";
 
 export default function CreatePinScreen() {
-  const [pin, setPin] = useState("");
-  const [confirmPin, setConfirmPin] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const submit = () => {
-    if (!/^\d{4}$/.test(pin)) return Alert.alert("Invalid PIN", "Your transaction PIN must contain 4 digits.");
-    if (pin !== confirmPin) return Alert.alert("PINs do not match", "Enter the same PIN in both fields.");
-    setLoading(true);
-    // TODO: POST PIN to backend over TLS. Hash server-side; never persist raw PIN locally.
-    setTimeout(() => { setLoading(false); router.replace("/(tabs)"); }, 350);
+  const createPinMutation = useCreatePin();
+
+  const { refreshUser } = useAuthContext();
+
+  const { control, handleSubmit } =
+    useForm<CreatePinFormData>({
+      resolver: zodResolver(createPinSchema),
+
+      defaultValues: {
+        pin: "",
+        confirmPin: "",
+      },
+    });
+
+  const onSubmit = async (data: CreatePinFormData) => {
+
+    createPinMutation.mutate(
+      { pin: data.pin },
+
+      {
+        onSuccess: async () => {
+
+          await refreshUser();
+
+          router.replace("/(tabs)");
+
+        },
+
+        onError: (error: any) => {
+
+          Alert.alert(
+            "PIN creation failed",
+            error.response?.data?.message ||
+              "Unable to create your transaction PIN."
+          );
+
+        },
+      }
+    );
+
   };
 
   return (
     <Screen>
+
       <Brand />
-      <PageHeading title="Create your transaction PIN" subtitle="This PIN will help protect transactions made from your NintPay account." />
-      <Field label="4-digit PIN" value={pin} onChangeText={setPin} placeholder="••••" keyboardType="number-pad" secureTextEntry maxLength={4} />
-      <Field label="Confirm PIN" value={confirmPin} onChangeText={setConfirmPin} placeholder="••••" keyboardType="number-pad" secureTextEntry maxLength={4} />
-      <Text style={styles.note}>Do not share your PIN with anyone, including NintPay support.</Text>
-      <PrimaryButton title="Create PIN and continue" onPress={submit} loading={loading} />
+
+      <PageHeading
+        title="Secure your transactions"
+        subtitle="Create a 4-digit PIN to authorize transactions on NintPay."
+      />
+
+      <FormInput
+        control={control}
+        name="pin"
+        label="Transaction PIN"
+        placeholder="••••"
+        keyboardType="number-pad"
+        secureTextEntry
+        maxLength={4}
+      />
+
+      <FormInput
+        control={control}
+        name="confirmPin"
+        label="Confirm transaction PIN"
+        placeholder="••••"
+        keyboardType="number-pad"
+        secureTextEntry
+        maxLength={4}
+      />
+
+      <PrimaryButton
+        title="Create PIN and continue"
+        onPress={handleSubmit(onSubmit)}
+        loading={createPinMutation.isPending}
+      />
+
     </Screen>
   );
 }
-const styles = StyleSheet.create({
-  note: { color: colors.muted, fontSize: 12, lineHeight: 18, marginTop: -4, marginBottom: 22 },
-});

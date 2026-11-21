@@ -4,6 +4,9 @@ import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Screen } from "../../components/Screen";
 import { colors } from "../../constants/theme";
+import { tokenStorage } from "../../api/axios";
+import { useAuthContext } from "@/auth/auth.context";
+
 
 const rows = [
   ["person-outline", "Personal information"],
@@ -14,12 +17,31 @@ const rows = [
 ] as const;
 
 export default function ProfileScreen() {
+
+    const {
+     user
+    } = useAuthContext();
+
+  const onLogout = async () => {
+     
+    try {
+
+      await tokenStorage.clearTokens();
+
+      router.replace("/(auth)/login");
+
+    } catch (error) {   
+      console.log("Logout failed")
+    }
+       
+  }
+
   return (
     <Screen>
       <Text style={styles.title}>Profile</Text>
       <View style={styles.userCard}>
         <View style={styles.avatar}><Ionicons name="person-outline" size={26} color={colors.green} /></View>
-        <View><Text style={styles.name}>NintPay User</Text><Text style={styles.email}>user@example.com</Text></View>
+        <View><Text style={styles.name}>{user ? user.fullname : "NintPay User"}</Text><Text style={styles.email}>{user?.email}</Text></View>
       </View>
       <Text style={styles.section}>ACCOUNT SETTINGS</Text>
       {rows.map(([icon, label]) => (
@@ -29,7 +51,7 @@ export default function ProfileScreen() {
           <Ionicons name="chevron-forward" size={18} color="#A0AAA5" />
         </TouchableOpacity>
       ))}
-      <TouchableOpacity style={styles.logout} onPress={() => router.replace("/(auth)/login")}>
+      <TouchableOpacity style={styles.logout} onPress={onLogout}>
         <Ionicons name="log-out-outline" size={19} color={colors.danger} />
         <Text style={styles.logoutText}>Log out</Text>
       </TouchableOpacity>

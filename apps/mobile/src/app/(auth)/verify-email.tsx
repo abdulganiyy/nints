@@ -1,39 +1,120 @@
-import React, { useState } from "react";
-import { Text, View, Alert, StyleSheet } from "react-native";
-import { useLocalSearchParams, router } from "expo-router";
+import React from "react";
+
+import { Alert, Text } from "react-native";
+
+import { router, useLocalSearchParams } from "expo-router";
+
+import { useForm } from "react-hook-form";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import {
+  verifyEmailSchema,
+  VerifyEmailFormData,
+} from "../../schemas/auth.schema";
+
+import {
+  useVerifyEmail,
+  useResendVerification,
+} from "../../auth/auth.hooks";
+
+import { FormInput } from "../../components/FormInput";
+
 import { Screen } from "../../components/Screen";
+
 import { Brand } from "../../components/Brand";
+
 import { PageHeading } from "../../components/PageHeading";
-import { Field } from "../../components/Field";
+
 import { PrimaryButton } from "../../components/PrimaryButton";
-import { colors } from "../../constants/theme";
 
 export default function VerifyEmailScreen() {
-  const { email } = useLocalSearchParams<{ email?: string }>();
-  const [otp, setOtp] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const verify = () => {
-    if (!/^\d{6}$/.test(otp)) return Alert.alert("Invalid code", "Enter the 6-digit verification code.");
-    setLoading(true);
-    // TODO: POST /auth/verify-email with email and OTP.
-    setTimeout(() => { setLoading(false); router.replace("/(auth)/create-pin"); }, 350);
+  const { email } = useLocalSearchParams<{
+    email: string;
+  }>();
+
+  const verifyMutation = useVerifyEmail();
+
+  const resendMutation = useResendVerification();
+
+  const { control, handleSubmit } =
+    useForm<VerifyEmailFormData>({
+      resolver: zodResolver(verifyEmailSchema),
+
+      defaultValues: {
+        email: email ?? "",
+        otp: "",
+      },
+    });
+
+  const onSubmit = (data: VerifyEmailFormData) => {
+
+    verifyMutation.mutate(data, {
+
+      onSuccess: () => {
+
+        router.replace("/(auth)/create-pin");
+
+      },
+
+      onError: (error: any) => {
+
+        Alert.alert(
+          "Verification failed",
+          error.response?.data?.message ||
+            "Invalid or expired verification code."
+        );
+
+      },
+
+    });
+
   };
 
   return (
     <Screen>
+
       <Brand />
-      <PageHeading title="Verify your email" subtitle={`We sent a 6-digit verification code to ${email || "your email address"}.`} />
-      <Field label="Verification code" value={otp} onChangeText={setOtp} placeholder="000000" keyboardType="number-pad" maxLength={6} />
-      <Text style={styles.note}>The code should expire after a short period. Request a new one if it expires.</Text>
-      <PrimaryButton title="Verify email" onPress={verify} loading={loading} />
-      <View style={styles.resend}><Text style={styles.muted}>Didn’t receive a code? </Text><Text style={styles.link} onPress={() => Alert.alert("Resend code", "Connect this action to your resend verification endpoint.")}>Resend code</Text></View>
+
+      <PageHeading
+        title="Verify your email"
+        subtitle={`Enter the verification code sent to ${email}.`}
+      />
+
+      <FormInput
+        control={control}
+        name="otp"
+        label="Verification code"
+        placeholder="000000"
+        keyboardType="number-pad"
+        maxLength={6}
+      />
+
+      <PrimaryButton
+        title="Verify email"
+        onPress={handleSubmit(onSubmit)}
+        loading={verifyMutation.isPending}
+      />
+
+      <Text
+        style={{ textAlign: "center", marginTop: 22 }}
+        onPress={() => {
+          if (!email || resendMutation.isPending) return;
+
+          resendMutation.mutate(email, {
+            onSuccess: () =>
+              Alert.alert("Success", "A new code has been sent."),
+            onError: () =>
+              Alert.alert("Error", "Unable to resend verification code."),
+          });
+        }}
+      >
+        {resendMutation.isPending
+          ? "Sending..."
+          : "Didn't receive a code? Resend"}
+      </Text>
+
     </Screen>
   );
 }
-const styles = StyleSheet.create({
-  note: { color: colors.muted, fontSize: 12, lineHeight: 18, marginTop: -4, marginBottom: 22 },
-  resend: { flexDirection: "row", justifyContent: "center", marginTop: 22 },
-  muted: { color: colors.muted, fontSize: 13 },
-  link: { color: colors.green, fontSize: 13, fontWeight: "800" },
-});
