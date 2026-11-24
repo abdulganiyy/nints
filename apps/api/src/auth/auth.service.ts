@@ -68,6 +68,7 @@ export class AuthService {
       email: user!.email,
       fullname: user!.fullname,
       token: otp,
+      platform: dto.platform ?? 'web',
     });
 
     const roles = user!.userRoles.map((ur) => ur.role.name);
@@ -129,6 +130,7 @@ export class AuthService {
       user: {
         fullname: user.fullname,
         email: user.email,
+        emailVerified: user.emailVerified,
         roles,
         permissions,
       },
@@ -152,7 +154,7 @@ export class AuthService {
     };
   }
 
-  async resendEmailOtp(email: string) {
+  async resendEmailOtp(email: string, platform?: string) {
     const user = await this.prisma.user.findUnique({
       where: { email },
     });
@@ -176,6 +178,7 @@ export class AuthService {
       email: user!.email,
       fullname: user!.fullname,
       token: otp,
+      platform: platform ?? 'web',
     });
 
     return {
@@ -183,7 +186,7 @@ export class AuthService {
     };
   }
 
-  async forgotPassword(email: string) {
+  async forgotPassword(email: string, platform?: string) {
     const user = await this.prisma.user.findUnique({
       where: { email },
     });
@@ -192,33 +195,36 @@ export class AuthService {
       return;
     }
 
-    const rawToken = crypto.randomBytes(32).toString('hex');
-    const hashedToken = crypto
-      .createHash('sha256')
-      .update(rawToken)
-      .digest('hex');
+    const { otp } = generateOtp();
 
     await this.prisma.user.update({
       where: {
         id: user.id,
       },
       data: {
-        resetPasswordToken: hashedToken,
+        resetPasswordToken: otp,
         resetPasswordExpiresAt: new Date(),
       },
     });
 
     const resetLink = `${this.config.get(
       'FRONTEND_URL',
-    )}/reset-password?token=${hashedToken}`;
-
-    console.log(resetLink);
+    )}/reset-password?token=${otp}`;
 
     await this.emailService.sendEmail({
       to: user.email!,
       subject: 'Reset Password',
       template: 'reset-password',
-      context: { url: resetLink },
+      context: {
+        resetPasswordUrl: resetLink,
+        appName: 'NintPay',
+        otp,
+        name:user.fullname,
+        expiryMinutes: '10',
+        supportEmail: 'info@nintpay.com',
+        year: new Date().getFullYear(),
+        isMobile: platform == 'mobile',
+      },
     });
 
     return {
@@ -294,11 +300,11 @@ export class AuthService {
     ];
 
     return {
-      emailVerified: user?.emailVerified,
-      email: user?.email,
-      phone: user?.phone,
-      fullname: user?.fullname,
-      profileImage: user?.profileImage,
+      emailVerified: user.emailVerified,
+      email: user.email,
+      phone: user.phone,
+      fullname: user.fullname,
+      profileImage: user.profileImage,
       roles,
       permissions: roles.includes('SUPER_ADMIN') ? ['*'] : permissions,
     };

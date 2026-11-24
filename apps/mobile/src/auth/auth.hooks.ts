@@ -37,7 +37,6 @@ export function useLogin() {
       data: LoginDto
     ) => {
       const response = await authApi.login(data);
-
       await tokenStorage.saveTokens(
         response.accessToken,
         // response.refreshToken
@@ -101,3 +100,15 @@ export function useLogout() {
     },
   });
 }
+
+export const useForgotPassword = () => {
+  return useMutation({
+    mutationFn: authApi.forgotPassword,
+  });
+};
+
+export const useResetPassword = () => {
+  return useMutation({
+    mutationFn: authApi.resetPassword,
+  });
+};

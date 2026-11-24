@@ -50,6 +50,33 @@ export const createPinSchema = z.object({
   }
 );
 
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email("Enter a valid email address"),
+});
+
+export const resetPasswordSchema = z
+  .object({
+    email: z.string().email(),
+    otp: z.string().length(6, "Enter the 6-digit code"),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export type ForgotPasswordFormValues = z.infer<
+  typeof forgotPasswordSchema
+>;
+
+export type ResetPasswordFormValues = z.infer<
+  typeof resetPasswordSchema
+>;
+
 export type RegisterFormData = z.infer<typeof registerSchema>;
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type VerifyEmailFormData = z.infer<typeof verifyEmailSchema>;

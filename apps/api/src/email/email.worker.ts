@@ -20,9 +20,11 @@ export class EmailWorker extends WorkerHost {
             appName: 'NintPay',
             name: job.data.fullname,
             verificationUrl: `${process.env.FRONTEND_URL}/verify-email?token=${job.data.token}&email=${job.data.email}`,
+            otp:job.data.token,
             expiryMinutes: '10',
             supportEmail: 'info@nintpay.com',
             year: new Date().getFullYear(),
+            isMobile:job.data.platform == "mobile"
           },
         });
     }

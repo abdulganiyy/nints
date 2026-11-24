@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Alert, Text } from "react-native";
+import { Alert, Text, TouchableOpacity } from "react-native";
 
 import { router, useLocalSearchParams } from "expo-router";
 
@@ -13,10 +13,7 @@ import {
   VerifyEmailFormData,
 } from "../../schemas/auth.schema";
 
-import {
-  useVerifyEmail,
-  useResendVerification,
-} from "../../auth/auth.hooks";
+import { useVerifyEmail, useResendVerification } from "../../auth/auth.hooks";
 
 import { FormInput } from "../../components/FormInput";
 
@@ -29,7 +26,6 @@ import { PageHeading } from "../../components/PageHeading";
 import { PrimaryButton } from "../../components/PrimaryButton";
 
 export default function VerifyEmailScreen() {
-
   const { email } = useLocalSearchParams<{
     email: string;
   }>();
@@ -38,43 +34,33 @@ export default function VerifyEmailScreen() {
 
   const resendMutation = useResendVerification();
 
-  const { control, handleSubmit } =
-    useForm<VerifyEmailFormData>({
-      resolver: zodResolver(verifyEmailSchema),
+  const { control, handleSubmit } = useForm<VerifyEmailFormData>({
+    resolver: zodResolver(verifyEmailSchema),
 
-      defaultValues: {
-        email: email ?? "",
-        otp: "",
-      },
-    });
+    defaultValues: {
+      email: email ?? "",
+      otp: "",
+    },
+  });
 
   const onSubmit = (data: VerifyEmailFormData) => {
-
     verifyMutation.mutate(data, {
-
       onSuccess: () => {
-
-        router.replace("/(auth)/create-pin");
-
+        router.replace("/(auth)/login");
       },
 
       onError: (error: any) => {
-
         Alert.alert(
           "Verification failed",
           error.response?.data?.message ||
-            "Invalid or expired verification code."
+            "Invalid or expired verification code.",
         );
-
       },
-
     });
-
   };
 
   return (
     <Screen>
-
       <Brand />
 
       <PageHeading
@@ -97,8 +83,7 @@ export default function VerifyEmailScreen() {
         loading={verifyMutation.isPending}
       />
 
-      <Text
-        style={{ textAlign: "center", marginTop: 22 }}
+      <TouchableOpacity
         onPress={() => {
           if (!email || resendMutation.isPending) return;
 
@@ -110,11 +95,12 @@ export default function VerifyEmailScreen() {
           });
         }}
       >
-        {resendMutation.isPending
-          ? "Sending..."
-          : "Didn't receive a code? Resend"}
-      </Text>
-
+        <Text style={{ textAlign: "center", marginTop: 22 }}>
+          {resendMutation.isPending
+            ? "Sending..."
+            : "Didn't receive a code? Resend"}
+        </Text>
+      </TouchableOpacity>
     </Screen>
   );
 }

@@ -8,6 +8,7 @@ interface AuthContextType {
   isLoading: boolean;
   refreshUser: () => Promise<void>;
   hasCompletedOnboarding:boolean;
+  completeOnboarding: () => Promise<void>;
 }
 
 export const AuthContext =

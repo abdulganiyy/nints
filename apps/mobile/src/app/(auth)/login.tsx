@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Alert, Text, TouchableOpacity } from "react-native";
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import { router } from "expo-router";
 
@@ -22,6 +22,8 @@ import { PageHeading } from "../../components/PageHeading";
 
 import { PrimaryButton } from "../../components/PrimaryButton";
 import axios, { AxiosError } from "axios";
+import { colors } from "@/constants/theme";
+import { tokenStorage } from "@/api/axios";
 
 export default function LoginScreen() {
   const loginMutation = useLogin();
@@ -37,7 +39,20 @@ export default function LoginScreen() {
 
   const onSubmit = (data: LoginFormData) => {
     loginMutation.mutate(data, {
-      onSuccess: () => {
+      onSuccess: async (response) => {
+        if (!response.user.emailVerified) {
+          await tokenStorage.clearTokens();
+
+          router.push({
+            pathname: "/(auth)/verify-email",
+            params: {
+              email: data.email,
+            },
+          });
+
+          return;
+        }
+
         router.replace("/(tabs)");
       },
 
@@ -93,13 +108,21 @@ export default function LoginScreen() {
         secureTextEntry
       />
 
-      <TouchableOpacity
-      // onPress={() => router.push("/(auth)/forgot-password")}
-      >
-        <Text style={{ textAlign: "right", marginBottom: 20 }}>
-          Forgot password?
-        </Text>
-      </TouchableOpacity>
+      <View style={styles.authlinks}>
+        <TouchableOpacity onPress={() => router.push("/(auth)/register")}>
+          <Text
+            style={{ textAlign: "left", marginBottom: 20, color: colors.green }}
+          >
+            Not signed up yet? Sign up
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => router.push("/(auth)/forgot-password")}>
+          <Text style={{ textAlign: "right", marginBottom: 20 }}>
+            Forgot password?
+          </Text>
+        </TouchableOpacity>
+      </View>
 
       <PrimaryButton
         title="Log in"
@@ -110,3 +133,10 @@ export default function LoginScreen() {
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  authlinks: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+});

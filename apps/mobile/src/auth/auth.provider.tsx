@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { AuthContext } from "./auth.context";
 
@@ -51,6 +51,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initialize();
   }, []);
 
+
+    const completeOnboarding = useCallback(async () => {
+    await AsyncStorage.setItem(ONBOARDING_KEY, "true");
+    setHasCompletedOnboarding(true);
+  }, []);
+
   return (
     <AuthContext.Provider
       value={{
@@ -58,7 +64,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isAuthenticated: !!user,
         isLoading,
         refreshUser,
-        hasCompletedOnboarding
+        hasCompletedOnboarding,
+        completeOnboarding
       }}
     >
       {children}

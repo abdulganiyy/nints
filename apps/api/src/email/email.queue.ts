@@ -10,7 +10,7 @@ export class EmailQueue {
     private readonly queue: Queue,
   ) {}
 
-  async verifyEmail(data: { email: string; token: string; fullname: string }) {
+  async verifyEmail(data: { email: string; token: string; fullname: string, platform:string }) {
     await this.queue.add(EmailJobs.VERIFY_EMAIL, data, {
       jobId: `verify-email-${data.email}-${Date.now()}`,
       attempts: 5,

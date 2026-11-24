@@ -41,3 +41,13 @@ export interface AuthResponse {
   accessToken: string;
   refreshToken: string;
 }
+
+export interface ForgotPasswordDto {
+  email: string;
+}
+
+export interface ResetPasswordDto {
+  email: string;
+  otp: string;
+  password: string;
+}
