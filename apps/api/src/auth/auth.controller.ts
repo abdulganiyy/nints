@@ -49,7 +49,7 @@ export class AuthController {
 
   @Post('forgot-password')
   async forgotPassword(@Body() forgotPaasswordDto: ForgotPasswordDto) {
-    return this.authService.forgotPassword(forgotPaasswordDto.email);
+    return this.authService.forgotPassword(forgotPaasswordDto.email,forgotPaasswordDto.platform);
   }
 
   @Post('reset-password')
@@ -62,9 +62,9 @@ export class AuthController {
 
   @Post('resend-verification')
   async resendVerification(
-    @Body() resendEmailVerificationDto: { email: string },
+    @Body() resendEmailVerificationDto: { email: string , platform?:string},
   ) {
-    return this.authService.resendEmailOtp(resendEmailVerificationDto.email);
+    return this.authService.resendEmailOtp(resendEmailVerificationDto.email,resendEmailVerificationDto.platform);
   }
 
   @Get('me')
